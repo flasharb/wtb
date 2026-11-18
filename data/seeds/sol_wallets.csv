@@ -1,0 +1,304 @@
+address,est_usd_balance,swaps_30d,avg_swaps_per_day,distinct_tokens,avg_holding_hours,label,category,is_exchange_or_bridge,is_contract,is_bot
+5tzFkiKscMRHK5ZXWBCsPU7j5eGqK25kPMFhVn2GCMnS,15000000,200,6.67,40,72,Binance Hot Wallet,exchange,true,false,false
+4ZtK8zB4n2m5q8w2y8x7v6u5t4s3r2q1p0o9n8m7l6k5,250000,2800,93.33,12,0.01,Jito MEV Arb Bot,bot,false,false,true
+3aB8zB4n2m5q8w2y8x7v6u5t4s3r2q1p0o9n8m7l6k1,45000,45,1.5,10,24,Small Retail Trader,retail,false,false,false
+UP7EaJmaWheg6ozfsKUKiXPiatcfPHy82wfn8rK84F6E,157321,23,0.77,11,19,Wintermute Solana #1,whale,false,false,false
+co92QBt2352kPEHdruCYixfVwWVXwVu9AFhUxdLUbdUJ,194642,34,1.13,18,32,CMS Holdings #2,whale,false,false,false
+9acJPxd1FeYPxX3sDMBdv1wzFQ6JpqErh84rwQBToC63,231963,45,1.5,25,45,DeFiance Capital Sol #3,smart_money,false,false,false
+C4uhPwGbg1KkTz6CMGXz3RYAPUCA52g8ecM93Vp3LfyQ,269284,56,1.87,32,58,Multicoin Sub-wallet #4,fund,false,false,false
+r7D2UjscZ5EHjCPuTkrjidqeErvr5w1wQmZN8BR41Rnj,306605,67,2.23,39,71,Ansem Kol Watch #5,whale,false,false,false
+2QHWCMoMzDfV68gYhZkjz1mkrGeKpoX7N4qAeo91Lm79,343926,78,2.6,6,84,GCR Solana Stash #6,smart_money,false,false,false
+MJyN43B66MQ4J3T9M2oJPbq2Tm8bBpP11eXpiPjSeokQ,381247,89,2.97,13,97,Solana Smart DEX Buyer #7,whale,false,false,false
+ZpJahZRbNnmdo5tLgbFqauiRZktpwcim1AkEF1s3pLKB,418568,100,3.33,20,110,Jupiter Aggregator Whale #8,fund,false,false,false
+wxLwe5FXMunwCJhKnJiJLquhi8fdxNy6HQtPCdh5uMEP,455889,111,3.7,27,123,Raydium Liquidity Leader #9,smart_money,false,false,false
+ZWaqG6wSGB22cDFzNwgvw6CApkrkjZsY142PpYPzpdUU,493210,122,4.07,34,136,Pump.fun Whale Early #10,whale,false,false,false
+b6RCTKTUEje28JXsC1GSnLDBw3PPFK1q3Yye1s12gB6U,530531,133,4.43,41,149,Solana Alpha Fund #1 #11,whale,false,false,false
+brJ5S6eFjvkVxw3k2ikCo39Tq3sPrnFu3QrXzYChHNJ3,567852,144,4.8,8,162,Solana Alpha Fund #2 #12,fund,false,false,false
+V7RtnagMtzkNAMuNz1Wddkfespk15bpF3ZyLEpSDELWE,605173,155,5.17,15,175,High Conviction Sol Whale #13,whale,false,false,false
+8AQf3y8MnYVzLpmqtcHnYqPkoUJrDzCnziYRPXnV2Qwk,642494,166,5.53,22,188,Jump Trading Active #14,whale,false,false,false
+MVTPEgNMb3Rpt8sxcNLsuQVUbx2wnqkVVwhFa82VMPHN,679815,177,5.9,29,201,Wintermute Solana #15,smart_money,false,false,false
+RM5icQ1DR9qUD4rfMsAobY9jyQGe68a2fbqAGGZsfHPL,717136,188,6.27,36,214,CMS Holdings #16,fund,false,false,false
+1oAoQmmKvyegkhxZ4PSi8oCBADQKTMMGmMWMGKKBGRC8,754457,199,6.63,43,227,DeFiance Capital Sol #17,whale,false,false,false
+iXNpqRG2AH7rGhLbT1MWsRzzKix9Pp95UypGPypUcqZJ,791778,210,7,10,10,Multicoin Sub-wallet #18,smart_money,false,false,false
+u95Z5MV9HEFGoJHJ6Hw7nCoQuUcKg4P3MbX1Xu3hqnop,829099,221,7.37,17,23,Ansem Kol Watch #19,whale,false,false,false
+BR1QpztULM4XZtQ5U9n4cDS59A7aCMUUjyTxGSL2nuW5,866420,232,7.73,24,36,GCR Solana Stash #20,fund,false,false,false
+gZf2B7BJPEpQ6z4mUxdz56BCXKoNpw9fE17adfdkwnGx,903741,243,8.1,31,49,Solana Smart DEX Buyer #21,smart_money,false,false,false
+E1CfM661qdSDVQDwWxPK3hw9nJk7PKggnZe7ueeMPB6Z,941062,254,8.47,38,62,Jupiter Aggregator Whale #22,whale,false,false,false
+ssEdJChXb1YTaDKoPL3WPMbH2FMdEA5hRDtHrk3y3Zzu,978383,265,8.83,5,75,Raydium Liquidity Leader #23,whale,false,false,false
+eGxka3CtY2z6SXA4FK5G6nNV7FMskwDS6pWC2hkECaLe,1015704,276,9.2,12,88,Pump.fun Whale Early #24,fund,false,false,false
+PAZPKLWmTMuFb62Hi77HHzbE3vxs8TV53p1qmzAKu1To,1053025,287,9.57,19,101,Solana Alpha Fund #1 #25,whale,false,false,false
+ZsrGoJvt6NLGk3pWxckupECEk9cqdHoGDDQc9rUSSiti,1090346,298,9.93,26,114,Solana Alpha Fund #2 #26,whale,false,false,false
+ycYN6JgHtahPwi2bDjgB8G21Tp8avR1NK4zpYk8qL89w,1127667,309,10.3,33,127,High Conviction Sol Whale #27,smart_money,false,false,false
+Gr22oypo418EBhDVMtD5JJF5S5AsStUwpJUaFRGFWTag,1164988,320,10.67,40,140,Jump Trading Active #28,fund,false,false,false
+1AHCKSirJAfmmQR21hLczp1i8D3awmPAZiqkszAJki7D,1202309,331,11.03,7,153,Wintermute Solana #29,whale,false,false,false
+DoCyAE7JH1RJimqMif4A1ykMUxJxeN5amFkRcnZrjZyr,1239630,22,0.73,14,166,CMS Holdings #30,smart_money,false,false,false
+4XicTQyQ4CaUKKoqkuYHBxDwkMKUsG5Qc5GA1rRxLUSY,1276951,33,1.1,21,179,DeFiance Capital Sol #31,whale,false,false,false
+cg3Pvz1ReUMqxBAyKMYghLyUbnH3N3DXnrKf6YH5pYdo,1314272,44,1.47,28,192,Multicoin Sub-wallet #32,fund,false,false,false
+c8twZWdyvABYbe4ahtrdPGp4MsjQHgYSUQruDaHwtiTC,1351593,55,1.83,35,205,Ansem Kol Watch #33,smart_money,false,false,false
+t4akbdNVd1JMakRHiCPxE2pck9XvcRSgScScfo2mhZAD,1388914,66,2.2,42,218,GCR Solana Stash #34,whale,false,false,false
+HkVcSyAp3AQq4SytYBBKXuWLyCDEdhun3vmn6jSz1vxP,1426235,77,2.57,9,231,Solana Smart DEX Buyer #35,whale,false,false,false
+VRXwBdYoa6wcjFrGYBYaz4nEVAUaNeMq9HBujB6F2YVA,1463556,88,2.93,16,14,Jupiter Aggregator Whale #36,fund,false,false,false
+HCUSnxWSrz7Ao1Mt8V13PaZugt1G77aujevzLWxtQSZc,1500877,99,3.3,23,27,Raydium Liquidity Leader #37,whale,false,false,false
+FFv6NzePCieUxGBjjSBP8HLeje5p71GehhUYpY6qeACv,1538198,110,3.67,30,40,Pump.fun Whale Early #38,whale,false,false,false
+9VFLWU4wPXCaPQ86MfrLd7nWiRUyirumbwhnxvcVqye8,1575519,121,4.03,37,53,Solana Alpha Fund #1 #39,smart_money,false,false,false
+f8V3Fsh2XbMAYPqRPVWebgffTAdwAq5D7gwbhRFaywhW,1612840,132,4.4,4,66,Solana Alpha Fund #2 #40,fund,false,false,false
+SJSqdzY7rynzKZjGYEsAkf9NCgARqSfDze6V5etfWR8e,1650161,143,4.77,11,79,High Conviction Sol Whale #41,whale,false,false,false
+4WtJR3FxQH24jdp8TQduFGfS5RFr7iDuW4LrmVoQkdaW,1687482,154,5.13,18,92,Jump Trading Active #42,smart_money,false,false,false
+6PeYU6rQwhx7jLarEwqAH9fYfsiJerfRejzt2kWxbMQm,1724803,165,5.5,25,105,Wintermute Solana #43,whale,false,false,false
+ngcfr61LUmffGomTRw7X8mpYZPXhfdgQE2A7WkTtpR71,1762124,176,5.87,32,118,CMS Holdings #44,fund,false,false,false
+7HZTkupDxRtj8jD77ddSG7tr6UVM4JTYmq7o6TGmWsSH,1799445,187,6.23,39,131,DeFiance Capital Sol #45,smart_money,false,false,false
+F6yLtEaVw2njQaGLqqxf5cmjwjKm9eXuheRnSn2wVaEH,1836766,198,6.6,6,144,Multicoin Sub-wallet #46,whale,false,false,false
+Ptycc9xWTScEauN6RRpxkk3HNVTCymRsqSXAAbW4utAg,1874087,209,6.97,13,157,Ansem Kol Watch #47,whale,false,false,false
+Q42eWK1EzazXjUXJiVUDJyuLiufmVrworWa6xmZgS8Yy,1911408,220,7.33,20,170,GCR Solana Stash #48,fund,false,false,false
+yhFud7FpPfxD4n3jNPuCKe8A8YbxWjevX9hTBZhGq1py,1948729,231,7.7,27,183,Solana Smart DEX Buyer #49,whale,false,false,false
+UTtJjgK6aMS27zLSR9YMsvHfq5ufZykTvuY4Pp5e8unU,1986050,242,8.07,34,196,Jupiter Aggregator Whale #50,whale,false,false,false
+VSy8rTX4212usMwXSk2YTgkkqTsZgqxcqnja61fpgmUM,2023371,253,8.43,41,209,Raydium Liquidity Leader #51,smart_money,false,false,false
+AtF2VZfgmSqWyNXhP3QNnJZmZLDfab8Fvk1GM7K8dnVG,2060692,264,8.8,8,222,Pump.fun Whale Early #52,fund,false,false,false
+DR4Uvydde3SpVYrSVvX5hWSvR9ZShXNqmBJEAdyy6oaG,2098013,275,9.17,15,235,Solana Alpha Fund #1 #53,whale,false,false,false
+nhiDLNcyVHJusuxPUoJkVnVWXNK9eyw2vMNTgv4R3jkT,2135334,286,9.53,22,18,Solana Alpha Fund #2 #54,smart_money,false,false,false
+Sm12UqpFa5CSWFShu51gsqNo5THGruQxzKZUvPGh8Xet,2172655,297,9.9,29,31,High Conviction Sol Whale #55,whale,false,false,false
+gMCjApNz18o3BiCpvTHKxk3f1HZ1suqPEoeHiGpYZaMb,2209976,308,10.27,36,44,Jump Trading Active #56,fund,false,false,false
+RuhpoYCngbRpjzxmWGmSRrsEzdVvy9TByTFNMzeLE3yN,2247297,319,10.63,43,57,Wintermute Solana #57,smart_money,false,false,false
+oKgwYVze7ydrjYZpHacZdDaVLi48SBziMmEVzwY6fRBJ,2284618,330,11,10,70,CMS Holdings #58,whale,false,false,false
+2r2GhKReRkjPCAuRfJAWNbgCkaQWsVuSUQaiFsm6yCBw,2321939,21,0.7,17,83,DeFiance Capital Sol #59,whale,false,false,false
+2vFephfVegcww82rPAoAEbWZ38Z6MjCaaaozUMK36ExP,2359260,32,1.07,24,96,Multicoin Sub-wallet #60,fund,false,false,false
+xYJnu6hq2XBHd2q4o88qoowPNHmHuhCyctrEZY9HUsdd,2396581,43,1.43,31,109,Ansem Kol Watch #61,whale,false,false,false
+4crbkRM6QQKUkn9H8WYaxtd8M7R5GLoCWAWwC5ukxks2,2433902,54,1.8,38,122,GCR Solana Stash #62,whale,false,false,false
+j9X6GXDR5kt2jVGATsgqoeZnrDoemuzWPbySpsmsdJSa,2471223,65,2.17,5,135,Solana Smart DEX Buyer #63,smart_money,false,false,false
+fmjqgBsh7gWdfEfzFg2hLoTyco8QaXneDKHPEjRFfExB,2508544,76,2.53,12,148,Jupiter Aggregator Whale #64,fund,false,false,false
+F6kieEL7n7NdLvSDVBkKZCcxfGAVCe7FheJACgnZEfp5,2545865,87,2.9,19,161,Raydium Liquidity Leader #65,whale,false,false,false
+FhXasrqBA6eERfQSN7uD6sXRmdQZXDDWhF52RQPdce6g,2583186,98,3.27,26,174,Pump.fun Whale Early #66,smart_money,false,false,false
+ZZXkstY4RGgcch1aWciZ1RXSRRZV7JTZ11yJRS6csiEg,2620507,109,3.63,33,187,Solana Alpha Fund #1 #67,whale,false,false,false
+FunhTx7uH43zdP2ZAe7jGpWXvpHLPkjBhTLFDpHBTE7A,2657828,120,4,40,200,Solana Alpha Fund #2 #68,fund,false,false,false
+FopYiTydFftfom3B6avvVjtAsr3jsrDSDs6JUd9huRYD,2695149,131,4.37,7,213,High Conviction Sol Whale #69,smart_money,false,false,false
+HGRvKnyYuDAb1TkvzSDMfXox2SwKAWwk3EyC5S3pyyp9,2732470,142,4.73,14,226,Jump Trading Active #70,whale,false,false,false
+MZXVw7gvL6hPYuaR2x4njNz5hFc8kUD4KK5TDyYCW4yM,2769791,153,5.1,21,9,Wintermute Solana #71,whale,false,false,false
+FV1X9VLbLLLKt7zkskXgkp67bwM9UghKD35b1mWZttts,2807112,164,5.47,28,22,CMS Holdings #72,fund,false,false,false
+QF4KaqqCkqB3NGGh6rtsUCBqW8vUUFMBaocs2HHkCPjV,2844433,175,5.83,35,35,DeFiance Capital Sol #73,whale,false,false,false
+7xbtsdBNnhHgDpthENxVeV6sUtxbBLnhfW9SK5jvE9q8,2881754,186,6.2,42,48,Multicoin Sub-wallet #74,whale,false,false,false
+91W8EommKrFvDPQ7U24M1gFS1vE8awxQhTxggFDDsJoN,2919075,197,6.57,9,61,Ansem Kol Watch #75,smart_money,false,false,false
+8GrGM9hmWcp5vdFqs4qVYCVuc4Y8hpP6apJpuh9D44Gd,2956396,208,6.93,16,74,GCR Solana Stash #76,fund,false,false,false
+aQ8zN1gXYLknCrCdoehMZAJzJhAPJhHc2xaSvZ25zzJL,2993717,219,7.3,23,87,Solana Smart DEX Buyer #77,whale,false,false,false
+FYxqBuqvArsJmrcqQRyFUCN1T5UkKskoutQPqZPUcCRk,3031038,230,7.67,30,100,Jupiter Aggregator Whale #78,smart_money,false,false,false
+n7VvEjyWU9syjqptYqC5LVeTEkoetBo18m3Gg5KrvbXd,3068359,241,8.03,37,113,Raydium Liquidity Leader #79,whale,false,false,false
+ZzZhsTnpzdZ96bpnTSu8T6dENf9TCALmDL13RuLNLy1b,3105680,252,8.4,4,126,Pump.fun Whale Early #80,fund,false,false,false
+tn9Qk69bY88m75HwNm1D8d3YZMwJpwYDELorJeV9CagD,3143001,263,8.77,11,139,Solana Alpha Fund #1 #81,smart_money,false,false,false
+uAvcJr3pWjdRSBPzDecRaswgbpEZwuveTcN4rJVG4BBy,3180322,274,9.13,18,152,Solana Alpha Fund #2 #82,whale,false,false,false
+Nnoo8E1p39gNr8S7muZcrmQcSASMWhsrvEFFanZGVh8v,3217643,285,9.5,25,165,High Conviction Sol Whale #83,whale,false,false,false
+ukXpRCPcoBidayfofFYkc54aU3FjL8zuMC5Gykw4FjA5,3254964,296,9.87,32,178,Jump Trading Active #84,fund,false,false,false
+qLUFZACogRnrAaRDQSCdkpQPFF8Bxh3kPt2o7ikF8yEJ,3292285,307,10.23,39,191,Wintermute Solana #85,whale,false,false,false
+ZsbxpTUxTvDNv45bUY1xpPNYKTyLYcj51K3QG1iWDGT2,3329606,318,10.6,6,204,CMS Holdings #86,whale,false,false,false
+z15qta9Q7Ux5b3TpVspnnz8A4mUU8jYurfXyEL1eZvcw,3366927,329,10.97,13,217,DeFiance Capital Sol #87,smart_money,false,false,false
+ngAD2vCxwyWU55FKrx8D75FB8RPta2YfvSpsg44pbXGE,3404248,20,0.67,20,230,Multicoin Sub-wallet #88,fund,false,false,false
+kFuJMCmDoVp51MyN9XTHvJSvx4r9eoFvW73ADS759Fxj,3441569,31,1.03,27,13,Ansem Kol Watch #89,whale,false,false,false
+8rg1DSA9G55qLhM6twJ4Eh39WsKsPNx5zCEZs6JH8XdP,3478890,42,1.4,34,26,GCR Solana Stash #90,smart_money,false,false,false
+45tvfG1rRZ1ff2r3gdSj7UpLSMSfqvADWDkNDpTJy7T7,3516211,53,1.77,41,39,Solana Smart DEX Buyer #91,whale,false,false,false
+7XWRHZEmkw5KELwqRWCEeQzyq6QMjA5nZyxyq1nDCVds,3553532,64,2.13,8,52,Jupiter Aggregator Whale #92,fund,false,false,false
+yRs5tGtWKiXmF5nzEZuwy88NjpDDkt66RyRdLpL4sAyD,3590853,75,2.5,15,65,Raydium Liquidity Leader #93,smart_money,false,false,false
+epYShJbFnXrzPysgX2Sbszhh2Ds6pw7L6G6z9r9oE5JY,3628174,86,2.87,22,78,Pump.fun Whale Early #94,whale,false,false,false
+BnqCJo1ZPiLhUmQD8WUW452vF8AyPcDNjEHkrFZ73GzF,3665495,97,3.23,29,91,Solana Alpha Fund #1 #95,whale,false,false,false
+NTr8tw2EMc1BV36E3Emm5aTBt7a2DDdx21CnSHNgo4Mq,3702816,108,3.6,36,104,Solana Alpha Fund #2 #96,fund,false,false,false
+WZNBwSZDx1MD1gcgCA33cL5j9fMo2JSv41pqVtDsJf1s,3740137,119,3.97,43,117,High Conviction Sol Whale #97,whale,false,false,false
+3sCfP3TzbFeC9GUyCLWnYEh9seundgjXbXYD3h7L9hzr,3777458,130,4.33,10,130,Jump Trading Active #98,whale,false,false,false
+BbqodJEtu2ka56DiqZxyviBexXak1qJ7q3BM5xaSTN62,3814779,141,4.7,17,143,Wintermute Solana #99,smart_money,false,false,false
+VASNi6Vte5XFbtRV6v2sBXSVjMcJexTR3cz2AY3L6d5o,3852100,152,5.07,24,156,CMS Holdings #100,fund,false,false,false
+QbV7nauBLJuSUuDDgjHb6os76pvnTApPx33fE8MjtrMz,3889421,163,5.43,31,169,DeFiance Capital Sol #101,whale,false,false,false
+W3AZtcwttm24qSFhySChwbC3gGEAz7xB4bi7L4PLLDUW,3926742,174,5.8,38,182,Multicoin Sub-wallet #102,smart_money,false,false,false
+vYh26qreZA5C2Wm9p6ZR6nfM6zmstTK3Nz9UYHJ67iXk,3964063,185,6.17,5,195,Ansem Kol Watch #103,whale,false,false,false
+U8yVBGoGp7CpHwRqoXKSEooKqFg8DWTr2gX3dpFpnsGz,4001384,196,6.53,12,208,GCR Solana Stash #104,fund,false,false,false
+8SFZ9vWGhcWjL44FEhQkyr9JV5eiCQoVgJ7jRCA8FGgu,4038705,207,6.9,19,221,Solana Smart DEX Buyer #105,smart_money,false,false,false
+C9qB6gP3LQSZEFqWBUHxfzxJzpXL7AxFrD7TreZ7c4WR,4076026,218,7.27,26,234,Jupiter Aggregator Whale #106,whale,false,false,false
+E4Cee8RMBpudZ6xas5jokEPiYdf4q5wBJc4Qcg5DqnsH,4113347,229,7.63,33,17,Raydium Liquidity Leader #107,whale,false,false,false
+QHqpxM8b37ThEhREecEhfw1dmckhv8J1GZoNEDgmKPKT,4150668,240,8,40,30,Pump.fun Whale Early #108,fund,false,false,false
+oC4W6v4T8DfJKHuAYtEX5uDuubVHS2rCZGLNxNW1afDk,4187989,251,8.37,7,43,Solana Alpha Fund #1 #109,whale,false,false,false
+L3XVWLBT1GrRBhMkGvLdUYoWcyZuK4DMnV5w4nd1TiQs,4225310,262,8.73,14,56,Solana Alpha Fund #2 #110,whale,false,false,false
+zRQ7Kg6ET6PHqfFC8PX7MVY1YscRhmixSsxZmEeguYqj,4262631,273,9.1,21,69,High Conviction Sol Whale #111,smart_money,false,false,false
+NRFDQhYF7ujajSG1UZQppQ3Wq59MFW8cpyhfxF6hZTH8,4299952,284,9.47,28,82,Jump Trading Active #112,fund,false,false,false
+cMz1N3gxAyyxRiuiHWajcyeDPhD1uYTC4oYZvVEQcXXW,4337273,295,9.83,35,95,Wintermute Solana #113,whale,false,false,false
+1Mhv6BdNbegXNjeXuWqqHWnJcKUG2wHmToMNSjyiF68B,4374594,306,10.2,42,108,CMS Holdings #114,smart_money,false,false,false
+2DG1jYaRgmBhUBjkvAZCKTgcQmRHBfHdNZpZB6EmLDXM,4411915,317,10.57,9,121,DeFiance Capital Sol #115,whale,false,false,false
+nawdEzaQyAxXLH2rcwXhaJ7TcFwSbZe6EEPyaevkKiWy,4449236,328,10.93,16,134,Multicoin Sub-wallet #116,fund,false,false,false
+tGsgvrPdBKuVRaL6h5yJdMuNX3BPPxPeSvKLNJw5XfF9,4486557,19,0.63,23,147,Ansem Kol Watch #117,smart_money,false,false,false
+bJCKGVWG43iSTCCQtzNdndr13KVsNNTYwxkfvw4iWVGt,4523878,30,1,30,160,GCR Solana Stash #118,whale,false,false,false
+HwYLVGGCmhfcR1eox7LaFRNWJeHTiktMqPztwppeKFDA,4561199,41,1.37,37,173,Solana Smart DEX Buyer #119,whale,false,false,false
+4ujsPRDwSMYX4eDRjiALv6YEEy8BU22jcMHKqsfVtu65,4598520,52,1.73,4,186,Jupiter Aggregator Whale #120,fund,false,false,false
+F81ca5hyLNdLrGYD6vCSrXtSeztCTLnphaTA8XFRnpBn,4635841,63,2.1,11,199,Raydium Liquidity Leader #121,whale,false,false,false
+seaSnwKwogB37oHb7HJMNmUEFThbtPQQR68tLPmPMEKH,4673162,74,2.47,18,212,Pump.fun Whale Early #122,whale,false,false,false
+XzrZeMBHFh187zDaRaQT5W5jaJS5jCaR5SQRJDjq19Zt,4710483,85,2.83,25,225,Solana Alpha Fund #1 #123,smart_money,false,false,false
+WsHvnh3Uv8yXWrRCBkTVdh4VNGqQDCntrKqA29HLNgRs,4747804,96,3.2,32,8,Solana Alpha Fund #2 #124,fund,false,false,false
+qwjfaQnr28z7mGGmTXiTGT55YZZbYiGV5hBKpke6NGYf,4785125,107,3.57,39,21,High Conviction Sol Whale #125,whale,false,false,false
+HadGCNKuTRXzJeWNKSUfCyNexraAJwhx3EVcLv5foZyE,4822446,118,3.93,6,34,Jump Trading Active #126,smart_money,false,false,false
+NwbMxgeVzVnFhZmTP26fSHwgd7ZXTaY82P3uQL63S3Lh,4859767,129,4.3,13,47,Wintermute Solana #127,whale,false,false,false
+kdx1MXDPiihS1N7S9NHjZRuPoNb7qVscJBWZuyfwGGFz,4897088,140,4.67,20,60,CMS Holdings #128,fund,false,false,false
+tQBEoDyB7mZRDw3FNJCqXDWQxPVcPVs5SrdgMfXdZK7s,4934409,151,5.03,27,73,DeFiance Capital Sol #129,smart_money,false,false,false
+VMqY5tPJRTQkQW98cPjZ2YiNYnwp2VA73uPzXSqkyuxJ,4971730,162,5.4,34,86,Multicoin Sub-wallet #130,whale,false,false,false
+pbdUudoikA6Z4J3NQ2y4RB5zHpf92Vg8N9B2T5MGJcY1,5009051,173,5.77,41,99,Ansem Kol Watch #131,whale,false,false,false
+12MGvhyR5bnKJx6HYCQZNyRUVxygPiAeTUoiGMd5R3Es,5046372,184,6.13,8,112,GCR Solana Stash #132,fund,false,false,false
+93T2aU5F524NPw14uyhqc1egyE1vsgtPVbuU22doXaci,5083693,195,6.5,15,125,Solana Smart DEX Buyer #133,whale,false,false,false
+ATi9frsiLMEEUprPGKdJcG2kGAGVgu4DW7NV7JKAzhan,5121014,206,6.87,22,138,Jupiter Aggregator Whale #134,whale,false,false,false
+EwXx8vh6cbaaK5sbVRFZSTAcWw38cRNCaVsQUU9YG322,5158335,217,7.23,29,151,Raydium Liquidity Leader #135,smart_money,false,false,false
+LsTSD73sCJveMPxYVPATssWSM5BsXuAstRu6ZfVKekNC,5195656,228,7.6,36,164,Pump.fun Whale Early #136,fund,false,false,false
+patyp6pLMTq5mQfQstsgaovi6o6N2TtoG8SXNYNnu1PX,5232977,239,7.97,43,177,Solana Alpha Fund #1 #137,whale,false,false,false
+V9RQZjRZLWAhRJAPt56xwXdMbt1ZAG4J3bsr7Hs7txcF,5270298,250,8.33,10,190,Solana Alpha Fund #2 #138,smart_money,false,false,false
+FeYdAqW6yHTDvMKRPhh7FQRJQXw4PZ1Ph6zBcP4eXj1f,5307619,261,8.7,17,203,High Conviction Sol Whale #139,whale,false,false,false
+pXQVsGbCjTNMXpvRTmYYgazgFqtAcsLSN5xwRi9eHuvo,5344940,272,9.07,24,216,Jump Trading Active #140,fund,false,false,false
+koFDbz2S5gwx6yv4cZTyHcgD7jLTKEn6JFhf3egzFxuv,5382261,283,9.43,31,229,Wintermute Solana #141,smart_money,false,false,false
+TfQWAnpf9M1dQkHqHr8xRwf81b6pNxTgXwNN8egwuRBu,5419582,294,9.8,38,12,CMS Holdings #142,whale,false,false,false
+fHgXA9fkdYbNBVZcHqrMM3RMeSqN2SRjj3xoL7wph6Fv,5456903,305,10.17,5,25,DeFiance Capital Sol #143,whale,false,false,false
+wxgFCYG3ibnBf4Yfs1oV25t4sJo1zvUubpLXNcYDN9Sj,5494224,316,10.53,12,38,Multicoin Sub-wallet #144,fund,false,false,false
+d2xF1284TcFfAjqcLRSY3j91fExJqLgUVnc1Bg62D4hD,5531545,327,10.9,19,51,Ansem Kol Watch #145,whale,false,false,false
+t1X9QPsrxw3RaAkRyiVBxYrYk58bMvfRxmyhrqRJWVbs,5568866,18,0.6,26,64,GCR Solana Stash #146,whale,false,false,false
+tEYo9iUA7HzzfHuBXAi3qvLi7LvxJpR1LgzFhA2ifqYY,5606187,29,0.97,33,77,Solana Smart DEX Buyer #147,smart_money,false,false,false
+852vsGeyRoxkfEamQXyK58Drjhj9BtX1gdaURp6XsFWC,5643508,40,1.33,40,90,Jupiter Aggregator Whale #148,fund,false,false,false
+3uuPzwXSBhYzg4uKEwfN7z8CetkQxn4sbMTwYVytj9zY,5680829,51,1.7,7,103,Raydium Liquidity Leader #149,whale,false,false,false
+QVEQ7GwwVx9kiFg9F1cG5w3RMn1DwFY9xwnrfpbb3cbJ,5718150,62,2.07,14,116,Pump.fun Whale Early #150,smart_money,false,false,false
+26yxSx6eRMcFCmJYy8Ao3hiv41w6pek8UYRcnQkzyhxh,5755471,73,2.43,21,129,Solana Alpha Fund #1 #151,whale,false,false,false
+vNo3aSFDBHjms4orR4FV1mxFtCaw2bVUa2TVvnumqw5R,5792792,84,2.8,28,142,Solana Alpha Fund #2 #152,fund,false,false,false
+gLqjqbANzZPiy5qV7xEfaTMtEURzxEvrEtPHBwcieu34,5830113,95,3.17,35,155,High Conviction Sol Whale #153,smart_money,false,false,false
+KWxnxPJF2pQfDo81CnDsJfH1JWX2RkmRfxQ8JqkhgUr7,5867434,106,3.53,42,168,Jump Trading Active #154,whale,false,false,false
+erzSwehqoYYsShNU8PEou1Wi2zpYaMBbCCStV69HFzzK,5904755,117,3.9,9,181,Wintermute Solana #155,whale,false,false,false
+PpNDFizs4BFUoAtiYUe2hZeoRcmY1JeiqNpmhGYRcjov,5942076,128,4.27,16,194,CMS Holdings #156,fund,false,false,false
+xV35eJneYAiSGygcHK6Z3wrAFSoJKXzHQ3bd6rE6ziAt,5979397,139,4.63,23,207,DeFiance Capital Sol #157,whale,false,false,false
+rnwnmP7NtUv9mHLXfjLFHtqJBTMvwprxQEPEDqfvSvUh,6016718,150,5,30,220,Multicoin Sub-wallet #158,whale,false,false,false
+kj9sbtwwsyiA2iFjHhy1knWknpyPiQ6CCHhR3LV5j7rQ,6054039,161,5.37,37,233,Ansem Kol Watch #159,smart_money,false,false,false
+inbkB9ABcgh5B4CL3vpM9jmqYU6pp9vRrSMtqbQdAp3K,6091360,172,5.73,4,16,GCR Solana Stash #160,fund,false,false,false
+Z51EZ24iZNQn4kwarsQnEsZT2DjUkXsNhX9ghGCGhvxv,6128681,183,6.1,11,29,Solana Smart DEX Buyer #161,whale,false,false,false
+H4HhxCyWMgvi71i3i27oXyKueWGwui8ZwJXqQ4DroYNa,6166002,194,6.47,18,42,Jupiter Aggregator Whale #162,smart_money,false,false,false
+RQfkD4sgP9n6Skp88RGhMdnDEEdsS2WTyAo6TC1Sw1ee,6203323,205,6.83,25,55,Raydium Liquidity Leader #163,whale,false,false,false
+H5nKvouwoCwNu8osU6X89j4G27fjPHhg3XLZUFTPFkVp,6240644,216,7.2,32,68,Pump.fun Whale Early #164,fund,false,false,false
+uLWbaA45iS8MenaFPMqZh1kJd7Sm7K3fTtx32icdAtgu,6277965,227,7.57,39,81,Solana Alpha Fund #1 #165,smart_money,false,false,false
+Ar9gHUyLyN3rbYKxboFs1q992Bs5JbAGiJhEq2RtXpVQ,6315286,238,7.93,6,94,Solana Alpha Fund #2 #166,whale,false,false,false
+fFN5MGjbf9oFFPvVPhKW87t1b3S2XnjEDhpdopB37hFh,6352607,249,8.3,13,107,High Conviction Sol Whale #167,whale,false,false,false
+qtD56h3uXDrLJoQqYU5dJB4Zy9yRP4mAHSmde9VTsfQt,6389928,260,8.67,20,120,Jump Trading Active #168,fund,false,false,false
+k3wk1piE1MnVtwN6rypqm1wUvPFeCpFkChHJfNNgfuS3,6427249,271,9.03,27,133,Wintermute Solana #169,whale,false,false,false
+g4zRnpsAjux2XB5bjeqWK1m5kF7D3wZiEQLy8AKpPZcg,6464570,282,9.4,34,146,CMS Holdings #170,whale,false,false,false
+z52CHEBgkQ9At4bmQGhzkxPaxcXsuWFJSjUrjndE6kbc,6501891,293,9.77,41,159,DeFiance Capital Sol #171,smart_money,false,false,false
+pZ3TCKku3WiHeuAS6diSwC1dNpSEVh2KG7V1esJTVrNw,6539212,304,10.13,8,172,Multicoin Sub-wallet #172,fund,false,false,false
+kjff5NtSbyBVj6N28rtJwbhBGaj36MPtJ51KXpSt3Rj3,6576533,315,10.5,15,185,Ansem Kol Watch #173,whale,false,false,false
+dhUFUs9mEcc8tk3cca5zCYhH76MzG3pS592hvRhDn44g,6613854,326,10.87,22,198,GCR Solana Stash #174,smart_money,false,false,false
+EzUavwepccnQnWcaB9kpN4FahAye2amAnSv2UV6G44Lr,6651175,17,0.57,29,211,Solana Smart DEX Buyer #175,whale,false,false,false
+Dz6A4WAN786y1gUtuFQUgMhrzgsVVFjpmSeicxivfgeX,6688496,28,0.93,36,224,Jupiter Aggregator Whale #176,fund,false,false,false
+eChz73U2xdfHZi7WWhxnpM5aZUscohhM6kFYfbvaQbDT,6725817,39,1.3,43,7,Raydium Liquidity Leader #177,smart_money,false,false,false
+xa4wn6cmmmcnaonkhbxV3hYUknpL8P7nW2LDrNn33XnY,6763138,50,1.67,10,20,Pump.fun Whale Early #178,whale,false,false,false
+RsqYnQDDktchz49BbskRscQbskCZutykbj7ik45HWxnf,6800459,61,2.03,17,33,Solana Alpha Fund #1 #179,whale,false,false,false
+Lg4D9PiawRvSTtCu71bYCbJiSgTE7KUcCSiHoZzYD5UC,6837780,72,2.4,24,46,Solana Alpha Fund #2 #180,fund,false,false,false
+gdtKZSXio4ciLrRVDQpL7zyBaz1HbAyHEbkV7cVG5inG,6875101,83,2.77,31,59,High Conviction Sol Whale #181,whale,false,false,false
+T5zqdt7Tt8quNw2drEHAKamGuLgFsUM5794bBeZuSaHM,6912422,94,3.13,38,72,Jump Trading Active #182,whale,false,false,false
+nDj8NGP4gXdE168vaYGbmXqtHmjQdu5TEfHaviwWE5Bg,6949743,105,3.5,5,85,Wintermute Solana #183,smart_money,false,false,false
+6qYT1a9WJ3DYACeXh3eNw5F9F6Ung2DrYH61T8b4kVf6,6987064,116,3.87,12,98,CMS Holdings #184,fund,false,false,false
+sKL6tqV5X59WZ1M6WtkKAsj4CXokuFWVKmneLH3X5Xb4,7024385,127,4.23,19,111,DeFiance Capital Sol #185,whale,false,false,false
+gqTd2Q8PTj8gy8MeuC4mSx3FY8PtKvGTEH1BUxaq1HgE,7061706,138,4.6,26,124,Multicoin Sub-wallet #186,smart_money,false,false,false
+5Ppj6o69gtf4w1H841uaqbUdv7Fv6ZxWXwN5SFeh8LKc,7099027,149,4.97,33,137,Ansem Kol Watch #187,whale,false,false,false
+L9bLE6g5Lz1xbu799QaH6n4morYkRz7PzhFgne8dgLZW,7136348,160,5.33,40,150,GCR Solana Stash #188,fund,false,false,false
+bQLupW1eoDDr1pUiGBUCKdHCfHaeaTCH3ktFGxMJTfsQ,7173669,171,5.7,7,163,Solana Smart DEX Buyer #189,smart_money,false,false,false
+T65DeRsA5bjqCFi6LBBReXWVS9huaseB7eRZ65DpR3BH,7210990,182,6.07,14,176,Jupiter Aggregator Whale #190,whale,false,false,false
+37h56RnDois5qLZYe7dN19CSjvr6Dt2obmFdS5EmMARX,7248311,193,6.43,21,189,Raydium Liquidity Leader #191,whale,false,false,false
+r3cFEtn8AyvnwHD1ZzEPLX7sxKTRShMDJVAogLEaiRNL,7285632,204,6.8,28,202,Pump.fun Whale Early #192,fund,false,false,false
+h6unWDxAjktYmJ2DxaBEyL96tBabaVR5FYML4mQcBCL6,7322953,215,7.17,35,215,Solana Alpha Fund #1 #193,whale,false,false,false
+e8UkJnB9m5HPaQGg4qYQCCgLvEH8dNbJCavCkEdbDXqq,7360274,226,7.53,42,228,Solana Alpha Fund #2 #194,whale,false,false,false
+oRMCreQRLjsKMZbsJpGRMKaZriTRM1MwFyukJCxytHKf,7397595,237,7.9,9,11,High Conviction Sol Whale #195,smart_money,false,false,false
+gvEo43XmkALYrJPxfzYdVjFjrV2x2D7LENnFCbmDzvgC,7434916,248,8.27,16,24,Jump Trading Active #196,fund,false,false,false
+Ep6nehw45YrcE61GwAUz2BX8Gb9dRcLuN4E2t9hpwncr,7472237,259,8.63,23,37,Wintermute Solana #197,whale,false,false,false
+JRnwQtSkvekD3CATZ8Mb7KKRASzyCWp2eHYHYSaJUJWm,7509558,270,9,30,50,CMS Holdings #198,smart_money,false,false,false
+qexpjnQA6fMPkiKDD2tYNd26yuxMn68q5tWGyEr2rR1q,7546879,281,9.37,37,63,DeFiance Capital Sol #199,whale,false,false,false
+5r5CrRBft7naXngUf7wGZKLUoxJqxEQPDQqkCfXuLZL8,7584200,292,9.73,4,76,Multicoin Sub-wallet #200,fund,false,false,false
+AVUHr4Vb74RjXpSJPMECzciUtT77eQcmW3vqQW39ZWyH,7621521,303,10.1,11,89,Ansem Kol Watch #201,smart_money,false,false,false
+LFfc9aGepP7QUyqYLecGWUyGUx6aK7jgno7Ab8pCGwZx,7658842,314,10.47,18,102,GCR Solana Stash #202,whale,false,false,false
+FMmsgVLMjn3c8LRNuznfNKGnHCK5EtdnouDR83toBLVA,7696163,325,10.83,25,115,Solana Smart DEX Buyer #203,whale,false,false,false
+AuykcgG4SL9jA94WUhuAFBKgHgazgBV8iMRCA8pWztbB,7733484,16,0.53,32,128,Jupiter Aggregator Whale #204,fund,false,false,false
+v4u8vWTbiMsRZdgRVJ3r5jBVkxRUsjzxNWTaNxu3A1Ks,7770805,27,0.9,39,141,Raydium Liquidity Leader #205,whale,false,false,false
+7AZJviCn9eM1iGVHnaESoTuougy61Qe2TiDxUNY8VJ1Z,7808126,38,1.27,6,154,Pump.fun Whale Early #206,whale,false,false,false
+zFjeKQ5KfvgP8aVAo8giRwJLP1T1KehKLbB6mrds7NEq,7845447,49,1.63,13,167,Solana Alpha Fund #1 #207,smart_money,false,false,false
+RHLNkQemsehCECq7FotFRU4Z4Q6y3CAS5wz2Q467D6FY,7882768,60,2,20,180,Solana Alpha Fund #2 #208,fund,false,false,false
+pFDj9bovxrh6nni8efFw5CTbi6TxwwuqGosHhFFUJJ9Y,7920089,71,2.37,27,193,High Conviction Sol Whale #209,whale,false,false,false
+LaeQU7Td7nKvMeccJYYxNt6VA1kHG1AntECrvZuBZEsU,7957410,82,2.73,34,206,Jump Trading Active #210,smart_money,false,false,false
+Fey3bheoRyegbPWDCFkRmeX1RyKMF4W4h6RV9FCFsRCE,7994731,93,3.1,41,219,Wintermute Solana #211,whale,false,false,false
+TDehbNQmSPKiyXeM71j4YTGBpMUTssXu1fCF9pxDzwsA,8032052,104,3.47,8,232,CMS Holdings #212,fund,false,false,false
+8iYE3ABLUeirFZx8cTZUiB2HCLQFkMYCaG6gVcdtv6GJ,8069373,115,3.83,15,15,DeFiance Capital Sol #213,smart_money,false,false,false
+n9pLmDKj7FtPyd5V8k59FK7HkLrvKfQqLbGtDm5ufDeT,8106694,126,4.2,22,28,Multicoin Sub-wallet #214,whale,false,false,false
+ojQLb5CmacgqCHQguoANHYXgJZbmktATmbg6T3UjrGkb,8144015,137,4.57,29,41,Ansem Kol Watch #215,whale,false,false,false
+P7V2TvD4CQ16eZgPNERECmUjtBBuQRo2fPZzXaypGUBG,8181336,148,4.93,36,54,GCR Solana Stash #216,fund,false,false,false
+6P1Vh1BerwGQ7EP7KEYPkLq6JP38GzQMrwymZmFpW7LU,8218657,159,5.3,43,67,Solana Smart DEX Buyer #217,whale,false,false,false
+SVPoTuAft7Z4Wn4YVh4Ew9vVDQe2jj2GJ9wT1Z8KeH1c,8255978,170,5.67,10,80,Jupiter Aggregator Whale #218,whale,false,false,false
+hAHj4Hcu5kpRL7WhqQS9BDW1A4AvtsaZmv9Hcj4TXJNs,8293299,181,6.03,17,93,Raydium Liquidity Leader #219,smart_money,false,false,false
+FbGBpVXrUATZ3kgp5DJUXaJ1qXbpk8hbh3pjNwyQvcu1,8330620,192,6.4,24,106,Pump.fun Whale Early #220,fund,false,false,false
+cAxWfFjm8nNNy3ahMxwQjchNcbpiCJJr4cWxDhBKgLpp,8367941,203,6.77,31,119,Solana Alpha Fund #1 #221,whale,false,false,false
+3ZtXi7AYH7FpDFgMmy3PWPgZ1PDShMNmb1SyAfizjfhN,8405262,214,7.13,38,132,Solana Alpha Fund #2 #222,smart_money,false,false,false
+pmLwC6C9G9U1V8ivWQbNkd1FFCjXgnuyNDnVkeeVcb2T,142583,225,7.5,5,145,High Conviction Sol Whale #223,whale,false,false,false
+yvykuj4z33jVhcU2jeTwp16LonivmPUMRaR6Z5cebb53,179904,236,7.87,12,158,Jump Trading Active #224,fund,false,false,false
+WpjhgXWioWVq8aozfXpHff9RiwyYiRfi4G53E5rNTr9V,217225,247,8.23,19,171,Wintermute Solana #225,smart_money,false,false,false
+Xwpb41bRkaGimrGCHtqnvxj2EthWZdSeBbG3WT9yQ8iA,254546,258,8.6,26,184,CMS Holdings #226,whale,false,false,false
+tp2QqTYBke53GLVeRKBK6egqUbRjoa6BYAgkB1tjJCdb,291867,269,8.97,33,197,DeFiance Capital Sol #227,whale,false,false,false
+YZgJMnXJSVC1DxfxMi6YeRqbHbjAkFrc67LkoLyrtwkZ,329188,280,9.33,40,210,Multicoin Sub-wallet #228,fund,false,false,false
+yPSwaWuUSCNByh2FJGYWE2XPFNV54yKWXqtV2xTvtkpd,366509,291,9.7,7,223,Ansem Kol Watch #229,whale,false,false,false
+fvzvoYAoKZLtYvx2K8V3dnkjTrMtqgqW7UYUMziMs1nS,403830,302,10.07,14,6,GCR Solana Stash #230,whale,false,false,false
+qmmMsyTCSUGXdfPrTTYaGKxGsbgM3uNRPKKoRXuktviy,441151,313,10.43,21,19,Solana Smart DEX Buyer #231,smart_money,false,false,false
+PHAEzbHga3pLJpVDS4WuPhKJTs6hddaEqjigY9jEihUg,478472,324,10.8,28,32,Jupiter Aggregator Whale #232,fund,false,false,false
+dfSqFbPsEzEscAssNvDDm25DXjxzudhe5DnVbjXjnSzj,515793,15,0.5,35,45,Raydium Liquidity Leader #233,whale,false,false,false
+JiyWf4315Bry2Zda89gWThLLzzuFZVfkYAqGophTjRid,553114,26,0.87,42,58,Pump.fun Whale Early #234,smart_money,false,false,false
+NpADgkvmhhNPYVQCzXYr4PHnV8ySCts9ixcm26Au398w,590435,37,1.23,9,71,Solana Alpha Fund #1 #235,whale,false,false,false
+gdnKpA84RTphoVBBWvmhNZm5zQHha8ZbEySs4cnpm1g3,627756,48,1.6,16,84,Solana Alpha Fund #2 #236,fund,false,false,false
+uyXYZgkvmWnTAZGW8sTkGhwTrx2UicsV9dfQuECUDxLu,665077,59,1.97,23,97,High Conviction Sol Whale #237,smart_money,false,false,false
+11brcUPtkJqKvb8XrmWHqmVkotBwRfb9ZZ3QAvqSJrPs,702398,70,2.33,30,110,Jump Trading Active #238,whale,false,false,false
+cgjiZmnjsjvdYVe3xZiX1sJ9f4Zj4tfe4EBA7DEBRHU5,739719,81,2.7,37,123,Wintermute Solana #239,whale,false,false,false
+ThLuhqTQjyXMo6dmmXqUVUracrqjL4wZuFnTFPurBX5o,777040,92,3.07,4,136,CMS Holdings #240,fund,false,false,false
+UQcMhVRW8Brt9CGDe8iCJxszRkwhf8ojvr4oFws4gXJL,814361,103,3.43,11,149,DeFiance Capital Sol #241,whale,false,false,false
+NfMMNkB4bjQ9t7LMncVaTJXizKoN7TF1pDuuiJqWw5kb,851682,114,3.8,18,162,Multicoin Sub-wallet #242,whale,false,false,false
+ykte6zau1NeLcFXJZM2AfvBffgpGcTx6RJLzYevZTvJt,889003,125,4.17,25,175,Ansem Kol Watch #243,smart_money,false,false,false
+VXAausmviEvooyH5Dm1LXUdVjV15yfor9Bc8ZXKa4aNF,926324,136,4.53,32,188,GCR Solana Stash #244,fund,false,false,false
+7ywdDhbzZNNnouscvjRqYDSGAyUR3VwDfRPyf99SuvvS,963645,147,4.9,39,201,Solana Smart DEX Buyer #245,whale,false,false,false
+7viXkRbzAcnJpsYKZhcs2NULHhbQcUj5faNsQm9Yc4Lr,1000966,158,5.27,6,214,Jupiter Aggregator Whale #246,smart_money,false,false,false
+ERc7WT6gNxEWQMizeKzWgSgoynuzBbYFgsAZ4ueEpWgx,1038287,169,5.63,13,227,Raydium Liquidity Leader #247,whale,false,false,false
+qZsokSH1qPm4kSDFjgMk3pYRyyPcc6x3P1RMCtjZHqKW,1075608,180,6,20,10,Pump.fun Whale Early #248,fund,false,false,false
+ZQYVMikD5vimjoeejL6NfiS3mbqTpniN1r63oGJfdUAK,1112929,191,6.37,27,23,Solana Alpha Fund #1 #249,smart_money,false,false,false
+h6UPXFoCW88EzU3PECGbVntPkjDVzzQwFevqyhMkxgJt,1150250,202,6.73,34,36,Solana Alpha Fund #2 #250,whale,false,false,false
+2AqoWUofhxq44o4LHXyB9ve1XfeFqdenaiPs4SMwych8,1187571,213,7.1,41,49,High Conviction Sol Whale #251,whale,false,false,false
+bCnbmm7b5Ya2R7UVmYKHHALUT91w7RqQsrLZ3XBMwi8t,1224892,224,7.47,8,62,Jump Trading Active #252,fund,false,false,false
+UqtpTr6Bscj2iT8217wsnp9SVxAo9Q8qehkU1vxqXA1g,1262213,235,7.83,15,75,Wintermute Solana #253,whale,false,false,false
+7gr22EcQnnTnfSrnAbVG6UoADkWDG5Q2mEv6tCtaYLde,1299534,246,8.2,22,88,CMS Holdings #254,whale,false,false,false
+KQhk9LfEGuvu5hdd8aon1PZYD57e9ELGHxTp16wnpMNT,1336855,257,8.57,29,101,DeFiance Capital Sol #255,smart_money,false,false,false
+1BBByHUapzgD9WZSEiHqaRUaNznbDEsSTdjjRqv2GSEf,1374176,268,8.93,36,114,Multicoin Sub-wallet #256,fund,false,false,false
+nNwdZPpoGh2WBbqwP2TXitGndd5CgcyHEvP51wGFpFU4,1411497,279,9.3,43,127,Ansem Kol Watch #257,whale,false,false,false
+sQ5u1gHETsvwmdBnqqEKe11TaqFXnM69KxXMZ8qnuKNV,1448818,290,9.67,10,140,GCR Solana Stash #258,smart_money,false,false,false
+8DHNQuxS4Gw9Z5tQSo8o9T6gYhvgr1DugfqvxMQzWpVo,1486139,301,10.03,17,153,Solana Smart DEX Buyer #259,whale,false,false,false
+FNwrrzNsCqx11K5hmaJYbdd2ftpQWXAYovPJCY2ReBWT,1523460,312,10.4,24,166,Jupiter Aggregator Whale #260,fund,false,false,false
+uLJjRGNLsbNJG9W2M9a8y7B73cmuouFXFze55ipnDw2x,1560781,323,10.77,31,179,Raydium Liquidity Leader #261,smart_money,false,false,false
+k3S4SucEZRfTGqCfEzaE8p3xrGWSHn5cJVtQ6Txa15D7,1598102,14,0.47,38,192,Pump.fun Whale Early #262,whale,false,false,false
+9uAbL6rDt9eNsetNLGQugYSKZ5QfGgeAbFcwzeCsEoJ2,1635423,25,0.83,5,205,Solana Alpha Fund #1 #263,whale,false,false,false
+Tz5E5TsKK9JXAR6yEevaJ6DUJtTWBZRx7edtRuDysbr5,1672744,36,1.2,12,218,Solana Alpha Fund #2 #264,fund,false,false,false
+3SCfcT3r1MPQ1tphTfYCdAXLXyHRYdfFPzkD41VJZuwx,1710065,47,1.57,19,231,High Conviction Sol Whale #265,whale,false,false,false
+xSi5RLrX7pcQVFtRWsf1whKPD6no1KC2QzGXytJ5ZG4x,1747386,58,1.93,26,14,Jump Trading Active #266,whale,false,false,false
+FnjPLdJ6J4wd9wGUNHD2HnXm8S6yxT14oEBwt5rYrWV5,1784707,69,2.3,33,27,Wintermute Solana #267,smart_money,false,false,false
+Fonc8Wat95V8BvU8FRwnXqM9gD69gvb5oFEAg42Lhd3a,1822028,80,2.67,40,40,CMS Holdings #268,fund,false,false,false
+efAGrK59AnDxKv9MHu4uaYCsDjr51ik7C7cpJZwV2vM6,1859349,91,3.03,7,53,DeFiance Capital Sol #269,whale,false,false,false
+vu5cgXqqwR4V3YWggcYJBTxfzPYkuQnfUmDr2HyPHfv9,1896670,102,3.4,14,66,Multicoin Sub-wallet #270,smart_money,false,false,false
+f78SaPeC6S9HisnaZHSoBrcmEHGDimDzDFUJ83QLEJoX,1933991,113,3.77,21,79,Ansem Kol Watch #271,whale,false,false,false
+NRtE72dDYExpDGrNCSTbCF9mdTQupHutpHeUFts5zNWx,1971312,124,4.13,28,92,GCR Solana Stash #272,fund,false,false,false
+B7qCzBQBmiTZ1ZE6Ny4512V3t3SjFHaJqyPeLXeXKA17,2008633,135,4.5,35,105,Solana Smart DEX Buyer #273,smart_money,false,false,false
+TeoToR9aDrd7V7hzhzyCjTc2TS4jM34TDQF1Fyh8mJ5f,2045954,146,4.87,42,118,Jupiter Aggregator Whale #274,whale,false,false,false
+26n6QWkbdGUYszzBwjuTFXEbQzKhfmn4UYEYx4J95p2z,2083275,157,5.23,9,131,Raydium Liquidity Leader #275,whale,false,false,false
+YaXNqcnNg3xQkNH7vCJE1Czh433zxz2Rz85vH4Ev8VQx,2120596,168,5.6,16,144,Pump.fun Whale Early #276,fund,false,false,false
+5jA1P6gsL1r2Uoxa3BUqPJ19o2qD5Q8zdBcZwYEKtZJa,2157917,179,5.97,23,157,Solana Alpha Fund #1 #277,whale,false,false,false
+jdefeRuiwDA7ocLBbC2epojymZjk1x4uB5C76yZ4bZWT,2195238,190,6.33,30,170,Solana Alpha Fund #2 #278,whale,false,false,false
+3RZRBsn4HrjGmy9gTyrJq6V1PARYxcmTPs75XR8iwCBv,2232559,201,6.7,37,183,High Conviction Sol Whale #279,smart_money,false,false,false
+ejfjuJhSxBTXLGVUcXXGUwWP4c5gH9oW6H7BZeF6Jq7y,2269880,212,7.07,4,196,Jump Trading Active #280,fund,false,false,false
+zRRRiMcenfDmMuoUB995D1MwL6C4Q6TYL555Gox68Ds7,2307201,223,7.43,11,209,Wintermute Solana #281,whale,false,false,false
+vqbti3XxCvxE1hKoML7uoEjz7doD5CqrGB3SAVyWrUQn,2344522,234,7.8,18,222,CMS Holdings #282,smart_money,false,false,false
+JrH6zJCed7zk24qoP8o9z5zV5QjDjH1ZxQdeSkeC5fSC,2381843,245,8.17,25,235,DeFiance Capital Sol #283,whale,false,false,false
+xnAjBZrLyzAeKqrS7u64JgJoAz1ykZHuWEiBd7JtRScC,2419164,256,8.53,32,18,Multicoin Sub-wallet #284,fund,false,false,false
+DccSrtXY6UCN1F8JbP7jF6oWY4YEx7W8mA4zJLy6Yvkv,2456485,267,8.9,39,31,Ansem Kol Watch #285,smart_money,false,false,false
+rw8SWP6Gxk4nd4p1UiBhxsxEX5Ebh4A5JPaz4wYiQCcE,2493806,278,9.27,6,44,GCR Solana Stash #286,whale,false,false,false
+BmTCdxpi4gw13mLjHKzs8PymJ9mhyttddD1k5WGg2SDH,2531127,289,9.63,13,57,Solana Smart DEX Buyer #287,whale,false,false,false
+bGPxGvMfJNWVVY9F836uC9NhMmT4N13RFpTvpCdRASg9,2568448,300,10,20,70,Jupiter Aggregator Whale #288,fund,false,false,false
+pXdym5YchEWx6w5YkbEidW6ZLAm6GjJTaPbjw9QafWgi,2605769,311,10.37,27,83,Raydium Liquidity Leader #289,whale,false,false,false
+r8LrkfTE9mXtVE9Gx3KuRhfRnXxc8ygKQCQcvKdJhXbe,2643090,322,10.73,34,96,Pump.fun Whale Early #290,whale,false,false,false
+GFGRqPKtebzXUHNyYtfekt3GhKtvT1sPvo851TPecZA5,2680411,13,0.43,41,109,Solana Alpha Fund #1 #291,smart_money,false,false,false
+VqPZCr1YiT5BSKLxDa151Ka7LVgLTPYo9bTjeQZ6GuXd,2717732,24,0.8,8,122,Solana Alpha Fund #2 #292,fund,false,false,false
+uKHhBKczrkXX7Pw2UbTkXLgYFwjmdP2wTmjFdsAYQJ55,2755053,35,1.17,15,135,High Conviction Sol Whale #293,whale,false,false,false
+4MXZdf1XfuGAxKSHD1a1Re93SWPzuwsJWo57BDZ5DTic,2792374,46,1.53,22,148,Jump Trading Active #294,smart_money,false,false,false
+fM3TT3fBG2aWLSnX5wYKL9SRXQWLGMDVDoVuuVDdia24,2829695,57,1.9,29,161,Wintermute Solana #295,whale,false,false,false
+fSf1NoNeVQhkoWgWn1npPvY6bYYtSLwMDtDTvMpCqx9Q,2867016,68,2.27,36,174,CMS Holdings #296,fund,false,false,false
+JR6h8dfnsDf9WPGzeZ1SPU1ZVPG2wb9LkmS9g5KEKm7h,2904337,79,2.63,43,187,DeFiance Capital Sol #297,smart_money,false,false,false
+L21vXwpkaP5LECWZiRpiRcFJRa7gSNstgNMNyPUCE3dt,2941658,90,3,10,200,Multicoin Sub-wallet #298,whale,false,false,false
+jPghQFeg5MF4RHsipguSxTLYt4jGHfcvPw234ozLdhbW,2978979,101,3.37,17,213,Ansem Kol Watch #299,whale,false,false,false
+SJbYEDZZwoqTiPU2m77aveMm4hUP8b7DnewtnZ77VFHu,3016300,112,3.73,24,226,GCR Solana Stash #300,fund,false,false,false

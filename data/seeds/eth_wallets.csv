@@ -1,0 +1,304 @@
+address,est_usd_balance,swaps_30d,avg_swaps_per_day,distinct_tokens,avg_holding_hours,label,category,is_exchange_or_bridge,is_contract,is_bot
+0x28c6c06298d514db089934071355e5743bf21d60,45000000,120,4.0,25,96,Binance 14 Hot,exchange,true,false,false
+0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45,1000000,500,16.67,80,12,Uniswap Universal Router,contract,false,true,false
+0xae2fc483527b8ef99eb5d9b44875f005ba1fae13,800000,3200,106.67,5,0.005,jaredfromsubway.eth,bot,false,false,true
+0x98924570bd0e48fecbb7943c6fe350d75fa13e26,193123,19,0.63,8,29,a16z Active Crypto #1,whale,false,false,false
+0xd01aa9dccfc5d4224236b46b3380345840939a89,236246,28,0.93,13,46,Dragonfly Capital Active #2,smart_money,false,false,false
+0x682464213065750c07806a1f2a7d5b1ea4c177bc,279369,37,1.23,18,63,Amber Group Trading #3,whale,false,false,false
+0x5e7f8ccb17b0fbbbdec1e9fa76917b7599306a4a,322492,46,1.53,23,80,Arthur Hayes Portfolio #4,smart_money,false,false,false
+0x050292f76593ced16574f19e97f2deb23163fc7e,365615,55,1.83,28,97,Tetranode Stash #5,fund,false,false,false
+0xf5eb1a2ba58e45861db220f57cc147f207275fac,408738,64,2.13,33,114,Vitalik Public Sub #6,smart_money,false,false,false
+0xa82861bfe97df89aace49e376befa0a672372e9a,451861,73,2.43,3,131,Machibigbrother Active #7,whale,false,false,false
+0x35b1de6b230da683cdf2fe98032cca8ffa4cd9a1,494984,82,2.73,8,148,0xb1 Capital #8,smart_money,false,false,false
+0x95f6ac7a817dc78095fc8b2a7f92146fd168946b,538107,91,3.03,13,165,Mechanism Capital Eth #9,whale,false,false,false
+0x7f18855e9ead29f3b00ee2c5e6845d2d0d83a99f,581230,100,3.33,18,182,Alameda Liquidator Cold #10,fund,false,false,false
+0x7d5816c4c854a5ae37a375768ff1a278d7f72bf2,624353,109,3.63,23,199,Smart DEX Swapper #1 #11,whale,false,false,false
+0xf05c0c62f88dca85b6ecc98420f82bd46419908b,667476,118,3.93,28,216,Curve Wars Veteran #12,smart_money,false,false,false
+0x5f4d58eca5027de6b93368a84057b6efc659cab7,710599,127,4.23,33,233,1inch Smart Routing Whale #13,whale,false,false,false
+0x9717ab6222aa78bcb3daa252198d919fe1d040a4,753722,136,4.53,3,250,Paradigm Sub-wallet #14,smart_money,false,false,false
+0xe8504511299029f16454f37a705618c1e3b1e7ad,796845,145,4.83,8,267,a16z Active Crypto #15,fund,false,false,false
+0xedc13947645282ffa2f199c426abd1aab7d43285,839968,154,5.13,13,284,Dragonfly Capital Active #16,smart_money,false,false,false
+0x0e51a7331e1b2ed1f5436b7ffc2c4a00126faf09,883091,163,5.43,18,301,Amber Group Trading #17,whale,false,false,false
+0xe6ed19ce3de43e1d1e45063bb50abee488fd25c9,926214,172,5.73,23,318,Arthur Hayes Portfolio #18,smart_money,false,false,false
+0x1b2aa332b892222246d68dcf72e46a9b632ceacb,969337,181,6.03,28,335,Tetranode Stash #19,whale,false,false,false
+0x32e7f74fe001f4af89a21c00c70ec0c9323430e2,1012460,190,6.33,33,352,Vitalik Public Sub #20,fund,false,false,false
+0x1bad4992c3479327929ce3b3e4908c1a07190e72,1055583,199,6.63,3,19,Machibigbrother Active #21,whale,false,false,false
+0xc80e73747f12804a40bce2e4472604460f9c1080,1098706,208,6.93,8,36,0xb1 Capital #22,smart_money,false,false,false
+0xb614bdb9f48631e825b6beb7a24fee15394172d7,1141829,217,7.23,13,53,Mechanism Capital Eth #23,whale,false,false,false
+0x07c2664500b26405c53635e7bbc8737017af8482,1184952,226,7.53,18,70,Alameda Liquidator Cold #24,smart_money,false,false,false
+0x70683d6aaac037ada5e0e4780b17f424de2a8ee5,1228075,235,7.83,23,87,Smart DEX Swapper #1 #25,fund,false,false,false
+0xfe3d660e965f3c82e7acf7c5e61263921c6d4465,1271198,244,8.13,28,104,Curve Wars Veteran #26,smart_money,false,false,false
+0xc0f92717a423b742b4db70b3394cbfe47831568d,1314321,13,0.43,33,121,1inch Smart Routing Whale #27,whale,false,false,false
+0x18d36cfbaee98a726a5ea8b1cac4924d2179ec27,1357444,22,0.73,3,138,Paradigm Sub-wallet #28,smart_money,false,false,false
+0x550e219fa06401582dc86056f32cb021c226a0e1,1400567,31,1.03,8,155,a16z Active Crypto #29,whale,false,false,false
+0xc436682db1fbe827b3f09efda9b51c11d3300f05,1443690,40,1.33,13,172,Dragonfly Capital Active #30,fund,false,false,false
+0xf46b85bc2949a66b4b857c2e9d58c5acd6c8786f,1486813,49,1.63,18,189,Amber Group Trading #31,whale,false,false,false
+0xa2df51c0ed4988ffea19e042481c6770d81d621c,1529936,58,1.93,23,206,Arthur Hayes Portfolio #32,smart_money,false,false,false
+0x3238ac2f856871f6c09c6e80f9dfbafb1481e984,1573059,67,2.23,28,223,Tetranode Stash #33,whale,false,false,false
+0x2afaa928cf7bc22f4d0f51a511a68822b39373c9,1616182,76,2.53,33,240,Vitalik Public Sub #34,smart_money,false,false,false
+0x046cd171b8c14a93f7d5ec3c357f1b3589639805,1659305,85,2.83,3,257,Machibigbrother Active #35,fund,false,false,false
+0xdc951222e0a369120eddc3de0f3938f510cdbb57,1702428,94,3.13,8,274,0xb1 Capital #36,smart_money,false,false,false
+0x62a977a9ed71006902a04a0b8a1dc8bc65844b63,1745551,103,3.43,13,291,Mechanism Capital Eth #37,whale,false,false,false
+0xc3149d310af55d1d58060b7ab71793f6184a9cf4,1788674,112,3.73,18,308,Alameda Liquidator Cold #38,smart_money,false,false,false
+0xe54f78466c8fd44361ea0f85dedd8b984db2163b,1831797,121,4.03,23,325,Smart DEX Swapper #1 #39,whale,false,false,false
+0x68c521ae228cfcb851ade9cb99279d105c0d76d3,1874920,130,4.33,28,342,Curve Wars Veteran #40,fund,false,false,false
+0x5b5cd7f30005a71ef2015ab159d296d171e55fdb,1918043,139,4.63,33,359,1inch Smart Routing Whale #41,whale,false,false,false
+0xc558a152a14b39ae52c5e3ee690743b35ae6ee6d,1961166,148,4.93,3,26,Paradigm Sub-wallet #42,smart_money,false,false,false
+0x6e26f58b328cc4e34a7d826d63764927a50d6c08,2004289,157,5.23,8,43,a16z Active Crypto #43,whale,false,false,false
+0x3b99a6b5c7e96b4579bba0298896c0567c392b6a,2047412,166,5.53,13,60,Dragonfly Capital Active #44,smart_money,false,false,false
+0x2eabab45d6fd817502690f6e29cfc8ff3130f991,2090535,175,5.83,18,77,Amber Group Trading #45,fund,false,false,false
+0xf05d2feee1c053ac0fd6c58a1a4b819091dc5947,2133658,184,6.13,23,94,Arthur Hayes Portfolio #46,smart_money,false,false,false
+0x6d688718ded9980222b40f968c29d0c61e0642d0,2176781,193,6.43,28,111,Tetranode Stash #47,whale,false,false,false
+0x981d6dce605b8203ce35ed999f753610e49ad4d2,2219904,202,6.73,33,128,Vitalik Public Sub #48,smart_money,false,false,false
+0x32f3569fe28ef21a52c2b4d09383c4c05e45e8b3,2263027,211,7.03,3,145,Machibigbrother Active #49,whale,false,false,false
+0x5154ba6430420f5a66d040f5dec57f567cae40a1,2306150,220,7.33,8,162,0xb1 Capital #50,fund,false,false,false
+0xbc7394b643d5416949b00227d8a5999616c8e077,2349273,229,7.63,13,179,Mechanism Capital Eth #51,whale,false,false,false
+0x8e7fc2171803a13c5c3c59b79433188f25d5a907,2392396,238,7.93,18,196,Alameda Liquidator Cold #52,smart_money,false,false,false
+0x5604c7dca98acd585986aa6884aa7083137a1cad,2435519,247,8.23,23,213,Smart DEX Swapper #1 #53,whale,false,false,false
+0xc2109d51bd375ac7010cc3a6d3d9920c508f8acc,2478642,16,0.53,28,230,Curve Wars Veteran #54,smart_money,false,false,false
+0xa8abf3c3dd78c135a82e3f6fd8915642f8081060,2521765,25,0.83,33,247,1inch Smart Routing Whale #55,fund,false,false,false
+0x8d52c616b18e20f5256be1249dc21dd14febd49f,2564888,34,1.13,3,264,Paradigm Sub-wallet #56,smart_money,false,false,false
+0xaf809425a6ca8f04a5a65a0496cc9ab4b76857b0,2608011,43,1.43,8,281,a16z Active Crypto #57,whale,false,false,false
+0xbfb8603e370c6d9bf77beadb6f9573b12161228d,2651134,52,1.73,13,298,Dragonfly Capital Active #58,smart_money,false,false,false
+0x16d6366b9abfd5237764fc155a2b381e31966f67,2694257,61,2.03,18,315,Amber Group Trading #59,whale,false,false,false
+0x6628d825f00cd7fc4507a89ac6a2755324f2a0d4,2737380,70,2.33,23,332,Arthur Hayes Portfolio #60,fund,false,false,false
+0xba979e6c6019e5d5b3eab15db33d2266306aafa9,2780503,79,2.63,28,349,Tetranode Stash #61,whale,false,false,false
+0xde5fb0b200ca09aef686cf392970c07c00ba0a88,2823626,88,2.93,33,16,Vitalik Public Sub #62,smart_money,false,false,false
+0xe6f785ad9b3d66c6f4187e2ff49e66685afdbc50,2866749,97,3.23,3,33,Machibigbrother Active #63,whale,false,false,false
+0xcbfd1d3095f122aa5a05422b390d9bffeb41cb4b,2909872,106,3.53,8,50,0xb1 Capital #64,smart_money,false,false,false
+0x8526fe7cc959f90920738f2174b9d5cc769f33b9,2952995,115,3.83,13,67,Mechanism Capital Eth #65,fund,false,false,false
+0x175c2f4c7f9c313482497f3f6085f262cec8edc0,2996118,124,4.13,18,84,Alameda Liquidator Cold #66,smart_money,false,false,false
+0xcb0747bae8688c58e35d594f262b3f31d2ed93cb,3039241,133,4.43,23,101,Smart DEX Swapper #1 #67,whale,false,false,false
+0x611057a1974ae0d3c1915920e2d76bb8ec9cf788,3082364,142,4.73,28,118,Curve Wars Veteran #68,smart_money,false,false,false
+0xa362276e7b397dff8894472a0ed3e968a0f5d96a,3125487,151,5.03,33,135,1inch Smart Routing Whale #69,whale,false,false,false
+0xa71aea5580e63ea81766a55bd6856d61644f34c9,3168610,160,5.33,3,152,Paradigm Sub-wallet #70,fund,false,false,false
+0xa7819022a40893e5be537fa569fa69804e1cb7b8,3211733,169,5.63,8,169,a16z Active Crypto #71,whale,false,false,false
+0x9a8f14233a9c383c995f48417faec5a6a4c82aa7,3254856,178,5.93,13,186,Dragonfly Capital Active #72,smart_money,false,false,false
+0x8703a70f5c030f936436965c3f2215ed87c429b6,3297979,187,6.23,18,203,Amber Group Trading #73,whale,false,false,false
+0x4bba13a533bd328f06e70ab0c095da60f58339d8,3341102,196,6.53,23,220,Arthur Hayes Portfolio #74,smart_money,false,false,false
+0x9cf102c9dbdc4e790b40653f61a6f0a09dbc68fc,3384225,205,6.83,28,237,Tetranode Stash #75,fund,false,false,false
+0xb1d9743ed0742be89936c064a4126a887ccd6631,3427348,214,7.13,33,254,Vitalik Public Sub #76,smart_money,false,false,false
+0xcbdef0a8295b59f23113592a65272195a4d46b26,3470471,223,7.43,3,271,Machibigbrother Active #77,whale,false,false,false
+0xba352546adb8a37fe8cd81a28327203a20024cd0,3513594,232,7.73,8,288,0xb1 Capital #78,smart_money,false,false,false
+0x91aaf530d3e96f57afa660255353af5f45be0408,3556717,241,8.03,13,305,Mechanism Capital Eth #79,whale,false,false,false
+0x0ae7a6672332e4ae47c6b8b3646208dd414daded,3599840,10,0.33,18,322,Alameda Liquidator Cold #80,fund,false,false,false
+0x2585e9f82cfa44e64a183e2ca9efd0b283098d06,3642963,19,0.63,23,339,Smart DEX Swapper #1 #81,whale,false,false,false
+0xddb88149ebc282433aa68b40835950d35b54b711,3686086,28,0.93,28,356,Curve Wars Veteran #82,smart_money,false,false,false
+0x0e3097d8b6c77acd3b8d8d82450bc03cfa125045,3729209,37,1.23,33,23,1inch Smart Routing Whale #83,whale,false,false,false
+0x92a8a153fb936c897b2f7217d73f39d0d23032df,3772332,46,1.53,3,40,Paradigm Sub-wallet #84,smart_money,false,false,false
+0xd2b9a47d9ef4ba16f676eb9f702c3383c29e4e7e,3815455,55,1.83,8,57,a16z Active Crypto #85,fund,false,false,false
+0xee9f39f4734e4d4a20c10988d7b9f81a8f6dd173,3858578,64,2.13,13,74,Dragonfly Capital Active #86,smart_money,false,false,false
+0x39d443bdfb8f4c3c9f1f93520a08275d63b7a14d,3901701,73,2.43,18,91,Amber Group Trading #87,whale,false,false,false
+0xfe163fcaeb36eca6df646a6fb86a0d5c1f5d2ebf,3944824,82,2.73,23,108,Arthur Hayes Portfolio #88,smart_money,false,false,false
+0x991cfaea5b8f949474508749650f99a8acf289df,3987947,91,3.03,28,125,Tetranode Stash #89,whale,false,false,false
+0x42b952cfcaaef88071eb7bf8b35831f904731c08,4031070,100,3.33,33,142,Vitalik Public Sub #90,fund,false,false,false
+0x8410127b7f9b6756e59e973fcf189c989b54bb86,4074193,109,3.63,3,159,Machibigbrother Active #91,whale,false,false,false
+0x4e9c6a3d2ea68cf5e532c9f83ae3131fe3074c61,4117316,118,3.93,8,176,0xb1 Capital #92,smart_money,false,false,false
+0xa1f85fd000174dfb026af2c239933150d105fc50,4160439,127,4.23,13,193,Mechanism Capital Eth #93,whale,false,false,false
+0x520e901ade6489cc7157a4a37c98f5c3580377ea,4203562,136,4.53,18,210,Alameda Liquidator Cold #94,smart_money,false,false,false
+0x5636567fa8b109a9201ec75e95de4152d6f8f186,4246685,145,4.83,23,227,Smart DEX Swapper #1 #95,fund,false,false,false
+0x31db6d584660eb156de8d1d547c974b889019165,4289808,154,5.13,28,244,Curve Wars Veteran #96,smart_money,false,false,false
+0x5bcd6c88d1c58f80de7841e755a7b8f5c2b165fd,4332931,163,5.43,33,261,1inch Smart Routing Whale #97,whale,false,false,false
+0x1ab680491fa9fda10ab11c640bbdeab757eb0510,4376054,172,5.73,3,278,Paradigm Sub-wallet #98,smart_money,false,false,false
+0xb3b139e889332c2b8ec9fb7b6a1024ffa8e22df1,4419177,181,6.03,8,295,a16z Active Crypto #99,whale,false,false,false
+0xfb624ab09e42a19b99be0333447c8acaaaa460f3,4462300,190,6.33,13,312,Dragonfly Capital Active #100,fund,false,false,false
+0xcf4536cf4c809757df782c80bd56db64f789ad58,4505423,199,6.63,18,329,Amber Group Trading #101,whale,false,false,false
+0x84d61a5091fc789d9fc96ae21253c4378f2abc05,4548546,208,6.93,23,346,Arthur Hayes Portfolio #102,smart_money,false,false,false
+0x7cc0e05226342707f4bb71ee0b693c81f8dccad6,4591669,217,7.23,28,13,Tetranode Stash #103,whale,false,false,false
+0xa7eb9fe62738c877edc54cbe40705befb499b940,4634792,226,7.53,33,30,Vitalik Public Sub #104,smart_money,false,false,false
+0xa5ba9b25cce2b34d1a4afd752f4ef00f04e2a641,4677915,235,7.83,3,47,Machibigbrother Active #105,fund,false,false,false
+0xd728e7a91bf5c8dc9bb0aadab620c9b0591a0384,4721038,244,8.13,8,64,0xb1 Capital #106,smart_money,false,false,false
+0xf1b23c55dc663676b9e5040f4c11b912c0fad506,4764161,13,0.43,13,81,Mechanism Capital Eth #107,whale,false,false,false
+0x239446fc55fff83161a1f47cecfa22710e793a28,4807284,22,0.73,18,98,Alameda Liquidator Cold #108,smart_money,false,false,false
+0xb944d8821b93396f526d690163fc71cb751d5409,4850407,31,1.03,23,115,Smart DEX Swapper #1 #109,whale,false,false,false
+0xc81d47b295000c6a2437f7657ff491478a8a9386,4893530,40,1.33,28,132,Curve Wars Veteran #110,fund,false,false,false
+0x1a262c1f347fb2cf28d83feea4f12e049c41af29,4936653,49,1.63,33,149,1inch Smart Routing Whale #111,whale,false,false,false
+0x3382aa5cafae2493bf8186b2d23d483f2d563a9a,4979776,58,1.93,3,166,Paradigm Sub-wallet #112,smart_money,false,false,false
+0xaea6945ad8bea14d21a57a884d0001f66738e2b8,5022899,67,2.23,8,183,a16z Active Crypto #113,whale,false,false,false
+0xd76fa6a1bba703b42cf7df38bcb618c20b9bbda5,5066022,76,2.53,13,200,Dragonfly Capital Active #114,smart_money,false,false,false
+0xde6632f594d03ac260599d0474b28e6e898b2cf3,5109145,85,2.83,18,217,Amber Group Trading #115,fund,false,false,false
+0x05c5ffeb39fa261997372c6563b90c48df45aba5,5152268,94,3.13,23,234,Arthur Hayes Portfolio #116,smart_money,false,false,false
+0x2a49caa27840b150fa3c3d83f2d4c8349c179acb,5195391,103,3.43,28,251,Tetranode Stash #117,whale,false,false,false
+0xa26b7771dfda77be892fbf2b082f4fe6e0077f99,5238514,112,3.73,33,268,Vitalik Public Sub #118,smart_money,false,false,false
+0xce31db0d4532d981c0c90e9807da2a0cdae9b758,5281637,121,4.03,3,285,Machibigbrother Active #119,whale,false,false,false
+0x353f87681211427b15854b8d64b19d25c2e5869c,5324760,130,4.33,8,302,0xb1 Capital #120,fund,false,false,false
+0x8a1d004aa4362ffb647bcc87b8373bfa3c22ad4f,5367883,139,4.63,13,319,Mechanism Capital Eth #121,whale,false,false,false
+0x16efb38754984ceaf75259caff98589f6b232b4b,5411006,148,4.93,18,336,Alameda Liquidator Cold #122,smart_money,false,false,false
+0x0a6e8fbb8f93b7a7a848bbcb27e35778e83bd3af,5454129,157,5.23,23,353,Smart DEX Swapper #1 #123,whale,false,false,false
+0x57e2279986ccbc649bcaddbc08b22687aa765cc9,5497252,166,5.53,28,20,Curve Wars Veteran #124,smart_money,false,false,false
+0x19ce15b274421b97a211dd1d0e0fa81601711a5a,5540375,175,5.83,33,37,1inch Smart Routing Whale #125,fund,false,false,false
+0x4041fed4228b89848515e8c3d9c25f14f857c576,5583498,184,6.13,3,54,Paradigm Sub-wallet #126,smart_money,false,false,false
+0x82fc1f48b2d7a43c6424586aa88195901896a556,5626621,193,6.43,8,71,a16z Active Crypto #127,whale,false,false,false
+0xb3003457ec68c89aa1a00e071dcfc5f157137165,5669744,202,6.73,13,88,Dragonfly Capital Active #128,smart_money,false,false,false
+0xb84b582ce348f6271a99e2755984a3ffaba835a7,5712867,211,7.03,18,105,Amber Group Trading #129,whale,false,false,false
+0xb343ab60bd7f7a5dde17f67ea4baff205da1a6ad,5755990,220,7.33,23,122,Arthur Hayes Portfolio #130,fund,false,false,false
+0x8a6062ffc1bda6e2cf50e7ca23b16687806b3559,5799113,229,7.63,28,139,Tetranode Stash #131,whale,false,false,false
+0xc43141e32a8cdb4ce383ca8c619af3341b01f96c,5842236,238,7.93,33,156,Vitalik Public Sub #132,smart_money,false,false,false
+0xca1f4ac734854563fe7c19b512d3a6fae0655197,5885359,247,8.23,3,173,Machibigbrother Active #133,whale,false,false,false
+0x4e7ded04ef88fe6adc875765a7f6b96e9a9ddaba,5928482,16,0.53,8,190,0xb1 Capital #134,smart_money,false,false,false
+0x7d08780badb21c51e35c6f171a2c0ce818bf4dfc,5971605,25,0.83,13,207,Mechanism Capital Eth #135,fund,false,false,false
+0x80443a27e48e2a0ab997848c0f2fa4d2d16ab051,6014728,34,1.13,18,224,Alameda Liquidator Cold #136,smart_money,false,false,false
+0xdb321030047a0a6e253b54eb897453c06c5cf594,6057851,43,1.43,23,241,Smart DEX Swapper #1 #137,whale,false,false,false
+0xf8e6ec9cbf9c483f0e56d02ca29ba3f27c942b8d,6100974,52,1.73,28,258,Curve Wars Veteran #138,smart_money,false,false,false
+0x0a039209326cb39662d9178545cad7f38e6f4c99,6144097,61,2.03,33,275,1inch Smart Routing Whale #139,whale,false,false,false
+0x04c7345572169f5211e61ca7837a903eb8c8ba3f,6187220,70,2.33,3,292,Paradigm Sub-wallet #140,fund,false,false,false
+0xa54dbb3f5b27520801cbc48783a350a7093f930f,6230343,79,2.63,8,309,a16z Active Crypto #141,whale,false,false,false
+0xe3aa2c94688c8b0a669463e8c435c53e4cc45c03,6273466,88,2.93,13,326,Dragonfly Capital Active #142,smart_money,false,false,false
+0xb29695dcf4be072564270a902f9d6690e64c5a5f,6316589,97,3.23,18,343,Amber Group Trading #143,whale,false,false,false
+0x4c35e069a69daa050a14e8c27eb6deb0fccb19e7,6359712,106,3.53,23,360,Arthur Hayes Portfolio #144,smart_money,false,false,false
+0x97abb2691086938bacafbc366de240a12d2f9134,6402835,115,3.83,28,27,Tetranode Stash #145,fund,false,false,false
+0x2e4ad99f86427131c69532bf5b362cb73977628d,6445958,124,4.13,33,44,Vitalik Public Sub #146,smart_money,false,false,false
+0x07008e7372b8d298b987d91527dd00db55d64da5,6489081,133,4.43,3,61,Machibigbrother Active #147,whale,false,false,false
+0xabaa73cad3cd76e7800333827db23b6c9c6cd782,6532204,142,4.73,8,78,0xb1 Capital #148,smart_money,false,false,false
+0xf558cbe8fc577aa40da68570b7847e5ba50809ea,6575327,151,5.03,13,95,Mechanism Capital Eth #149,whale,false,false,false
+0xaa53a12f45cf992c76234fc0e8e3050599fdf2b0,6618450,160,5.33,18,112,Alameda Liquidator Cold #150,fund,false,false,false
+0xd9fc7fd2f0ba1e08b6a129ee1f819c8b18567d71,6661573,169,5.63,23,129,Smart DEX Swapper #1 #151,whale,false,false,false
+0x6fee6a9ff4a392c42e53845cf033f000945fd00a,6704696,178,5.93,28,146,Curve Wars Veteran #152,smart_money,false,false,false
+0xd78ac5d3a0095063adffc71fe0eb34d36ddda1e7,6747819,187,6.23,33,163,1inch Smart Routing Whale #153,whale,false,false,false
+0x1bb17f007a1e59a41fdff29671e2133deae4a347,6790942,196,6.53,3,180,Paradigm Sub-wallet #154,smart_money,false,false,false
+0xa1626375b557356fb48fc6400b31ab8f680a44a1,6834065,205,6.83,8,197,a16z Active Crypto #155,fund,false,false,false
+0xfb847bd879cad9b2d1dbea20868edca95d740a78,6877188,214,7.13,13,214,Dragonfly Capital Active #156,smart_money,false,false,false
+0xc5758b8dc8997851e57f6710e84c0b1369772df5,6920311,223,7.43,18,231,Amber Group Trading #157,whale,false,false,false
+0x56ad05b93ea76fde61d94092eb0628e2c351da1e,6963434,232,7.73,23,248,Arthur Hayes Portfolio #158,smart_money,false,false,false
+0x7a3117f3132d269e63492fcfc2a2cd28784dd4a7,7006557,241,8.03,28,265,Tetranode Stash #159,whale,false,false,false
+0x7f6cc1e29016721030bbc7d0378289d81d938a30,7049680,10,0.33,33,282,Vitalik Public Sub #160,fund,false,false,false
+0x0fe870d5433bf67502fd5f5f3b67f02eda66d73e,7092803,19,0.63,3,299,Machibigbrother Active #161,whale,false,false,false
+0x5dd0f6311ec1c5c49d34c4953a4ea78b87fd59ab,7135926,28,0.93,8,316,0xb1 Capital #162,smart_money,false,false,false
+0xba851ed2174a88e0e06eb81ed4b780aa07a7c6ee,7179049,37,1.23,13,333,Mechanism Capital Eth #163,whale,false,false,false
+0xfbbcf7b878e24eeb1398a0b3502dd647eaa445af,7222172,46,1.53,18,350,Alameda Liquidator Cold #164,smart_money,false,false,false
+0xc601f8f198ab655ea050bf9b9abee2178ccf1cd5,7265295,55,1.83,23,17,Smart DEX Swapper #1 #165,fund,false,false,false
+0xf6f1dea9c5f6c7fe09773982dd25d09724aba469,7308418,64,2.13,28,34,Curve Wars Veteran #166,smart_money,false,false,false
+0x63163cbfc3473328fe739a22e11201ab29670476,7351541,73,2.43,33,51,1inch Smart Routing Whale #167,whale,false,false,false
+0x748ec48e19a5f2a3d27d9f0cbf74069ccbf7ee36,7394664,82,2.73,3,68,Paradigm Sub-wallet #168,smart_money,false,false,false
+0x2cc9b603a78821acd054c35d5428d3da2f57de0a,7437787,91,3.03,8,85,a16z Active Crypto #169,whale,false,false,false
+0x9052c2cbeb5b445d1ae5827571b5837d5753a5dd,7480910,100,3.33,13,102,Dragonfly Capital Active #170,fund,false,false,false
+0x571b3f5810ae3f6f598bbbba711acd864d192f7c,7524033,109,3.63,18,119,Amber Group Trading #171,whale,false,false,false
+0xdf273c802ec8da97b921c24fda54a54e376b6e4c,7567156,118,3.93,23,136,Arthur Hayes Portfolio #172,smart_money,false,false,false
+0x8e8241502ce8f3bb2a551f319ff04ff29921f0d4,7610279,127,4.23,28,153,Tetranode Stash #173,whale,false,false,false
+0xd1c6bbfc7758c553dd420ef352afce25be827094,7653402,136,4.53,33,170,Vitalik Public Sub #174,smart_money,false,false,false
+0x2633bc76e172fa08eff1416fd24c6f5289974e9f,7696525,145,4.83,3,187,Machibigbrother Active #175,fund,false,false,false
+0x0c6514b3dd380a18425dbeb7ee856613e9e9ab00,7739648,154,5.13,8,204,0xb1 Capital #176,smart_money,false,false,false
+0x2c041597b4e803af035d3aacdc4f575793464095,7782771,163,5.43,13,221,Mechanism Capital Eth #177,whale,false,false,false
+0x47ca315fb00cf7da2fabd688b1b9ab699f5e964f,7825894,172,5.73,18,238,Alameda Liquidator Cold #178,smart_money,false,false,false
+0x01a4fc820ea7fe3469861cf442f208df17f17327,7869017,181,6.03,23,255,Smart DEX Swapper #1 #179,whale,false,false,false
+0xad30a38ef85cfbba316cdee2d39bdbfd7d1117e5,7912140,190,6.33,28,272,Curve Wars Veteran #180,fund,false,false,false
+0xca4a528558d470267a13cb254e57fbdf544b4783,7955263,199,6.63,33,289,1inch Smart Routing Whale #181,whale,false,false,false
+0xaeb97a133d02193c37b620d450706fefbbbc3d4b,7998386,208,6.93,3,306,Paradigm Sub-wallet #182,smart_money,false,false,false
+0x00b42bc4e541f3a1c83c59c7961ac5695145a9c0,8041509,217,7.23,8,323,a16z Active Crypto #183,whale,false,false,false
+0xe7ea044e95190b3ead5b13df5ffcc31ba76bf6ce,8084632,226,7.53,13,340,Dragonfly Capital Active #184,smart_money,false,false,false
+0x1e6df4b0e782a988f95d3632c75426a711e9da3f,8127755,235,7.83,18,357,Amber Group Trading #185,fund,false,false,false
+0xfb5b32d65fd05a74a9f71d176fdb4ea5e27bbd97,8170878,244,8.13,23,24,Arthur Hayes Portfolio #186,smart_money,false,false,false
+0x84f4ac1149fc9aedb71578b423d64bdb00a478fd,8214001,13,0.43,28,41,Tetranode Stash #187,whale,false,false,false
+0xc3423b5941392784095b1766194f6608128561f0,8257124,22,0.73,33,58,Vitalik Public Sub #188,smart_money,false,false,false
+0x02f7ef9eb44ffe56c576971b36820d6bc7593562,8300247,31,1.03,3,75,Machibigbrother Active #189,whale,false,false,false
+0x5db135586c6685fbd96968cc53fa72e27860b8df,8343370,40,1.33,8,92,0xb1 Capital #190,fund,false,false,false
+0x16d77c07187e722cfc20a0ba7ae96014d9809ce3,8386493,49,1.63,13,109,Mechanism Capital Eth #191,whale,false,false,false
+0x4a99bdff66c64f746504d47d5874a0464a24dfcd,8429616,58,1.93,18,126,Alameda Liquidator Cold #192,smart_money,false,false,false
+0x630eb2f45e3692e91939ca56248af5cfb1a1c766,8472739,67,2.23,23,143,Smart DEX Swapper #1 #193,whale,false,false,false
+0x51fd84e8c77daddc8ccd4bff0266d2325df9b291,8515862,76,2.53,28,160,Curve Wars Veteran #194,smart_money,false,false,false
+0x384b086b147de686ad35a392fa2965f8601a2f30,8558985,85,2.83,33,177,1inch Smart Routing Whale #195,fund,false,false,false
+0xf49c1de11c6cec9b33d25d29452062a73e1a9778,8602108,94,3.13,3,194,Paradigm Sub-wallet #196,smart_money,false,false,false
+0xe196ab6ba26771f4fbf6879fcaf3ad56cb1afa2c,8645231,103,3.43,8,211,a16z Active Crypto #197,whale,false,false,false
+0x52e144409d94787f8813350a38fdb93898f7ff5e,8688354,112,3.73,13,228,Dragonfly Capital Active #198,smart_money,false,false,false
+0x378dcd79ba5ad80d2be9f81a20076fce1f695ab2,8731477,121,4.03,18,245,Amber Group Trading #199,whale,false,false,false
+0x63606a6b8b7ee472c2c70ca6b051e9b95ad289ef,8774600,130,4.33,23,262,Arthur Hayes Portfolio #200,fund,false,false,false
+0x4068b9e106a20736789d675a7840ead843905310,8817723,139,4.63,28,279,Tetranode Stash #201,whale,false,false,false
+0x872f60d627b4c6d3557492e4005c9867b9ae78bc,8860846,148,4.93,33,296,Vitalik Public Sub #202,smart_money,false,false,false
+0xfb9fd6ffb3366f004008501532979ab79486a334,8903969,157,5.23,3,313,Machibigbrother Active #203,whale,false,false,false
+0x8f98dc0dad290b01d2c7467a74f7053c25834a19,8947092,166,5.53,8,330,0xb1 Capital #204,smart_money,false,false,false
+0x843c0262c264c5d685829a99e256df2aeb4729d5,8990215,175,5.83,13,347,Mechanism Capital Eth #205,fund,false,false,false
+0x2414270d0cbb14c4c8fa0481b09e6749a8e191b3,9033338,184,6.13,18,14,Alameda Liquidator Cold #206,smart_money,false,false,false
+0xa2298c630cbf46d5dbeaa5570d7fef4c14ac612a,9076461,193,6.43,23,31,Smart DEX Swapper #1 #207,whale,false,false,false
+0x2db0d120075d89d2992c2fceae23539c22445d97,9119584,202,6.73,28,48,Curve Wars Veteran #208,smart_money,false,false,false
+0x769ee30fe496f0482f9d26896c18bc8667e24f87,9162707,211,7.03,33,65,1inch Smart Routing Whale #209,whale,false,false,false
+0x2699efca799097676eb0e855d5087c608ddc542f,9205830,220,7.33,3,82,Paradigm Sub-wallet #210,fund,false,false,false
+0x0fde4ec4a767b1ba2e48075bdcb7b131626abecf,9248953,229,7.63,8,99,a16z Active Crypto #211,whale,false,false,false
+0xc8df5e255827d5f96ec1ac4178bda1d35952acd9,9292076,238,7.93,13,116,Dragonfly Capital Active #212,smart_money,false,false,false
+0x4579d2dde7d4b83d5455b4a7d3731c398aea57b3,9335199,247,8.23,18,133,Amber Group Trading #213,whale,false,false,false
+0x3d9439b48b4675bd7ec5f6e648e0884fe10f1896,9378322,16,0.53,23,150,Arthur Hayes Portfolio #214,smart_money,false,false,false
+0x5c5fe2d2b7763507396e38f522fac91ef70e9994,9421445,25,0.83,28,167,Tetranode Stash #215,fund,false,false,false
+0xce2afdce08ffadbf125346f4ee6c008c461b768c,9464568,34,1.13,33,184,Vitalik Public Sub #216,smart_money,false,false,false
+0x090a8cfbac9124d61abbf553d4a50638d6f2a6a8,9507691,43,1.43,3,201,Machibigbrother Active #217,whale,false,false,false
+0x2212db830cd0dd4959e6e1b9bf54233fced20b2b,9550814,52,1.73,8,218,0xb1 Capital #218,smart_money,false,false,false
+0x03c4b1121c28eb749536360085c223cff4a043d6,9593937,61,2.03,13,235,Mechanism Capital Eth #219,whale,false,false,false
+0x2607cce0aff23d5321f446ae199693af9df09547,9637060,70,2.33,18,252,Alameda Liquidator Cold #220,fund,false,false,false
+0xab67d1829df54cd8165edb4d36fff27d4b1c8e28,9680183,79,2.63,23,269,Smart DEX Swapper #1 #221,whale,false,false,false
+0xdcc46cdaeeaaa40a4d70166a8f9bbb811123767f,9723306,88,2.93,28,286,Curve Wars Veteran #222,smart_money,false,false,false
+0x368808a3a8e3eb199d8c552d85d7785cf097a271,9766429,97,3.23,33,303,1inch Smart Routing Whale #223,whale,false,false,false
+0xbdb3cdf4232509cc6521ea820bc5c33391d3f3b9,9809552,106,3.53,3,320,Paradigm Sub-wallet #224,smart_money,false,false,false
+0xe85820e4eb54deed147c7193db8380a44b265bec,9852675,115,3.83,8,337,a16z Active Crypto #225,fund,false,false,false
+0x8751ef69e5aaedbc0d439332c4ae835034a85f54,9895798,124,4.13,13,354,Dragonfly Capital Active #226,smart_money,false,false,false
+0xfbc32e114cb18604daae6110a5f99dc5ee2a80c8,9938921,133,4.43,18,21,Amber Group Trading #227,whale,false,false,false
+0x84306fc79961a023ea1ed98c5819d2b399a7a992,9982044,142,4.73,23,38,Arthur Hayes Portfolio #228,smart_money,false,false,false
+0x5b5b908b4613f3c0f259153eededfec49b559dea,10025167,151,5.03,28,55,Tetranode Stash #229,whale,false,false,false
+0x6fcfaafb8ab9689fe386502acf048fa3a2dba240,10068290,160,5.33,33,72,Vitalik Public Sub #230,fund,false,false,false
+0xc5cd1a8d228bc1316f55f1952f73742da2b86fe5,10111413,169,5.63,3,89,Machibigbrother Active #231,whale,false,false,false
+0xf276100bbcccc66330d8f1e7801c65260462cb1f,10154536,178,5.93,8,106,0xb1 Capital #232,smart_money,false,false,false
+0xecc2ef7df7387d2a4b6aef71e48ac803f8a3e117,10197659,187,6.23,13,123,Mechanism Capital Eth #233,whale,false,false,false
+0x4be4e3420320bfb9f56940ad00356b624e3aabeb,10240782,196,6.53,18,140,Alameda Liquidator Cold #234,smart_money,false,false,false
+0xe7e25bbe263f2931257eca22bd3bae5fd59100f3,10283905,205,6.83,23,157,Smart DEX Swapper #1 #235,fund,false,false,false
+0xa282d9eb95a9e3275a299cf859bf63002c3a80b9,10327028,214,7.13,28,174,Curve Wars Veteran #236,smart_money,false,false,false
+0x60c1f88fea879818d1f9fb0738fe89a07a248a3e,10370151,223,7.43,33,191,1inch Smart Routing Whale #237,whale,false,false,false
+0xbeb9a50472f9d00d7c146aa37ed14e6aacd977a5,10413274,232,7.73,3,208,Paradigm Sub-wallet #238,smart_money,false,false,false
+0x923dab109fe260a4c01a8d296675ff2f2e8c0fb0,10456397,241,8.03,8,225,a16z Active Crypto #239,whale,false,false,false
+0x0df19a3310b37c7e518324e812aeb4e7eed45b01,10499520,10,0.33,13,242,Dragonfly Capital Active #240,fund,false,false,false
+0xef441cbf21f84a300b9c1acd289e8a0b30bc3361,10542643,19,0.63,18,259,Amber Group Trading #241,whale,false,false,false
+0x357644de8c7663a0df167e835fcb370db19b0971,10585766,28,0.93,23,276,Arthur Hayes Portfolio #242,smart_money,false,false,false
+0xbe43b6ae1899faf4758af9fe12e0d95b6d82c5b0,10628889,37,1.23,28,293,Tetranode Stash #243,whale,false,false,false
+0xb9b2712520cf36dc3c3c82ee054c252645af05d5,10672012,46,1.53,33,310,Vitalik Public Sub #244,smart_money,false,false,false
+0x126569b8c20c70d90421953f361ef3b1437d326a,10715135,55,1.83,3,327,Machibigbrother Active #245,fund,false,false,false
+0x168eccd76b9d48776845ca1a4ad52dffcc63a059,10758258,64,2.13,8,344,0xb1 Capital #246,smart_money,false,false,false
+0xe046dc1baa48e3c6e4fdae9a83ed27a0520f091c,10801381,73,2.43,13,361,Mechanism Capital Eth #247,whale,false,false,false
+0xea56f5753bd53cbe214558ecc4f2b6c3f0e328ba,10844504,82,2.73,18,28,Alameda Liquidator Cold #248,smart_money,false,false,false
+0x0e323a79711bad030b38c300ffb8b282666fe2ae,10887627,91,3.03,23,45,Smart DEX Swapper #1 #249,whale,false,false,false
+0x9b10196578229c63022abaca826ef937a92f8757,10930750,100,3.33,28,62,Curve Wars Veteran #250,fund,false,false,false
+0xb2040733b64c3149d9261b4a364c375e5be6c990,10973873,109,3.63,33,79,1inch Smart Routing Whale #251,whale,false,false,false
+0x287bbae57e5b8edab14a03f9bb5e0675a6a311a5,11016996,118,3.93,3,96,Paradigm Sub-wallet #252,smart_money,false,false,false
+0x973b2b2cf73f4bb932611da6a6f5a142c42e2dc0,11060119,127,4.23,8,113,a16z Active Crypto #253,whale,false,false,false
+0x6002a4399f34bb0f2daf595cefbbc9f36d7775fb,11103242,136,4.53,13,130,Dragonfly Capital Active #254,smart_money,false,false,false
+0xac818aaf903687434742855821897ee622b35f8a,11146365,145,4.83,18,147,Amber Group Trading #255,fund,false,false,false
+0x3380de3100af06e8a1d015238acbb99d2f4ad19c,11189488,154,5.13,23,164,Arthur Hayes Portfolio #256,smart_money,false,false,false
+0xf2e3e6893dbf127e1fa755f70f6f2fd52da48651,11232611,163,5.43,28,181,Tetranode Stash #257,whale,false,false,false
+0x705e19e564d80ce2ae5596f9e186d62b6992f895,11275734,172,5.73,33,198,Vitalik Public Sub #258,smart_money,false,false,false
+0xbecbb6138a4e1d795b318c6fc5a88c4a6566344f,11318857,181,6.03,3,215,Machibigbrother Active #259,whale,false,false,false
+0x1de9a9417a63e20332c6b449f6959a7ad286c01b,11361980,190,6.33,8,232,0xb1 Capital #260,fund,false,false,false
+0xad1c67951cfa316177198e479d301b5683eed114,11405103,199,6.63,13,249,Mechanism Capital Eth #261,whale,false,false,false
+0xfcc221a8aa07e2e4c063ec737fde75f9b0a7e62d,11448226,208,6.93,18,266,Alameda Liquidator Cold #262,smart_money,false,false,false
+0x40f7e1a45cd3660f33be45eba2e9e8fc3cd67361,11491349,217,7.23,23,283,Smart DEX Swapper #1 #263,whale,false,false,false
+0x48dbc112adc2faa4d22c72566601dce6108399a0,11534472,226,7.53,28,300,Curve Wars Veteran #264,smart_money,false,false,false
+0x22d75a5865dcb2cf73775ef1276f9631fe5b3f7d,11577595,235,7.83,33,317,1inch Smart Routing Whale #265,fund,false,false,false
+0x22b905e4942bdc52f2f999b66f582268f680a6a4,11620718,244,8.13,3,334,Paradigm Sub-wallet #266,smart_money,false,false,false
+0x3aab0fa409c58140cb40449a37b55ebbd10e3139,11663841,13,0.43,8,351,a16z Active Crypto #267,whale,false,false,false
+0xba19b966b95c01f458232c90b5f58a92f7b39b4d,11706964,22,0.73,13,18,Dragonfly Capital Active #268,smart_money,false,false,false
+0x0ac274734a4eb444268580481a24e97af05558ff,11750087,31,1.03,18,35,Amber Group Trading #269,whale,false,false,false
+0x861fdefa6a69a82f2edb312d47751bd333b3157e,11793210,40,1.33,23,52,Arthur Hayes Portfolio #270,fund,false,false,false
+0x29a9b70f0c8787b74733c25ba8c7f92567843c87,11836333,49,1.63,28,69,Tetranode Stash #271,whale,false,false,false
+0x28b1f2c6e05bb6e37f6d5fd0e941d589d8d25afa,11879456,58,1.93,33,86,Vitalik Public Sub #272,smart_money,false,false,false
+0x2cc293cd70a2ce07da93e551e529198cbc26c405,11922579,67,2.23,3,103,Machibigbrother Active #273,whale,false,false,false
+0x301668adbae1e16875d602ec378e21979dcaf681,11965702,76,2.53,8,120,0xb1 Capital #274,smart_money,false,false,false
+0xd4d272774b062d2580603bc10a435b18c45ebb4a,12008825,85,2.83,13,137,Mechanism Capital Eth #275,fund,false,false,false
+0x770bbf0e82d23aa75e30763a47a2dc22ece86d1b,12051948,94,3.13,18,154,Alameda Liquidator Cold #276,smart_money,false,false,false
+0x685c36cde350b789a5256332682888b291e31124,12095071,103,3.43,23,171,Smart DEX Swapper #1 #277,whale,false,false,false
+0xfd5c6dc9d73e12523fede4b0421f4bde62bee789,12138194,112,3.73,28,188,Curve Wars Veteran #278,smart_money,false,false,false
+0x5b747f774a8f0a7e47844981f7bf12444608c5b6,12181317,121,4.03,33,205,1inch Smart Routing Whale #279,whale,false,false,false
+0xffe4f9cd1d120ccbbb650775b28fa1ef2a1fc064,12224440,130,4.33,3,222,Paradigm Sub-wallet #280,fund,false,false,false
+0x16d2fe1d0b68f102b043160c400667d2fec84683,12267563,139,4.63,8,239,a16z Active Crypto #281,whale,false,false,false
+0xdcf34f0ea07df3a1011414ebe24289c01c7d5249,12310686,148,4.93,13,256,Dragonfly Capital Active #282,smart_money,false,false,false
+0xf53137d95958b4945be532b86412174cba6e28cf,12353809,157,5.23,18,273,Amber Group Trading #283,whale,false,false,false
+0x16759232ca448d6f9505ee3856611dea2da7565c,12396932,166,5.53,23,290,Arthur Hayes Portfolio #284,smart_money,false,false,false
+0x3b677d741af6609874bd3b34194855c6c06efb61,12440055,175,5.83,28,307,Tetranode Stash #285,fund,false,false,false
+0xbf440918fc41ba27b8ed69c374d417396f2ef61f,12483178,184,6.13,33,324,Vitalik Public Sub #286,smart_money,false,false,false
+0x5cc8c75c9809baef031aeff1643477910057e570,12526301,193,6.43,3,341,Machibigbrother Active #287,whale,false,false,false
+0x0885ceb34aaa38969501aff52aa3dbeb129749cf,12569424,202,6.73,8,358,0xb1 Capital #288,smart_money,false,false,false
+0xd01aa2491694a0252f9d25d365e096de34afadc2,12612547,211,7.03,13,25,Mechanism Capital Eth #289,whale,false,false,false
+0x5ab09b1ee1729c3c12055a5f54127fe322ce64df,12655670,220,7.33,18,42,Alameda Liquidator Cold #290,fund,false,false,false
+0xdd7f6b683c5ad4d69b861cb751f3d26283532875,12698793,229,7.63,23,59,Smart DEX Swapper #1 #291,whale,false,false,false
+0x692538d614ec6dfd0fa71bbe076cf64a3b3bddfa,12741916,238,7.93,28,76,Curve Wars Veteran #292,smart_money,false,false,false
+0x29c9450da1a21716b712c00c2653940eb7b690e7,12785039,247,8.23,33,93,1inch Smart Routing Whale #293,whale,false,false,false
+0x48c29d5ddf74a3b5b71c19100618ba95f32e35b2,12828162,16,0.53,3,110,Paradigm Sub-wallet #294,smart_money,false,false,false
+0xc69add9822b5871da4b9f76ea286c7febfbfdafe,12871285,25,0.83,8,127,a16z Active Crypto #295,fund,false,false,false
+0x8eb027b64611912b362f700731606fc5da4802bb,12914408,34,1.13,13,144,Dragonfly Capital Active #296,smart_money,false,false,false
+0xc0dc62e722e133575708a800def0aaaa4af125fb,12957531,43,1.43,18,161,Amber Group Trading #297,whale,false,false,false
+0x439c3517bc1ca2edd3113101bdccb97b32f02243,13000654,52,1.73,23,178,Arthur Hayes Portfolio #298,smart_money,false,false,false
+0x7aad7307302177fb05f1f372c53d210a112a7c33,13043777,61,2.03,28,195,Tetranode Stash #299,whale,false,false,false
+0x16f3bbfa72c27fb7843c1a1f10f9756dfddf429d,13086900,70,2.33,33,212,Vitalik Public Sub #300,fund,false,false,false

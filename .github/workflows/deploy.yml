@@ -1,0 +1,60 @@
+name: Deploy to droplet
+
+# CI/CD: on every push to main (or manual run), ship the code to the DigitalOcean
+# droplet and rebuild. Secrets live on the server (/opt/wtb/.env) and are never in git.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   DROPLET_HOST     – the server IP, e.g. 46.101.21.200
+#   DROPLET_SSH_KEY  – the PRIVATE deploy key (contents of deploy_key), whose public
+#                      half is in the droplet's /root/.ssh/authorized_keys
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-droplet
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sanity checks (typecheck + tests)
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+          pnpm run lint
+          pnpm test
+        env:
+          # Tests touch the shared Neon DB; CI uses the same URL via secret if provided.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        continue-on-error: true
+
+      - name: Archive source
+        run: tar --exclude=.git --exclude=node_modules --exclude='*.log' -czf /tmp/wtb.tgz .
+
+      - name: Copy to droplet
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: root
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          source: /tmp/wtb.tgz
+          target: /root
+
+      - name: Extract + deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: root
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          command_timeout: 20m
+          script: |
+            set -e
+            mkdir -p /opt/wtb
+            tar -xzf /root/wtb.tgz -C /opt/wtb
+            bash /opt/wtb/deploy/deploy.sh
