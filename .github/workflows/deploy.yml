@@ -35,7 +35,9 @@ jobs:
         continue-on-error: true
 
       - name: Archive source
-        run: tar --exclude=.git --exclude=node_modules --exclude='*.log' -czf /tmp/wtb.tgz .
+        # Write the archive INSIDE the workspace so scp-action (runs in a container with
+        # the workspace mounted) can find it. Exclude the archive itself to avoid a race.
+        run: tar --exclude=.git --exclude=node_modules --exclude='*.log' --exclude=wtb.tgz -czf wtb.tgz .
 
       - name: Copy to droplet
         uses: appleboy/scp-action@v0.1.7
@@ -43,7 +45,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: /tmp/wtb.tgz
+          source: wtb.tgz
           target: /root
 
       - name: Extract + deploy
