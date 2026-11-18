@@ -238,26 +238,73 @@ export class LaunchScanner {
       if (!entry || entry <= 0) continue;
       const md = await this.market.getTokenMarketData('solana', c.tokenAddress);
       const price = md?.priceUsd || 0;
+      const liq = md?.liquidityUsd;
+
+      // Rug / liquidity death — report once, then stop tracking this call.
+      if (typeof liq === 'number' && liq > 0 && liq < config.SCAN_RUG_LIQUIDITY_USD) {
+        await this.postRug(c, liq);
+        await db
+          .update(launchCandidates)
+          .set({ status: 'closed', rejectReason: 'Liquidity died' })
+          .where(eq(launchCandidates.id, c.id));
+        posted++;
+        continue;
+      }
       if (price <= 0) continue;
 
       const mult = price / entry;
       const updates: any = {};
       if (mult > Number(c.peakMultiple)) updates.peakMultiple = mult;
 
-      // Highest new milestone crossed since we last reported.
+      // Highest new pump milestone crossed since we last reported.
       const reported = Number(c.reportedMultiple);
       const crossed = PUMP_MILESTONES.filter((m) => m > reported && mult >= m);
       if (crossed.length > 0) {
         const hit = Math.max(...crossed);
-        await this.postPump(c, hit, entry, price, md?.liquidityUsd || 0);
+        await this.postPump(c, hit, entry, price, liq || 0);
         updates.reportedMultiple = hit;
         posted++;
+      } else if (!c.reportedFade && mult <= config.SCAN_FADE_MULT) {
+        // Faded below the entry threshold — report once (keep tracking in case it recovers).
+        await this.postFade(c, mult, entry, price);
+        updates.reportedFade = true;
+        posted++;
       }
+
       if (Object.keys(updates).length > 0) {
         await db.update(launchCandidates).set(updates).where(eq(launchCandidates.id, c.id));
       }
     }
     return posted;
+  }
+
+  private async postFade(
+    c: typeof launchCandidates.$inferSelect,
+    mult: number,
+    entry: number,
+    price: number
+  ) {
+    const ticker = tokenTicker(c.symbol, c.tokenAddress);
+    const pct = Math.round((mult - 1) * 100); // negative
+    const text =
+      `📉 *${ticker}* faded *${pct}%* from the call.\n` +
+      `Entry ${formatPrice(entry)} → now ${formatPrice(price)}`;
+    const kb = new InlineKeyboard().url('📈 Chart', `https://dexscreener.com/solana/${c.tokenAddress}`);
+    if (config.ALERT_CHANNEL_ID) await this.sendMsg(config.ALERT_CHANNEL_ID, text, kb, c.channelMessageId);
+    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
+    for (const chat of activeChats) await this.sendMsg(chat.telegramChatId, text, kb);
+    console.log(`[scan] 📉 ${ticker} faded ${pct}% — follow-up posted`);
+  }
+
+  private async postRug(c: typeof launchCandidates.$inferSelect, liq: number) {
+    const ticker = tokenTicker(c.symbol, c.tokenAddress);
+    const text =
+      `💀 *${ticker}* — liquidity gone (${formatUsd(liq)}). Looks dead/rugged; tracking stopped.`;
+    const kb = new InlineKeyboard().url('🔍 Solscan', `https://solscan.io/token/${c.tokenAddress}`);
+    if (config.ALERT_CHANNEL_ID) await this.sendMsg(config.ALERT_CHANNEL_ID, text, kb, c.channelMessageId);
+    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
+    for (const chat of activeChats) await this.sendMsg(chat.telegramChatId, text, kb);
+    console.log(`[scan] 💀 ${ticker} rugged (liq ${formatUsd(liq)}) — follow-up posted`);
   }
 
   private async postPump(

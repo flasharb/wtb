@@ -240,6 +240,7 @@ export const launchCandidates = pgTable(
     channelMessageId: integer('channel_message_id'), // channel post id (for threaded follow-ups)
     reportedMultiple: real('reported_multiple').default(1).notNull(), // highest milestone already posted
     peakMultiple: real('peak_multiple').default(1).notNull(), // highest multiple seen since the call
+    reportedFade: boolean('reported_fade').default(false).notNull(), // posted a "faded" follow-up?
   },
   (table) => [
     uniqueIndex('launch_candidates_chain_token_idx').on(table.chain, table.tokenAddress),

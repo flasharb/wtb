@@ -67,6 +67,10 @@ const envSchema = z.object({
   SCAN_MAX_TOP10_PCT: z.coerce.number().default(60), // holder concentration ceiling
   SCAN_MIN_HOLDERS: z.coerce.number().default(100),
   SCAN_MAX_ALERTS_PER_CYCLE: z.coerce.number().default(5),
+  // Follow-up: report a fade when a call drops to this multiple of entry (0.5 = -50%),
+  // and mark a call dead/rugged when liquidity falls below this.
+  SCAN_FADE_MULT: z.coerce.number().default(0.5),
+  SCAN_RUG_LIQUIDITY_USD: z.coerce.number().default(5000),
 
   // Wallet selection & budget filters
   MVP_WALLET_CAP: z.coerce.number().default(1000),

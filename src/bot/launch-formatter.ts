@@ -36,8 +36,9 @@ export function formatLaunchAlert(
   text += name ? `*${name}* · ${ticker}\n` : `*${ticker}*\n`;
   text += `🗓 Launched *${age}* ago · ${dex}\n\n`;
 
+  const holders = safety.holderCount > 0 ? ` · 👥 ${safety.holderCount.toLocaleString()} holders` : '';
   text += `💧 Liquidity *${formatUsd(c.liquidityUsd)}* · 📊 24h *${formatUsd(c.volume24hUsd)}*\n`;
-  text += `💲 ${formatPrice(c.priceUsd)} · FDV ${formatUsd(c.fdvUsd)} · 👥 ${safety.holderCount.toLocaleString()} holders\n\n`;
+  text += `💲 ${formatPrice(c.priceUsd)} · FDV ${formatUsd(c.fdvUsd)}${holders}\n\n`;
 
   text += `🛡️ *Safety*\n`;
   for (const chk of safety.checks) {

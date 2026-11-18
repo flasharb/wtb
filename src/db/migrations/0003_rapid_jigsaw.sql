@@ -1,0 +1,1 @@
+ALTER TABLE "launch_candidates" ADD COLUMN "reported_fade" boolean DEFAULT false NOT NULL;
