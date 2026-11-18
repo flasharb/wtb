@@ -169,7 +169,15 @@ export class LaunchScanner {
           reply_markup: replyMarkup,
         });
       } catch (e: any) {
-        console.error(`[scan] send to ${chat.telegramChatId} failed:`, e?.message ?? e);
+        // A token name with Markdown-breaking chars can make parsing fail — never drop the
+        // alert: retry as plain text (strip Markdown markers) so it always gets through.
+        try {
+          await this.bot.api.sendMessage(chat.telegramChatId, text.replace(/[*_`]/g, ''), {
+            reply_markup: replyMarkup,
+          });
+        } catch (e2: any) {
+          console.error(`[scan] send to ${chat.telegramChatId} failed:`, e2?.message ?? e2);
+        }
       }
     }
     console.log(`[scan] 🚀 alerted ${cand.symbol || cand.tokenAddress} to ${activeChats.length} chat(s)`);
