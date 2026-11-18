@@ -4,104 +4,125 @@ import { SafetyCheckResult } from '../providers/security/types.js';
 import { InlineKeyboard } from 'grammy';
 
 export function formatShortAddress(address: string): string {
+  if (!address) return '';
   if (address.length <= 10) return address;
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  return `${address.slice(0, 4)}…${address.slice(-4)}`;
 }
 
 export function formatUsd(val: number): string {
-  if (val >= 1000000) {
-    return `$${(val / 1000000).toFixed(2)}M`;
-  }
-  if (val >= 1000) {
-    return `$${(val / 1000).toFixed(1)}k`;
-  }
+  if (!val || val < 0) val = 0;
+  if (val >= 1_000_000) return `$${(val / 1_000_000).toFixed(2)}M`;
+  if (val >= 1_000) return `$${(val / 1_000).toFixed(1)}k`;
   return `$${Math.round(val).toLocaleString()}`;
 }
 
+export function formatPrice(p: number): string {
+  if (!p || p <= 0) return '—';
+  if (p >= 1) return `$${p.toFixed(2)}`;
+  if (p >= 0.01) return `$${p.toFixed(4)}`;
+  return `$${p.toExponential(2)}`;
+}
+
+/** "$WIF" when we know the ticker, otherwise a short mint — never a confusing "TOKEN". */
+export function tokenTicker(symbol?: string | null, address?: string): string {
+  const s = (symbol || '').trim();
+  if (s && s.toUpperCase() !== 'UNKNOWN' && s.toUpperCase() !== 'TOKEN') return `$${s}`;
+  return address ? formatShortAddress(address) : 'Unknown token';
+}
+
+export function formatTimeAgo(d: Date | string | number): string {
+  const t = typeof d === 'object' ? d.getTime() : new Date(d).getTime();
+  const s = Math.max(0, Math.floor((Date.now() - t) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+export function formatAge(createdAt?: Date): string {
+  if (!createdAt) return '—';
+  const h = Math.max(0, (Date.now() - createdAt.getTime()) / 3600000);
+  if (h < 24) return `${Math.round(h)}h`;
+  const days = h / 24;
+  if (days < 30) return `${Math.round(days)}d`;
+  const months = days / 30;
+  if (months < 12) return `${Math.round(months)}mo`;
+  return `${(months / 12).toFixed(1)}y`;
+}
+
+/**
+ * The alert message: a one-glance verdict line, the essentials, then detail.
+ * Solana-focused, mobile-friendly, Markdown.
+ */
 export function formatAlertMessage(
   signal: EvaluatedSignal,
   marketData: TokenMarketData | null,
   safety: SafetyCheckResult | null
 ): { text: string; replyMarkup: InlineKeyboard } {
-  const chainName = signal.chain === 'solana' ? 'Solana' : 'Ethereum';
-  const chainEmoji = signal.chain === 'solana' ? '🟣' : '🔷';
-  const signalEmoji = signal.isUpdate ? '🔄' : '🚨';
+  const name = marketData?.name || signal.tokenName;
+  const ticker = tokenTicker(marketData?.symbol || signal.tokenSymbol, signal.tokenAddress);
 
-  // 1. Header & Reason
-  let text = `${signalEmoji} *WHALE BUY ALERT (${chainName.toUpperCase()})* ${chainEmoji}\n\n`;
-  text = text + `*${signal.tokenName}* (\`${signal.tokenSymbol}\`)\n`;
-  text = text + `Contract: \`${signal.tokenAddress}\`\n\n`;
+  const verdict =
+    signal.signalType === 'high_conviction'
+      ? '🟡 *HIGH-CONVICTION BUY*'
+      : '🟢 *CONSENSUS BUY*';
+  const head = signal.isUpdate ? `🔄 *UPDATE* · ${verdict.replace('*', '').replace('*', '')}` : verdict;
 
-  text = text + `🎯 *Signal Reason:* ${signal.signalReason}\n`;
-  text = text + `💰 *Total Inflow:* ${formatUsd(signal.totalUsd)} across ${signal.whaleCount} whale(s)\n\n`;
+  // Safety one-liner
+  const warns = safety?.items.filter((i) => i.status === 'warn').length ?? 0;
+  const fails = safety?.items.filter((i) => i.status === 'fail').length ?? 0;
+  const safetyLine = !safety
+    ? ''
+    : fails > 0
+      ? `❌ ${fails} safety issue(s)`
+      : warns > 0
+        ? `⚠️ Passed with ${warns} warning(s)`
+        : '✅ All safety checks passed';
 
-  // 2. Buyers Breakdown
-  text = text + `👥 *Whale Buyers:*\n`;
-  signal.buyers.slice(0, 5).forEach((b, idx) => {
-    const name = b.label || formatShortAddress(b.walletAddress);
-    text = text + `   ${idx + 1}. *${name}* (${formatShortAddress(b.walletAddress)}) | ${formatUsd(
-      b.usdValue
-    )} | Score: ${Math.round(b.qualityScore)}/100\n`;
-  });
-  if (signal.buyers.length > 5) {
-    text = text + `   _...and ${signal.buyers.length - 5} more whale(s)_\n`;
-  }
-  text = text + '\n';
+  let text = `${head}\n`;
+  text += `*${name}* · ${ticker}\n\n`;
+  text += `${signal.signalReason} · *${formatUsd(signal.totalUsd)}* total\n`;
+  if (safetyLine) text += `${safetyLine}\n`;
+  text += `\n\`${signal.tokenAddress}\`\n`;
 
-  // 3. Token Market Facts
   if (marketData) {
-    text = text + `📊 *Token Facts:*\n`;
-    text = text + `   • Price: $${marketData.priceUsd > 0.01 ? marketData.priceUsd.toFixed(4) : marketData.priceUsd.toExponential(2)}\n`;
-    text = text + `   • Liquidity: ${formatUsd(marketData.liquidityUsd)}\n`;
-    text = text + `   • FDV: ${formatUsd(marketData.fdvUsd)}\n`;
-    text = text + `   • 24h Volume: ${formatUsd(marketData.volume24hUsd)}\n`;
-    if (marketData.pairCreatedAt) {
-      const ageHours = Math.round((Date.now() - marketData.pairCreatedAt.getTime()) / 3600000);
-      const ageDisplay = ageHours > 24 ? `${(ageHours / 24).toFixed(1)} days` : `${ageHours} hours`;
-      text = text + `   • Pool Age: ${ageDisplay}\n`;
-    }
-    text = text + '\n';
+    const bits = [
+      `💲 ${formatPrice(marketData.priceUsd)}`,
+      `💧 ${formatUsd(marketData.liquidityUsd)} liq`,
+      `📊 ${formatUsd(marketData.volume24hUsd)} 24h`,
+      `⏳ ${formatAge(marketData.pairCreatedAt)}`,
+    ];
+    text += `${bits.join(' · ')}\n`;
   }
 
-  // 4. Safety Checks
-  if (safety) {
-    text = text + `🛡️ *Safety Checks:*\n`;
-    for (const item of safety.items) {
-      const icon = item.status === 'pass' ? '✅' : item.status === 'warn' ? '⚠️' : '❌';
-      text = text + `   ${icon} ${item.name}: ${item.detail}\n`;
+  // Buyers
+  text += `\n*Buyers:*\n`;
+  signal.buyers.slice(0, 5).forEach((b) => {
+    const who = b.label || formatShortAddress(b.walletAddress);
+    text += `• ${who} — ${formatUsd(b.usdValue)} _(score ${Math.round(b.qualityScore)})_\n`;
+  });
+  if (signal.buyers.length > 5) text += `• +${signal.buyers.length - 5} more\n`;
+
+  // Only show individual checks that matter (warn/fail); passing ones are summarized above.
+  const notable = safety?.items.filter((i) => i.status !== 'pass') ?? [];
+  if (notable.length > 0) {
+    text += `\n*Flags:*\n`;
+    for (const item of notable) {
+      text += `${item.status === 'fail' ? '❌' : '⚠️'} ${item.name}: ${item.detail}\n`;
     }
-    text = text + '\n';
   }
 
-  // 5. Mandatory Disclaimer
-  text = text + `_Not financial advice. Whale buys can be bait. Verify before acting._`;
+  text += `\n_Not financial advice. Whale buys can be bait. Verify before acting._`;
 
-  // 6. Inline Action Buttons
-  const keyboard = new InlineKeyboard();
-
-  // DexScreener URL
-  const dexUrl =
-    marketData?.url ||
-    (signal.chain === 'solana'
-      ? `https://dexscreener.com/solana/${signal.tokenAddress}`
-      : `https://dexscreener.com/ethereum/${signal.tokenAddress}`);
-  keyboard.url('📈 DexScreener', dexUrl);
-
-  // Explorer URL
-  const explorerUrl =
-    signal.chain === 'solana'
-      ? `https://solscan.io/token/${signal.tokenAddress}`
-      : `https://etherscan.io/token/${signal.tokenAddress}`;
-  keyboard.url('🔍 Explorer', explorerUrl);
-
-  // Biggest Buyer's Wallet URL
-  const biggestBuyer = signal.buyers[0];
-  if (biggestBuyer) {
-    const walletUrl =
-      signal.chain === 'solana'
-        ? `https://solscan.io/account/${biggestBuyer.walletAddress}`
-        : `https://etherscan.io/address/${biggestBuyer.walletAddress}`;
-    keyboard.row().url(`🐋 Top Buyer (${formatShortAddress(biggestBuyer.walletAddress)})`, walletUrl);
+  // Buttons
+  const dexUrl = marketData?.url || `https://dexscreener.com/solana/${signal.tokenAddress}`;
+  const explorerUrl = `https://solscan.io/token/${signal.tokenAddress}`;
+  const keyboard = new InlineKeyboard().url('📈 Chart', dexUrl).url('🔍 Solscan', explorerUrl);
+  const top = signal.buyers[0];
+  if (top) {
+    keyboard.row().url(`🐋 Top buyer`, `https://solscan.io/account/${top.walletAddress}`);
   }
 
   return { text, replyMarkup: keyboard };

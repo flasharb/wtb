@@ -10,15 +10,13 @@ export function buildSettingsMenu(chatSettings: {
   chains: string;
 }): { text: string; replyMarkup: InlineKeyboard } {
   const text =
-    `⚙️ *Alert Settings & Preferences*\n\n` +
-    `• *Chains:* ${chatSettings.chains.toUpperCase()}\n` +
-    `• *Min Buy Size:* $${Number(chatSettings.minBuyUsd).toLocaleString()}\n` +
-    `• *Consensus Whales:* ${chatSettings.minWhales} distinct buyers\n` +
-    `• *Time Window:* ${chatSettings.windowHours} hours\n` +
-    `• *Min Liquidity:* $${Number(chatSettings.minLiquidityUsd).toLocaleString()}\n` +
-    `• *First-Time Only:* ${chatSettings.showOnlyFirstTime ? 'Enabled ✅' : 'Disabled ❌'}\n` +
-    `• *Notifications:* ${chatSettings.muted ? 'Muted 🔕' : 'Active 🔔'}\n\n` +
-    `_Select an option below to adjust:_`;
+    `⚙️ *Alert settings*\n\n` +
+    `Alert me when at least *${chatSettings.minWhales} whales* buy the same token within *${chatSettings.windowHours}h*, each buying *$${Number(
+      chatSettings.minBuyUsd
+    ).toLocaleString()}+*, with at least *$${Number(chatSettings.minLiquidityUsd).toLocaleString()}* liquidity.\n\n` +
+    `🆕 First-time buys only: *${chatSettings.showOnlyFirstTime ? 'on' : 'off'}*\n` +
+    `🔔 Notifications: *${chatSettings.muted ? 'muted' : 'on'}*\n\n` +
+    `_Tap below to adjust._`;
 
   const keyboard = new InlineKeyboard()
     .text(`💰 Min Buy ($${Number(chatSettings.minBuyUsd) / 1000}k)`, 'set_min_buy')

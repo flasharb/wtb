@@ -4,7 +4,7 @@ import { db } from '../db/index.js';
 import { chats, wallets, walletLabels, buys, tokens, signals, signalOutcomes, usageDaily, webhookEvents } from '../db/schema.js';
 import { eq, desc, and, sql, gte } from 'drizzle-orm';
 import { buildSettingsMenu } from './menus.js';
-import { formatShortAddress, formatUsd } from './formatters.js';
+import { formatShortAddress, formatUsd, formatTimeAgo, tokenTicker } from './formatters.js';
 
 export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   const bot = new Bot(token || 'dummy_token_for_init');
@@ -21,7 +21,7 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
       .insert(chats)
       .values({
         telegramChatId: chatId,
-        chains: 'solana,ethereum',
+        chains: 'solana',
         minBuyUsd: config.MIN_BUY_USD.toString(),
         minWhales: config.MIN_WHALES,
         windowHours: config.WINDOW_HOURS,
@@ -38,17 +38,15 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   bot.command('start', async (ctx) => {
     await getOrCreateChat(ctx);
     const welcome =
-      `🐋 *Welcome to Telegram Whale Buy Tracker!* 🚀\n\n` +
-      `I watch curated high-net-worth whale wallets across *Solana* and *Ethereum* and alert you when consensus or high-conviction buys happen in real-time.\n\n` +
-      `📌 *Available Commands:*\n` +
-      `• /chains \`sol\` \`eth\` - Select which chains to track\n` +
-      `• /settings - Customize minimum buy size, consensus thresholds, and filters\n` +
-      `• /recent \`[n]\` - View the last N whale buys (default 10)\n` +
-      `• /top - Top tokens with most whale buyers in last 24h\n` +
-      `• /wallet \`<address>\` - Inspect a whale wallet's score and past buys\n` +
-      `• /performance - View historical signal returns (+1h, +24h, +7d)\n` +
-      `• /status - Health status, credit usage, and watched counts\n` +
-      `• /mute & /unmute - Toggle alert notifications\n\n` +
+      `🐋 *Whale Buy Tracker*\n\n` +
+      `I watch active Solana whale wallets and ping you the moment several of them buy the same token — so you can take a look early.\n\n` +
+      `*Popular commands*\n` +
+      `• /top — hottest tokens whales are buying now\n` +
+      `• /recent — latest whale buys\n` +
+      `• /settings — tune alert sensitivity\n` +
+      `• /performance — how past alerts did\n` +
+      `• /mute · /unmute — pause or resume alerts\n\n` +
+      `You're all set — I'll message you when whales move. 🔔\n\n` +
       `_Not financial advice. Whale buys can be bait. Verify before acting._`;
 
     await ctx.reply(welcome, { parse_mode: 'Markdown' });
@@ -56,28 +54,11 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
 
   // 2. /chains
   bot.command('chains', async (ctx) => {
-    const text = ctx.match?.trim().toLowerCase();
-    const chat = await getOrCreateChat(ctx);
-
-    if (!text) {
-      await ctx.reply(
-        `Current tracked chains: *${chat.chains.toUpperCase()}*\n\nUsage: \`/chains sol\`, \`/chains eth\`, or \`/chains sol eth\``,
-        { parse_mode: 'Markdown' }
-      );
-      return;
-    }
-
-    const sol = text.includes('sol');
-    const eth = text.includes('eth');
-
-    let updatedChains = 'solana,ethereum';
-    if (sol && !eth) updatedChains = 'solana';
-    if (!sol && eth) updatedChains = 'ethereum';
-
-    await db.update(chats).set({ chains: updatedChains }).where(eq(chats.id, chat.id));
-    await ctx.reply(`✅ Updated tracked chains to: *${updatedChains.toUpperCase()}*`, {
-      parse_mode: 'Markdown',
-    });
+    await getOrCreateChat(ctx);
+    await ctx.reply(
+      `🟣 *Tracking: Solana*\n\nEthereum support is coming soon — for now all alerts are Solana whale buys.`,
+      { parse_mode: 'Markdown' }
+    );
   });
 
   // 3. /settings
@@ -114,17 +95,16 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
       .limit(limit);
 
     if (rows.length === 0) {
-      await ctx.reply('No whale buys recorded yet.');
+      await ctx.reply('No whale buys recorded yet — I’ll notify you as soon as one lands. 🔔');
       return;
     }
 
-    let msg = `🕒 *Last ${rows.length} Whale Buys:*\n\n`;
-    rows.forEach((r, idx) => {
-      const chainEmoji = r.chain === 'solana' ? '🟣' : '🔷';
-      const buyerName = r.walletLabel || formatShortAddress(r.walletAddress);
-      msg += `${idx + 1}. ${chainEmoji} *${r.tokenSymbol || 'TOKEN'}* | ${formatUsd(
-        parseFloat(r.usdValue)
-      )}\n   Buyer: ${buyerName} | \`${formatShortAddress(r.tokenAddress)}\`\n`;
+    let msg = `🕒 *Recent whale buys*\n`;
+    rows.forEach((r) => {
+      const buyer = r.walletLabel || formatShortAddress(r.walletAddress);
+      const ticker = tokenTicker(r.tokenSymbol, r.tokenAddress);
+      msg += `\n*${ticker}* · ${formatUsd(parseFloat(r.usdValue))}\n`;
+      msg += `   ${buyer} · ${formatTimeAgo(r.blockTime)}\n`;
     });
 
     await ctx.reply(msg, { parse_mode: 'Markdown' });
@@ -151,16 +131,16 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
       .limit(5);
 
     if (topTokens.length === 0) {
-      await ctx.reply('No tokens with whale activity in the last 24h.');
+      await ctx.reply('No whale activity in the last 24h yet. 🔕');
       return;
     }
 
-    let msg = `🏆 *Top Tokens by Whale Buyers (Last 24h):*\n\n`;
+    const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
+    let msg = `🏆 *Top tokens — last 24h*\n_(by number of distinct whale buyers)_\n`;
     topTokens.forEach((t, idx) => {
-      const chainEmoji = t.chain === 'solana' ? '🟣' : '🔷';
-      msg += `${idx + 1}. ${chainEmoji} *${t.tokenName || t.tokenSymbol}* (\`${t.tokenSymbol}\`)\n   Whale Buyers: *${t.whaleCount}* | Inflow: *${formatUsd(
-        t.totalVolume
-      )}*\n   Mint/Contract: \`${t.tokenAddress}\`\n\n`;
+      const ticker = tokenTicker(t.tokenSymbol, t.tokenAddress);
+      msg += `\n${medals[idx] || `${idx + 1}.`} *${ticker}* — ${t.whaleCount} whales · ${formatUsd(t.totalVolume)}\n`;
+      msg += `   \`${t.tokenAddress}\`\n`;
     });
 
     await ctx.reply(msg, { parse_mode: 'Markdown' });
@@ -299,10 +279,6 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
       .select({ count: sql`count(*)` })
       .from(wallets)
       .where(and(eq(wallets.chain, 'solana'), eq(wallets.isExcluded, false)));
-    const [ethWallets] = await db
-      .select({ count: sql`count(*)` })
-      .from(wallets)
-      .where(and(eq(wallets.chain, 'ethereum'), eq(wallets.isExcluded, false)));
 
     const oneHourAgo = new Date(Date.now() - 3600 * 1000);
     const [eventsLastHour] = await db
@@ -310,25 +286,26 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
       .from(webhookEvents)
       .where(gte(webhookEvents.receivedAt, oneHourAgo));
 
+    const [lastEvent] = await db
+      .select({ at: webhookEvents.receivedAt })
+      .from(webhookEvents)
+      .orderBy(desc(webhookEvents.receivedAt))
+      .limit(1);
+
     const today = new Date().toISOString().split('T')[0];
     const usageRows = await db.select().from(usageDaily).where(eq(usageDaily.day, today));
     const heliusUsage = usageRows.find((u) => u.provider === 'helius')?.events || 0;
-    const alchemyUsage = usageRows.find((u) => u.provider === 'alchemy')?.events || 0;
-
     const projectedHelius = Math.round(heliusUsage * 30);
     const budgetPct = ((projectedHelius / config.HELIUS_MONTHLY_CREDIT_BUDGET) * 100).toFixed(1);
 
+    const lastSeen = lastEvent?.at ? formatTimeAgo(lastEvent.at) : 'none yet';
+
     const msg =
-      `📊 *Whale Buy Tracker System Status*\n\n` +
-      `• *Watched Wallets:*\n` +
-      `   - Solana: *${solWallets.count}* active\n` +
-      `   - Ethereum: *${ethWallets.count}* active\n` +
-      `• *Webhook Events (Last Hour):* ${eventsLastHour.count}\n\n` +
-      `🛡️ *Helius Free Plan Credit Guard:*\n` +
-      `   - Events Today: *${heliusUsage.toLocaleString()}*\n` +
-      `   - Projected Month-End: *${projectedHelius.toLocaleString()}* (${budgetPct}% of 1M budget)\n\n` +
-      `🛡️ *Alchemy Events Today:* ${alchemyUsage.toLocaleString()}\n` +
-      `• *Server Uptime:* ${(process.uptime() / 3600).toFixed(1)} hours`;
+      `📊 *Status — all systems live* 🟢\n\n` +
+      `🐋 Watching *${solWallets.count}* Solana whales\n` +
+      `📡 Whale buys seen (last hour): *${eventsLastHour.count}*\n` +
+      `🕒 Last activity: *${lastSeen}*\n\n` +
+      `_Usage: ${heliusUsage.toLocaleString()} events today · on track for ${budgetPct}% of the monthly budget._`;
 
     await ctx.reply(msg, { parse_mode: 'Markdown' });
   });
