@@ -1,4 +1,4 @@
-import { Bot, Context } from 'grammy';
+import { Bot, Context, InlineKeyboard } from 'grammy';
 import { config } from '../config/index.js';
 import { db } from '../db/index.js';
 import { chats, wallets, walletLabels, buys, tokens, signals, signalOutcomes, usageDaily, webhookEvents, launchCandidates } from '../db/schema.js';
@@ -34,6 +34,109 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     return inserted[0];
   }
 
+  // Quick-nav buttons shown under replies so users tap instead of typing commands.
+  function navKeyboard() {
+    return new InlineKeyboard()
+      .text('🚀 Recent', 'cmd_recent')
+      .text('🔭 Radar', 'cmd_top')
+      .text('📊 Status', 'cmd_status');
+  }
+
+  async function replyRecent(ctx: Context, limit = 10) {
+    const rows = await db
+      .select()
+      .from(launchCandidates)
+      .where(eq(launchCandidates.status, 'alerted'))
+      .orderBy(desc(launchCandidates.alertedAt))
+      .limit(limit);
+
+    if (rows.length === 0) {
+      await ctx.reply('No launches have passed the checks yet — I’ll ping you the moment one does. 🔔', {
+        reply_markup: navKeyboard(),
+      });
+      return;
+    }
+
+    let msg = `🚀 *Recent launches that passed*\n`;
+    rows.forEach((r) => {
+      const ticker = tokenTicker(r.symbol, r.tokenAddress);
+      const nm = r.name && r.name !== r.symbol ? ` · ${r.name}` : '';
+      msg += `\n*${ticker}*${nm}\n`;
+      msg += `   💧 ${formatUsd(Number(r.liquidityUsd))} liq · ${formatAge(r.poolCreatedAt ?? undefined)} old · alerted ${formatTimeAgo(r.alertedAt ?? new Date())}\n`;
+    });
+    await ctx.reply(msg, { parse_mode: 'Markdown', reply_markup: navKeyboard() });
+  }
+
+  async function replyTop(ctx: Context) {
+    const windowOldest = new Date(Date.now() - config.SCAN_MAX_AGE_DAYS * 86400000);
+    const rows = await db
+      .select()
+      .from(launchCandidates)
+      .where(
+        and(
+          gte(launchCandidates.poolCreatedAt, windowOldest),
+          gte(launchCandidates.liquidityUsd, config.SCAN_MIN_LIQUIDITY_USD.toString())
+        )
+      )
+      .orderBy(desc(launchCandidates.liquidityUsd))
+      .limit(6);
+
+    if (rows.length === 0) {
+      await ctx.reply('Nothing on the radar in the launch window yet. 🔭', { reply_markup: navKeyboard() });
+      return;
+    }
+
+    const medals = ['🥇', '🥈', '🥉', '4.', '5.', '6.'];
+    let msg = `🔭 *On the radar*\n_(biggest launches in the ${config.SCAN_MIN_AGE_DAYS}–${config.SCAN_MAX_AGE_DAYS}d window)_\n`;
+    rows.forEach((t, idx) => {
+      const ticker = tokenTicker(t.symbol, t.tokenAddress);
+      const flag = t.status === 'alerted' ? ' ✅' : '';
+      msg += `\n${medals[idx] || `${idx + 1}.`} *${ticker}*${flag} — 💧 ${formatUsd(Number(t.liquidityUsd))} · ${formatAge(t.poolCreatedAt ?? undefined)}\n`;
+    });
+    msg += `\n_✅ = already passed all safety checks_`;
+    await ctx.reply(msg, { parse_mode: 'Markdown', reply_markup: navKeyboard() });
+  }
+
+  async function replyStatus(ctx: Context) {
+    const windowOldest = new Date(Date.now() - config.SCAN_MAX_AGE_DAYS * 86400000);
+    const windowNewest = new Date(Date.now() - config.SCAN_MIN_AGE_DAYS * 86400000);
+
+    const [tracked] = await db
+      .select({ n: sql<number>`count(*)`.mapWith(Number) })
+      .from(launchCandidates)
+      .where(sql`${launchCandidates.status} <> 'rejected'`);
+    const [inWindow] = await db
+      .select({ n: sql<number>`count(*)`.mapWith(Number) })
+      .from(launchCandidates)
+      .where(
+        and(
+          eq(launchCandidates.status, 'watching'),
+          lte(launchCandidates.poolCreatedAt, windowNewest),
+          gte(launchCandidates.poolCreatedAt, windowOldest),
+          gte(launchCandidates.liquidityUsd, config.SCAN_MIN_LIQUIDITY_USD.toString())
+        )
+      );
+    const [alertsSentCount] = await db
+      .select({ n: sql<number>`count(*)`.mapWith(Number) })
+      .from(launchCandidates)
+      .where(eq(launchCandidates.status, 'alerted'));
+    const [lastScan] = await db
+      .select({ at: launchCandidates.lastCheckedAt })
+      .from(launchCandidates)
+      .orderBy(desc(launchCandidates.lastCheckedAt))
+      .limit(1);
+
+    const lastScanTxt = lastScan?.at ? formatTimeAgo(lastScan.at) : 'warming up…';
+    const msg =
+      `📊 *Scanner status* 🟢\n\n` +
+      `🔭 Tracking *${tracked.n.toLocaleString()}* launches\n` +
+      `🎯 In the ${config.SCAN_MIN_AGE_DAYS}–${config.SCAN_MAX_AGE_DAYS}d window: *${inWindow.n}*\n` +
+      `🚀 Alerts sent: *${alertsSentCount.n}*\n` +
+      `🕒 Last scan: *${lastScanTxt}*\n\n` +
+      `_Filters: ≥$${config.SCAN_MIN_LIQUIDITY_USD.toLocaleString()} liquidity · authorities revoked · no honeypot · healthy holders._`;
+    await ctx.reply(msg, { parse_mode: 'Markdown', reply_markup: navKeyboard() });
+  }
+
   // 1. /start
   bot.command('start', async (ctx) => {
     await getOrCreateChat(ctx);
@@ -52,7 +155,7 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
       `You're all set — I'll ping you when a clean launch shows up. 🔔\n\n` +
       `_Not financial advice. Whale buys can be bait. Verify before acting._`;
 
-    await ctx.reply(welcome, { parse_mode: 'Markdown' });
+    await ctx.reply(welcome, { parse_mode: 'Markdown', reply_markup: navKeyboard() });
   });
 
   // 2. /chains
@@ -77,60 +180,12 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   // 4. /recent
   bot.command('recent', async (ctx) => {
     const limit = Math.min(Math.max(parseInt(ctx.match || '10', 10) || 10, 1), 25);
-
-    const rows = await db
-      .select()
-      .from(launchCandidates)
-      .where(eq(launchCandidates.status, 'alerted'))
-      .orderBy(desc(launchCandidates.alertedAt))
-      .limit(limit);
-
-    if (rows.length === 0) {
-      await ctx.reply('No launches have passed the checks yet — I’ll ping you the moment one does. 🔔');
-      return;
-    }
-
-    let msg = `🚀 *Recent launches that passed*\n`;
-    rows.forEach((r) => {
-      const ticker = tokenTicker(r.symbol, r.tokenAddress);
-      const nm = r.name && r.name !== r.symbol ? ` · ${r.name}` : '';
-      msg += `\n*${ticker}*${nm}\n`;
-      msg += `   💧 ${formatUsd(Number(r.liquidityUsd))} liq · ${formatAge(r.poolCreatedAt ?? undefined)} old · alerted ${formatTimeAgo(r.alertedAt ?? new Date())}\n`;
-    });
-
-    await ctx.reply(msg, { parse_mode: 'Markdown' });
+    await replyRecent(ctx, limit);
   });
 
   // 5. /top
   bot.command('top', async (ctx) => {
-    const windowOldest = new Date(Date.now() - config.SCAN_MAX_AGE_DAYS * 86400000);
-    const rows = await db
-      .select()
-      .from(launchCandidates)
-      .where(
-        and(
-          gte(launchCandidates.poolCreatedAt, windowOldest),
-          gte(launchCandidates.liquidityUsd, config.SCAN_MIN_LIQUIDITY_USD.toString())
-        )
-      )
-      .orderBy(desc(launchCandidates.liquidityUsd))
-      .limit(6);
-
-    if (rows.length === 0) {
-      await ctx.reply('Nothing on the radar in the launch window yet. 🔭');
-      return;
-    }
-
-    const medals = ['🥇', '🥈', '🥉', '4.', '5.', '6.'];
-    let msg = `🔭 *On the radar*\n_(biggest launches in the ${config.SCAN_MIN_AGE_DAYS}–${config.SCAN_MAX_AGE_DAYS}d window)_\n`;
-    rows.forEach((t, idx) => {
-      const ticker = tokenTicker(t.symbol, t.tokenAddress);
-      const flag = t.status === 'alerted' ? ' ✅' : '';
-      msg += `\n${medals[idx] || `${idx + 1}.`} *${ticker}*${flag} — 💧 ${formatUsd(Number(t.liquidityUsd))} · ${formatAge(t.poolCreatedAt ?? undefined)}\n`;
-    });
-    msg += `\n_✅ = already passed all safety checks_`;
-
-    await ctx.reply(msg, { parse_mode: 'Markdown' });
+    await replyTop(ctx);
   });
 
   // 6. /wallet <address>
@@ -260,52 +315,32 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     await ctx.reply('🔔 Alerts unmuted. You will receive real-time whale notifications.');
   });
 
-  // 8. /status (Admin status report)
+  // 8. /status
   bot.command('status', async (ctx) => {
-    const windowOldest = new Date(Date.now() - config.SCAN_MAX_AGE_DAYS * 86400000);
-    const windowNewest = new Date(Date.now() - config.SCAN_MIN_AGE_DAYS * 86400000);
-
-    const [tracked] = await db
-      .select({ n: sql<number>`count(*)`.mapWith(Number) })
-      .from(launchCandidates)
-      .where(sql`${launchCandidates.status} <> 'rejected'`);
-    const [inWindow] = await db
-      .select({ n: sql<number>`count(*)`.mapWith(Number) })
-      .from(launchCandidates)
-      .where(
-        and(
-          eq(launchCandidates.status, 'watching'),
-          lte(launchCandidates.poolCreatedAt, windowNewest),
-          gte(launchCandidates.poolCreatedAt, windowOldest),
-          gte(launchCandidates.liquidityUsd, config.SCAN_MIN_LIQUIDITY_USD.toString())
-        )
-      );
-    const [alertsSentCount] = await db
-      .select({ n: sql<number>`count(*)`.mapWith(Number) })
-      .from(launchCandidates)
-      .where(eq(launchCandidates.status, 'alerted'));
-    const [lastScan] = await db
-      .select({ at: launchCandidates.lastCheckedAt })
-      .from(launchCandidates)
-      .orderBy(desc(launchCandidates.lastCheckedAt))
-      .limit(1);
-
-    const lastScanTxt = lastScan?.at ? formatTimeAgo(lastScan.at) : 'warming up…';
-
-    const msg =
-      `📊 *Scanner status* 🟢\n\n` +
-      `🔭 Tracking *${tracked.n.toLocaleString()}* launches\n` +
-      `🎯 In the ${config.SCAN_MIN_AGE_DAYS}–${config.SCAN_MAX_AGE_DAYS}d window: *${inWindow.n}*\n` +
-      `🚀 Alerts sent: *${alertsSentCount.n}*\n` +
-      `🕒 Last scan: *${lastScanTxt}*\n\n` +
-      `_Filters: ≥$${config.SCAN_MIN_LIQUIDITY_USD.toLocaleString()} liquidity · authorities revoked · no honeypot · healthy holders._`;
-
-    await ctx.reply(msg, { parse_mode: 'Markdown' });
+    await replyStatus(ctx);
   });
 
-  // Callback Query Handlers for Settings Menus
+  // Callback Query Handlers
   bot.on('callback_query:data', async (ctx) => {
     const data = ctx.callbackQuery.data;
+
+    // Quick-nav buttons: send the requested view as a new message.
+    if (data === 'cmd_recent') {
+      await replyRecent(ctx);
+      await ctx.answerCallbackQuery();
+      return;
+    }
+    if (data === 'cmd_top') {
+      await replyTop(ctx);
+      await ctx.answerCallbackQuery();
+      return;
+    }
+    if (data === 'cmd_status') {
+      await replyStatus(ctx);
+      await ctx.answerCallbackQuery();
+      return;
+    }
+
     const chat = await getOrCreateChat(ctx);
 
     if (data === 'toggle_mute') {
