@@ -4,14 +4,14 @@
 FROM node:20-slim
 
 WORKDIR /app
-ENV NODE_ENV=production
 
 RUN corepack enable
 
-# Install dependencies first (better layer caching). Need dev deps too: tsx (runtime)
-# and drizzle-kit (migrations) live there.
+# Install dependencies first (better layer caching). We deliberately do NOT set
+# NODE_ENV=production here: tsx (runtime) and drizzle-kit (migrations) are devDependencies
+# and must be installed. NODE_ENV=production is set at runtime by docker-compose.prod.yml.
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod=false
 
 # App source
 COPY . .
