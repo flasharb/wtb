@@ -161,26 +161,30 @@ export class LaunchScanner {
       safety
     );
 
-    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
-    for (const chat of activeChats) {
+    const bot = this.bot;
+    const send = async (target: string | number) => {
       try {
-        await this.bot.api.sendMessage(chat.telegramChatId, text, {
-          parse_mode: 'Markdown',
-          reply_markup: replyMarkup,
-        });
-      } catch (e: any) {
+        await bot.api.sendMessage(target, text, { parse_mode: 'Markdown', reply_markup: replyMarkup });
+      } catch {
         // A token name with Markdown-breaking chars can make parsing fail — never drop the
         // alert: retry as plain text (strip Markdown markers) so it always gets through.
         try {
-          await this.bot.api.sendMessage(chat.telegramChatId, text.replace(/[*_`]/g, ''), {
-            reply_markup: replyMarkup,
-          });
+          await bot.api.sendMessage(target, text.replace(/[*_`]/g, ''), { reply_markup: replyMarkup });
         } catch (e2: any) {
-          console.error(`[scan] send to ${chat.telegramChatId} failed:`, e2?.message ?? e2);
+          console.error(`[scan] send to ${target} failed:`, e2?.message ?? e2);
         }
       }
-    }
-    console.log(`[scan] 🚀 alerted ${cand.symbol || cand.tokenAddress} to ${activeChats.length} chat(s)`);
+    };
+
+    // 1. Broadcast channel (if configured) — the bot must be an admin with post rights.
+    if (config.ALERT_CHANNEL_ID) await send(config.ALERT_CHANNEL_ID);
+
+    // 2. Individual subscribers (DMs that /started the bot and aren't muted).
+    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
+    for (const chat of activeChats) await send(chat.telegramChatId);
+
+    const to = `${config.ALERT_CHANNEL_ID ? 'channel + ' : ''}${activeChats.length} chat(s)`;
+    console.log(`[scan] 🚀 alerted ${cand.symbol || cand.tokenAddress} to ${to}`);
   }
 
   private sleep(ms: number) {

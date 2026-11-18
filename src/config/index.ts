@@ -50,6 +50,10 @@ const envSchema = z.object({
   // Birdeye (optional enrichment; free key lacks token_security)
   BIRD_EYE_KEY: z.string().default(''),
 
+  // Broadcast channel for alerts (e.g. "@stackalphacalls" or a "-100..." id).
+  // The bot must be an admin of the channel with permission to post.
+  ALERT_CHANNEL_ID: z.string().default(''),
+
   // ---- New-Launch Scanner ----
   SCAN_ENABLED: z
     .string()
