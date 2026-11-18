@@ -211,6 +211,39 @@ export const usageDaily = pgTable(
   ]
 );
 
+// 11. Launch Candidates (New-Launch Scanner)
+export const launchCandidates = pgTable(
+  'launch_candidates',
+  {
+    id: serial('id').primaryKey(),
+    chain: varchar('chain', { length: 16 }).default('solana').notNull(),
+    tokenAddress: varchar('token_address', { length: 128 }).notNull(), // mint
+    symbol: varchar('symbol', { length: 32 }),
+    name: varchar('name', { length: 128 }),
+    poolAddress: varchar('pool_address', { length: 128 }),
+    dex: varchar('dex', { length: 64 }),
+    poolCreatedAt: timestamp('pool_created_at', { withTimezone: true }),
+    firstSeenAt: timestamp('first_seen_at', { withTimezone: true }).defaultNow().notNull(),
+    lastCheckedAt: timestamp('last_checked_at', { withTimezone: true }),
+    liquidityUsd: numeric('liquidity_usd', { precision: 18, scale: 2 }).default('0').notNull(),
+    volume24hUsd: numeric('volume_24h_usd', { precision: 18, scale: 2 }).default('0').notNull(),
+    fdvUsd: numeric('fdv_usd', { precision: 24, scale: 2 }).default('0').notNull(),
+    priceUsd: numeric('price_usd', { precision: 24, scale: 12 }).default('0').notNull(),
+    holderCount: integer('holder_count').default(0).notNull(),
+    top10Pct: real('top10_pct').default(0).notNull(),
+    status: varchar('status', { length: 16 }).default('watching').notNull(), // watching | alerted | rejected
+    rejectReason: text('reject_reason'),
+    safetyJson: jsonb('safety_json'),
+    alertedAt: timestamp('alerted_at', { withTimezone: true }),
+    priceAtAlert: numeric('price_at_alert', { precision: 24, scale: 12 }),
+  },
+  (table) => [
+    uniqueIndex('launch_candidates_chain_token_idx').on(table.chain, table.tokenAddress),
+    index('launch_candidates_status_idx').on(table.status),
+    index('launch_candidates_created_idx').on(table.poolCreatedAt),
+  ]
+);
+
 // Relations
 export const walletsRelations = relations(wallets, ({ many }) => ({
   labels: many(walletLabels),

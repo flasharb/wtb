@@ -47,6 +47,23 @@ const envSchema = z.object({
   // Dune (Optional)
   DUNE_API_KEY: z.string().default(''),
 
+  // Birdeye (optional enrichment; free key lacks token_security)
+  BIRD_EYE_KEY: z.string().default(''),
+
+  // ---- New-Launch Scanner ----
+  SCAN_ENABLED: z
+    .string()
+    .default('true')
+    .transform((v) => v === 'true' || v === '1'),
+  SCAN_INTERVAL_MIN: z.coerce.number().default(10), // minutes between scans
+  SCAN_MIN_AGE_DAYS: z.coerce.number().default(7), // survived the rug window
+  SCAN_MAX_AGE_DAYS: z.coerce.number().default(30), // still a "new" launch
+  SCAN_MIN_LIQUIDITY_USD: z.coerce.number().default(30000),
+  SCAN_MIN_VOLUME_24H_USD: z.coerce.number().default(10000), // liveness
+  SCAN_MAX_TOP10_PCT: z.coerce.number().default(60), // holder concentration ceiling
+  SCAN_MIN_HOLDERS: z.coerce.number().default(100),
+  SCAN_MAX_ALERTS_PER_CYCLE: z.coerce.number().default(5),
+
   // Wallet selection & budget filters
   MVP_WALLET_CAP: z.coerce.number().default(1000),
   MIN_WALLET_USD: z.coerce.number().default(100000),

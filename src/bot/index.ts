@@ -1,10 +1,10 @@
 import { Bot, Context } from 'grammy';
 import { config } from '../config/index.js';
 import { db } from '../db/index.js';
-import { chats, wallets, walletLabels, buys, tokens, signals, signalOutcomes, usageDaily, webhookEvents } from '../db/schema.js';
-import { eq, desc, and, sql, gte } from 'drizzle-orm';
+import { chats, wallets, walletLabels, buys, tokens, signals, signalOutcomes, usageDaily, webhookEvents, launchCandidates } from '../db/schema.js';
+import { eq, desc, and, sql, gte, lte } from 'drizzle-orm';
 import { buildSettingsMenu } from './menus.js';
-import { formatShortAddress, formatUsd, formatTimeAgo, tokenTicker } from './formatters.js';
+import { formatShortAddress, formatUsd, formatTimeAgo, tokenTicker, formatAge } from './formatters.js';
 
 export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   const bot = new Bot(token || 'dummy_token_for_init');
@@ -38,15 +38,18 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   bot.command('start', async (ctx) => {
     await getOrCreateChat(ctx);
     const welcome =
-      `🐋 *Whale Buy Tracker*\n\n` +
-      `I watch active Solana whale wallets and ping you the moment several of them buy the same token — so you can take a look early.\n\n` +
-      `*Popular commands*\n` +
-      `• /top — hottest tokens whales are buying now\n` +
-      `• /recent — latest whale buys\n` +
-      `• /settings — tune alert sensitivity\n` +
-      `• /performance — how past alerts did\n` +
+      `🚀 *Solana Launch Scanner*\n\n` +
+      `I scan every new Solana token across Pump.fun, Raydium, Meteora & more — and only alert you on the rare ones that *survive the first week* and pass strict safety:\n\n` +
+      `✅ 7–30 days old (made it past the rug window)\n` +
+      `✅ ≥ $30k liquidity · real volume\n` +
+      `✅ Mint & freeze authority revoked\n` +
+      `✅ No honeypot traits · healthy holder spread\n\n` +
+      `*Commands*\n` +
+      `• /recent — latest launches that passed\n` +
+      `• /top — biggest launches on the radar\n` +
+      `• /status — scanner health\n` +
       `• /mute · /unmute — pause or resume alerts\n\n` +
-      `You're all set — I'll message you when whales move. 🔔\n\n` +
+      `You're all set — I'll ping you when a clean launch shows up. 🔔\n\n` +
       `_Not financial advice. Whale buys can be bait. Verify before acting._`;
 
     await ctx.reply(welcome, { parse_mode: 'Markdown' });
@@ -76,35 +79,23 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     const limit = Math.min(Math.max(parseInt(ctx.match || '10', 10) || 10, 1), 25);
 
     const rows = await db
-      .select({
-        txId: buys.txId,
-        chain: buys.chain,
-        usdValue: buys.usdValue,
-        quoteAsset: buys.quoteAsset,
-        blockTime: buys.blockTime,
-        walletAddress: wallets.address,
-        walletLabel: walletLabels.label,
-        tokenAddress: tokens.address,
-        tokenSymbol: tokens.symbol,
-      })
-      .from(buys)
-      .innerJoin(wallets, eq(buys.walletId, wallets.id))
-      .innerJoin(tokens, eq(buys.tokenId, tokens.id))
-      .leftJoin(walletLabels, eq(wallets.id, walletLabels.walletId))
-      .orderBy(desc(buys.blockTime))
+      .select()
+      .from(launchCandidates)
+      .where(eq(launchCandidates.status, 'alerted'))
+      .orderBy(desc(launchCandidates.alertedAt))
       .limit(limit);
 
     if (rows.length === 0) {
-      await ctx.reply('No whale buys recorded yet — I’ll notify you as soon as one lands. 🔔');
+      await ctx.reply('No launches have passed the checks yet — I’ll ping you the moment one does. 🔔');
       return;
     }
 
-    let msg = `🕒 *Recent whale buys*\n`;
+    let msg = `🚀 *Recent launches that passed*\n`;
     rows.forEach((r) => {
-      const buyer = r.walletLabel || formatShortAddress(r.walletAddress);
-      const ticker = tokenTicker(r.tokenSymbol, r.tokenAddress);
-      msg += `\n*${ticker}* · ${formatUsd(parseFloat(r.usdValue))}\n`;
-      msg += `   ${buyer} · ${formatTimeAgo(r.blockTime)}\n`;
+      const ticker = tokenTicker(r.symbol, r.tokenAddress);
+      const nm = r.name && r.name !== r.symbol ? ` · ${r.name}` : '';
+      msg += `\n*${ticker}*${nm}\n`;
+      msg += `   💧 ${formatUsd(Number(r.liquidityUsd))} liq · ${formatAge(r.poolCreatedAt ?? undefined)} old · alerted ${formatTimeAgo(r.alertedAt ?? new Date())}\n`;
     });
 
     await ctx.reply(msg, { parse_mode: 'Markdown' });
@@ -112,36 +103,32 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
 
   // 5. /top
   bot.command('top', async (ctx) => {
-    const since = new Date(Date.now() - 24 * 3600 * 1000);
+    const windowOldest = new Date(Date.now() - config.SCAN_MAX_AGE_DAYS * 86400000);
+    const rows = await db
+      .select()
+      .from(launchCandidates)
+      .where(
+        and(
+          gte(launchCandidates.poolCreatedAt, windowOldest),
+          gte(launchCandidates.liquidityUsd, config.SCAN_MIN_LIQUIDITY_USD.toString())
+        )
+      )
+      .orderBy(desc(launchCandidates.liquidityUsd))
+      .limit(6);
 
-    const topTokens = await db
-      .select({
-        tokenAddress: tokens.address,
-        tokenSymbol: tokens.symbol,
-        tokenName: tokens.name,
-        chain: tokens.chain,
-        whaleCount: sql<number>`count(distinct ${buys.walletId})`.mapWith(Number),
-        totalVolume: sql<number>`sum(${buys.usdValue}::numeric)`.mapWith(Number),
-      })
-      .from(buys)
-      .innerJoin(tokens, eq(buys.tokenId, tokens.id))
-      .where(gte(buys.blockTime, since))
-      .groupBy(tokens.id, tokens.address, tokens.symbol, tokens.name, tokens.chain)
-      .orderBy(desc(sql`count(distinct ${buys.walletId})`))
-      .limit(5);
-
-    if (topTokens.length === 0) {
-      await ctx.reply('No whale activity in the last 24h yet. 🔕');
+    if (rows.length === 0) {
+      await ctx.reply('Nothing on the radar in the launch window yet. 🔭');
       return;
     }
 
-    const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
-    let msg = `🏆 *Top tokens — last 24h*\n_(by number of distinct whale buyers)_\n`;
-    topTokens.forEach((t, idx) => {
-      const ticker = tokenTicker(t.tokenSymbol, t.tokenAddress);
-      msg += `\n${medals[idx] || `${idx + 1}.`} *${ticker}* — ${t.whaleCount} whales · ${formatUsd(t.totalVolume)}\n`;
-      msg += `   \`${t.tokenAddress}\`\n`;
+    const medals = ['🥇', '🥈', '🥉', '4.', '5.', '6.'];
+    let msg = `🔭 *On the radar*\n_(biggest launches in the ${config.SCAN_MIN_AGE_DAYS}–${config.SCAN_MAX_AGE_DAYS}d window)_\n`;
+    rows.forEach((t, idx) => {
+      const ticker = tokenTicker(t.symbol, t.tokenAddress);
+      const flag = t.status === 'alerted' ? ' ✅' : '';
+      msg += `\n${medals[idx] || `${idx + 1}.`} *${ticker}*${flag} — 💧 ${formatUsd(Number(t.liquidityUsd))} · ${formatAge(t.poolCreatedAt ?? undefined)}\n`;
     });
+    msg += `\n_✅ = already passed all safety checks_`;
 
     await ctx.reply(msg, { parse_mode: 'Markdown' });
   });
@@ -275,37 +262,43 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
 
   // 8. /status (Admin status report)
   bot.command('status', async (ctx) => {
-    const [solWallets] = await db
-      .select({ count: sql`count(*)` })
-      .from(wallets)
-      .where(and(eq(wallets.chain, 'solana'), eq(wallets.isExcluded, false)));
+    const windowOldest = new Date(Date.now() - config.SCAN_MAX_AGE_DAYS * 86400000);
+    const windowNewest = new Date(Date.now() - config.SCAN_MIN_AGE_DAYS * 86400000);
 
-    const oneHourAgo = new Date(Date.now() - 3600 * 1000);
-    const [eventsLastHour] = await db
-      .select({ count: sql`count(*)` })
-      .from(webhookEvents)
-      .where(gte(webhookEvents.receivedAt, oneHourAgo));
-
-    const [lastEvent] = await db
-      .select({ at: webhookEvents.receivedAt })
-      .from(webhookEvents)
-      .orderBy(desc(webhookEvents.receivedAt))
+    const [tracked] = await db
+      .select({ n: sql<number>`count(*)`.mapWith(Number) })
+      .from(launchCandidates)
+      .where(sql`${launchCandidates.status} <> 'rejected'`);
+    const [inWindow] = await db
+      .select({ n: sql<number>`count(*)`.mapWith(Number) })
+      .from(launchCandidates)
+      .where(
+        and(
+          eq(launchCandidates.status, 'watching'),
+          lte(launchCandidates.poolCreatedAt, windowNewest),
+          gte(launchCandidates.poolCreatedAt, windowOldest),
+          gte(launchCandidates.liquidityUsd, config.SCAN_MIN_LIQUIDITY_USD.toString())
+        )
+      );
+    const [alertsSentCount] = await db
+      .select({ n: sql<number>`count(*)`.mapWith(Number) })
+      .from(launchCandidates)
+      .where(eq(launchCandidates.status, 'alerted'));
+    const [lastScan] = await db
+      .select({ at: launchCandidates.lastCheckedAt })
+      .from(launchCandidates)
+      .orderBy(desc(launchCandidates.lastCheckedAt))
       .limit(1);
 
-    const today = new Date().toISOString().split('T')[0];
-    const usageRows = await db.select().from(usageDaily).where(eq(usageDaily.day, today));
-    const heliusUsage = usageRows.find((u) => u.provider === 'helius')?.events || 0;
-    const projectedHelius = Math.round(heliusUsage * 30);
-    const budgetPct = ((projectedHelius / config.HELIUS_MONTHLY_CREDIT_BUDGET) * 100).toFixed(1);
-
-    const lastSeen = lastEvent?.at ? formatTimeAgo(lastEvent.at) : 'none yet';
+    const lastScanTxt = lastScan?.at ? formatTimeAgo(lastScan.at) : 'warming up…';
 
     const msg =
-      `📊 *Status — all systems live* 🟢\n\n` +
-      `🐋 Watching *${solWallets.count}* Solana whales\n` +
-      `📡 Whale buys seen (last hour): *${eventsLastHour.count}*\n` +
-      `🕒 Last activity: *${lastSeen}*\n\n` +
-      `_Usage: ${heliusUsage.toLocaleString()} events today · on track for ${budgetPct}% of the monthly budget._`;
+      `📊 *Scanner status* 🟢\n\n` +
+      `🔭 Tracking *${tracked.n.toLocaleString()}* launches\n` +
+      `🎯 In the ${config.SCAN_MIN_AGE_DAYS}–${config.SCAN_MAX_AGE_DAYS}d window: *${inWindow.n}*\n` +
+      `🚀 Alerts sent: *${alertsSentCount.n}*\n` +
+      `🕒 Last scan: *${lastScanTxt}*\n\n` +
+      `_Filters: ≥$${config.SCAN_MIN_LIQUIDITY_USD.toLocaleString()} liquidity · authorities revoked · no honeypot · healthy holders._`;
 
     await ctx.reply(msg, { parse_mode: 'Markdown' });
   });

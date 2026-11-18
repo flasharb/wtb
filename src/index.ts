@@ -4,6 +4,7 @@ import { IngestionProcessor } from './ingest/processor.js';
 import { AlertPipeline } from './signals/pipeline.js';
 import { createBot } from './bot/index.js';
 import { measureSignalOutcomes } from './jobs/measure-outcomes.js';
+import { runLaunchScan } from './jobs/scan-launches.js';
 import { pool } from './db/index.js';
 
 const OUTCOME_INTERVAL_MS = 15 * 60 * 1000; // re-check signal outcomes every 15 min
@@ -67,6 +68,17 @@ async function start() {
   }, OUTCOME_INTERVAL_MS);
   outcomeTimer.unref?.();
 
+  // --- New-launch scanner (primary product) ---
+  let scanTimer: NodeJS.Timeout | undefined;
+  if (config.SCAN_ENABLED) {
+    const scanMs = config.SCAN_INTERVAL_MIN * 60 * 1000;
+    const scan = () => runLaunchScan(bot).catch((e) => console.error('[scan] error:', e?.message ?? e));
+    scanTimer = setInterval(scan, scanMs);
+    scanTimer.unref?.();
+    scan(); // run one immediately on startup
+    console.log(`🔭 Launch scanner enabled — every ${config.SCAN_INTERVAL_MIN} min (age ${config.SCAN_MIN_AGE_DAYS}-${config.SCAN_MAX_AGE_DAYS}d, ≥$${config.SCAN_MIN_LIQUIDITY_USD} liq)`);
+  }
+
   console.log(`\n======================================================`);
   console.log(`🐋 Telegram Whale Buy Tracker — ACTIVE`);
   console.log(`🚀 Ingest server: http://${config.HOST}:${config.PORT}`);
@@ -78,6 +90,7 @@ async function start() {
   const shutdown = async () => {
     console.log('\nShutting down gracefully...');
     clearInterval(outcomeTimer);
+    if (scanTimer) clearInterval(scanTimer);
     try {
       await bot?.stop();
     } catch {
