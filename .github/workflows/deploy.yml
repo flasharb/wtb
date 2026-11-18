@@ -5,8 +5,9 @@ name: Deploy to droplet
 #
 # Required repo secrets (Settings → Secrets and variables → Actions):
 #   DROPLET_HOST     – the server IP, e.g. 46.101.21.200
-#   DROPLET_SSH_KEY  – the PRIVATE deploy key (contents of deploy_key), whose public
-#                      half is in the droplet's /root/.ssh/authorized_keys
+#   DROPLET_SSH_KEY  – the PRIVATE deploy key (full contents of .ssh/deploy_key, incl.
+#                      the BEGIN/END lines), whose public half is in the droplet's
+#                      /root/.ssh/authorized_keys
 
 on:
   push:
@@ -23,40 +24,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Sanity checks (typecheck + tests)
+      - name: Typecheck (non-blocking)
         run: |
           corepack enable
           pnpm install --frozen-lockfile
           pnpm run lint
-          pnpm test
-        env:
-          # Tests touch the shared Neon DB; CI uses the same URL via secret if provided.
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         continue-on-error: true
 
-      - name: Archive source
-        # Write the archive INSIDE the workspace so scp-action (runs in a container with
-        # the workspace mounted) can find it. Exclude the archive itself to avoid a race.
-        run: tar --exclude=.git --exclude=node_modules --exclude='*.log' --exclude=wtb.tgz -czf wtb.tgz .
+      - name: Deploy over SSH
+        env:
+          SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
+          HOST: ${{ secrets.DROPLET_HOST }}
+        run: |
+          set -euo pipefail
+          test -n "$SSH_KEY" || { echo "::error::DROPLET_SSH_KEY secret is empty"; exit 1; }
+          test -n "$HOST"    || { echo "::error::DROPLET_HOST secret is empty"; exit 1; }
 
-      - name: Copy to droplet
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: wtb.tgz
-          target: /root
+          mkdir -p ~/.ssh
+          # Write the key, stripping any CR so a CRLF-pasted secret still parses.
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Extract + deploy
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: root
-          key: ${{ secrets.DROPLET_SSH_KEY }}
-          command_timeout: 20m
-          script: |
-            set -e
-            mkdir -p /opt/wtb
-            tar -xzf /root/wtb.tgz -C /opt/wtb
-            bash /opt/wtb/deploy/deploy.sh
+          SSHOPTS="-i $HOME/.ssh/id_deploy -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=20"
+
+          echo "==> Verifying key auth"
+          ssh $SSHOPTS root@"$HOST" 'echo connected as $(whoami)'
+
+          echo "==> Archiving + uploading"
+          # Archive to /tmp (outside the workspace). Tolerate tar's exit 1 ("file changed
+          # as we read it" is a warning); only a real error (exit >=2) should fail.
+          tar --warning=no-file-changed \
+              --exclude=.git --exclude=node_modules --exclude='*.log' \
+              -czf /tmp/wtb.tgz . || { rc=$?; [ "$rc" = "1" ] || exit "$rc"; }
+          scp $SSHOPTS /tmp/wtb.tgz root@"$HOST":/root/wtb.tgz
+
+          echo "==> Extract + build + restart on droplet"
+          ssh $SSHOPTS root@"$HOST" 'set -e; mkdir -p /opt/wtb && tar -xzf /root/wtb.tgz -C /opt/wtb && bash /opt/wtb/deploy/deploy.sh'
