@@ -32,7 +32,7 @@ export function formatLaunchAlert(
   const dex = c.dex ? DEX_LABEL[c.dex] || c.dex : 'Solana DEX';
   const age = formatAge(c.poolCreatedAt || undefined);
 
-  let text = `🚀 *NEW LAUNCH — PASSED ALL CHECKS*\n`;
+  let text = `🚀 *ALPHA CALL!!! — PASSED ALL CHECKS*\n`;
   text += name ? `*${name}* · ${ticker}\n` : `*${ticker}*\n`;
   text += `🗓 Launched *${age}* ago · ${dex}\n\n`;
 
