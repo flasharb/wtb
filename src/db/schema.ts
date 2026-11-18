@@ -236,6 +236,10 @@ export const launchCandidates = pgTable(
     safetyJson: jsonb('safety_json'),
     alertedAt: timestamp('alerted_at', { withTimezone: true }),
     priceAtAlert: numeric('price_at_alert', { precision: 24, scale: 12 }),
+    // Pump follow-up tracking
+    channelMessageId: integer('channel_message_id'), // channel post id (for threaded follow-ups)
+    reportedMultiple: real('reported_multiple').default(1).notNull(), // highest milestone already posted
+    peakMultiple: real('peak_multiple').default(1).notNull(), // highest multiple seen since the call
   },
   (table) => [
     uniqueIndex('launch_candidates_chain_token_idx').on(table.chain, table.tokenAddress),
