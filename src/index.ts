@@ -35,27 +35,27 @@ async function start() {
 
   // --- Start the bot (long-polling in dev, webhook in prod) ---
   if (bot) {
-    try {
-      const me = await bot.api.getMe();
-      if (useWebhookMode) {
-        // In webhook mode the ingest server (or a reverse proxy) must route
-        // POST {PUBLIC_BASE_URL}/telegram to the bot; long-polling is disabled.
-        await bot.api.setWebhook(`${config.PUBLIC_BASE_URL}/telegram`, {
-          secret_token: config.TELEGRAM_WEBHOOK_SECRET || undefined,
-        });
-        console.log(`🤖 Bot @${me.username} registered in WEBHOOK mode.`);
-      } else {
-        // Ensure no stale webhook is set, then long-poll.
-        await bot.api.deleteWebhook();
-        bot.start({
-          onStart: (info) => console.log(`🤖 Bot @${info.username} started in LONG-POLLING mode.`),
-        });
+    // Start the bot in the background — never await Telegram here, or a network hiccup
+    // (e.g. a dead IPv6 route) would block the ingest server and the launch scanner.
+    const b = bot;
+    void (async () => {
+      try {
+        const me = await b.api.getMe();
+        if (useWebhookMode) {
+          await b.api.setWebhook(`${config.PUBLIC_BASE_URL}/telegram`, {
+            secret_token: config.TELEGRAM_WEBHOOK_SECRET || undefined,
+          });
+          console.log(`🤖 Bot @${me.username} registered in WEBHOOK mode.`);
+        } else {
+          await b.api.deleteWebhook().catch(() => {});
+          b.start({
+            onStart: (info) => console.log(`🤖 Bot @${info.username} started in LONG-POLLING mode.`),
+          });
+        }
+      } catch (err: any) {
+        console.error('⚠️  Telegram bot failed to start (will keep scanning):', err?.message ?? err);
       }
-    } catch (err: any) {
-      console.error('⚠️  Telegram bot failed to start:', err?.message ?? err);
-      console.error('   (Ingest server stays up. Check TELEGRAM_BOT_TOKEN.)');
-      bot = undefined;
-    }
+    })();
   }
 
   // --- Periodic outcome measurement (+1h / +24h / +7d price re-checks) ---

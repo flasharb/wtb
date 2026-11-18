@@ -13,6 +13,9 @@ services:
       PORT: 3000
       # Redis is the compose sidecar, not localhost.
       REDIS_URL: redis://redis:6379
+      # The droplet has a dead IPv6 route; without this, Node's fetch tries IPv6 first and
+      # hangs (Telegram/APIs unreachable). Force IPv4-first DNS resolution.
+      NODE_OPTIONS: --dns-result-order=ipv4first
     ports:
       - "3000:3000"
     depends_on:
