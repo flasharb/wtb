@@ -5,7 +5,10 @@ FROM node:20-slim
 
 WORKDIR /app
 
-RUN corepack enable
+# Pin pnpm explicitly (NOT via corepack — the image's corepack ignores the packageManager
+# field and falls back to pnpm 10, which fails on ERR_PNPM_IGNORED_BUILDS). pnpm 9 runs the
+# needed build scripts (esbuild) without that error.
+RUN npm install -g pnpm@9.15.9
 
 # Install dependencies first (better layer caching). We deliberately do NOT set
 # NODE_ENV=production here: tsx (runtime) and drizzle-kit (migrations) are devDependencies
