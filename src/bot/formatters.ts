@@ -20,6 +20,15 @@ export function formatPrice(p: number): string {
   if (!p || p <= 0) return '—';
   if (p >= 1) return `$${p.toFixed(2)}`;
   if (p >= 0.01) return `$${p.toFixed(4)}`;
+  if (p >= 0.0001) return `$${p.toFixed(6)}`; // e.g. $0.000164
+  // Tiny memecoin prices → DexScreener-style subscript: $0.0₅1234 means 5 leading zeros.
+  const m = p.toFixed(20).match(/^0\.(0+)(\d+)/);
+  if (m) {
+    const zeros = m[1].length;
+    const sig = (m[2].replace(/0+$/, '').slice(0, 4) || '0');
+    const sub = String(zeros).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[+d]);
+    return `$0.0${sub}${sig}`;
+  }
   return `$${p.toExponential(2)}`;
 }
 
