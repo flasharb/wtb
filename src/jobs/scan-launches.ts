@@ -10,6 +10,8 @@ import { formatLaunchAlert } from '../bot/launch-formatter.js';
 import { formatPrice, formatUsd, tokenTicker } from '../bot/formatters.js';
 
 const SAFETY_CHECKS_PER_CYCLE = 30; // bound GoPlus calls per cycle
+const REFRESH_PER_CYCLE = 60; // market-data refreshes per cycle (DexScreener)
+const REFRESH_FROM_DAYS = 5; // start refreshing a candidate ~2 days before it can qualify
 const PUMP_MILESTONES = [2, 3, 5, 10, 25, 50, 100]; // x-multiples we celebrate
 const FOLLOW_UP_DAYS = 30; // stop tracking a call after this long
 
@@ -30,6 +32,7 @@ export class LaunchScanner {
 
   async runCycle(): Promise<{
     discovered: number;
+    refreshed: number;
     checked: number;
     alerted: number;
     rejected: number;
@@ -91,6 +94,11 @@ export class LaunchScanner {
           lte(launchCandidates.poolCreatedAt, minCreated)
         )
       );
+
+    // 2b. Refresh market data for candidates in / approaching the window, so we evaluate
+    // maturity with CURRENT liquidity & volume (discovery feeds skew heavily to brand-new
+    // tokens, so a survivor would otherwise be judged on stale day-0 data).
+    const refreshed = await this.refreshWatching(now);
 
     // 3. Select eligible candidates (in window, liquid, active), least-recently-checked first
     const windowNewest = new Date(now - minAgeMs); // created on/before this = old enough
@@ -155,7 +163,49 @@ export class LaunchScanner {
     // 4. Follow up on past calls that have pumped.
     const followed = await this.followUpAlerts();
 
-    return { discovered, checked, alerted, rejected, followed };
+    return { discovered, refreshed, checked, alerted, rejected, followed };
+  }
+
+  /** Re-price watching candidates that are in or approaching the age window. */
+  private async refreshWatching(now: number): Promise<number> {
+    const oldest = new Date(now - config.SCAN_MAX_AGE_DAYS * 86400000);
+    const newest = new Date(now - REFRESH_FROM_DAYS * 86400000); // created on/before ~5d ago
+    const rows = await db
+      .select({ id: launchCandidates.id, addr: launchCandidates.tokenAddress, created: launchCandidates.poolCreatedAt })
+      .from(launchCandidates)
+      .where(
+        and(
+          eq(launchCandidates.status, 'watching'),
+          lte(launchCandidates.poolCreatedAt, newest),
+          gte(launchCandidates.poolCreatedAt, oldest)
+        )
+      )
+      .orderBy(asc(launchCandidates.lastCheckedAt))
+      .limit(REFRESH_PER_CYCLE);
+
+    let n = 0;
+    for (const r of rows) {
+      const md = await this.market.getTokenMarketData('solana', r.addr);
+      if (md && md.liquidityUsd > 0) {
+        await db
+          .update(launchCandidates)
+          .set({
+            liquidityUsd: md.liquidityUsd.toFixed(2),
+            volume24hUsd: (md.volume24hUsd || 0).toFixed(2),
+            priceUsd: (md.priceUsd || 0).toString(),
+            fdvUsd: (md.fdvUsd || 0).toFixed(2),
+          })
+          .where(eq(launchCandidates.id, r.id));
+        n++;
+      } else {
+        // No live pool / liquidity — the token is dead. Drop it so it never alerts.
+        await db
+          .update(launchCandidates)
+          .set({ status: 'rejected', rejectReason: 'Pool gone / no liquidity' })
+          .where(eq(launchCandidates.id, r.id));
+      }
+    }
+    return n;
   }
 
   private async sendAlert(cand: typeof launchCandidates.$inferSelect, safety: any) {
@@ -341,7 +391,7 @@ export async function runLaunchScan(bot?: Bot) {
   const scanner = new LaunchScanner(bot);
   const r = await scanner.runCycle();
   console.log(
-    `[scan] cycle: discovered ${r.discovered}, checked ${r.checked}, alerted ${r.alerted}, rejected ${r.rejected}, pump-follow-ups ${r.followed}`
+    `[scan] cycle: discovered ${r.discovered}, refreshed ${r.refreshed}, checked ${r.checked}, alerted ${r.alerted}, rejected ${r.rejected}, follow-ups ${r.followed}`
   );
   return r;
 }
