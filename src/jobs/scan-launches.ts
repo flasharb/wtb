@@ -6,12 +6,13 @@ import { config } from '../config/index.js';
 import { GeckoTerminalSource } from '../providers/launches/geckoterminal-source.js';
 import { SolanaSafetyChecker } from '../providers/security/solana-safety.js';
 import { DexScreenerMarketProvider } from '../providers/market/market-data-provider.js';
+import { BirdeyeProvider } from '../providers/market/birdeye-provider.js';
 import { formatLaunchAlert } from '../bot/launch-formatter.js';
 import { formatPrice, formatUsd, tokenTicker } from '../bot/formatters.js';
 
 const SAFETY_CHECKS_PER_CYCLE = 30; // bound GoPlus calls per cycle
 const REFRESH_PER_CYCLE = 60; // market-data refreshes per cycle (DexScreener)
-const REFRESH_FROM_DAYS = 5; // start refreshing a candidate ~2 days before it can qualify
+const REFRESH_FROM_DAYS = 1; // re-price candidates ≥1 day old (brand-new ones have fresh discovery data)
 const PUMP_MILESTONES = [2, 3, 5, 10, 25, 50, 100]; // x-multiples we celebrate
 const FOLLOW_UP_DAYS = 30; // stop tracking a call after this long
 
@@ -27,6 +28,7 @@ export class LaunchScanner {
   private gecko = new GeckoTerminalSource();
   private safety = new SolanaSafetyChecker();
   private market = new DexScreenerMarketProvider();
+  private birdeye = new BirdeyeProvider();
 
   constructor(private bot?: Bot) {}
 
@@ -125,8 +127,10 @@ export class LaunchScanner {
     for (const cand of eligible) {
       if (alerted >= config.SCAN_MAX_ALERTS_PER_CYCLE) break;
       checked++;
+      // Safety is rug-only here (minHolders:0); the holder gate is applied via Birdeye below
+      // so it works for brand-new tokens GoPlus hasn't indexed yet.
       const safety = await this.safety.check(cand.tokenAddress, {
-        minHolders: config.SCAN_MIN_HOLDERS,
+        minHolders: 0,
         maxTop10Pct: config.SCAN_MAX_TOP10_PCT,
       });
 
@@ -138,12 +142,25 @@ export class LaunchScanner {
       };
 
       if (safety.passed) {
-        await db
-          .update(launchCandidates)
-          .set({ ...base, status: 'alerted', alertedAt: new Date(), priceAtAlert: cand.priceUsd })
-          .where(eq(launchCandidates.id, cand.id));
-        await this.sendAlert(cand, safety);
-        alerted++;
+        // Holder gate: live holder count from Birdeye (covers any age).
+        const ov = await this.birdeye.getOverview(cand.tokenAddress);
+        const holders = ov?.holder ?? safety.holderCount ?? 0;
+        if (holders < config.SCAN_MIN_HOLDERS) {
+          // Safe but not enough holders yet — keep watching (holder count grows over time).
+          await db.update(launchCandidates).set({ ...base, holderCount: holders }).where(eq(launchCandidates.id, cand.id));
+        } else {
+          // Show the real holder count on the alert.
+          safety.holderCount = holders;
+          const hc = safety.checks.find((c) => c.name === 'Holders');
+          if (hc) hc.detail = holders.toLocaleString();
+          else safety.checks.push({ name: 'Holders', status: 'pass', detail: holders.toLocaleString() });
+          await db
+            .update(launchCandidates)
+            .set({ ...base, holderCount: holders, status: 'alerted', alertedAt: new Date(), priceAtAlert: cand.priceUsd })
+            .where(eq(launchCandidates.id, cand.id));
+          await this.sendAlert(cand, safety);
+          alerted++;
+        }
       } else if (!safety.verified) {
         // Transient (GoPlus rate-limit / not indexed yet) — keep watching, retry next cycle.
         await db.update(launchCandidates).set({ lastCheckedAt: new Date() }).where(eq(launchCandidates.id, cand.id));

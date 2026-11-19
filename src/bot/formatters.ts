@@ -65,6 +65,7 @@ export function formatTimeAgo(d: Date | string | number): string {
 export function formatAge(createdAt?: Date): string {
   if (!createdAt) return '—';
   const h = Math.max(0, (Date.now() - createdAt.getTime()) / 3600000);
+  if (h < 1) return `${Math.max(1, Math.round(h * 60))}m`; // e.g. "5m"
   if (h < 24) return `${Math.round(h)}h`;
   const days = h / 24;
   if (days < 30) return `${Math.round(days)}d`;
