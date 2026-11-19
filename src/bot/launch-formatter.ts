@@ -11,7 +11,7 @@ export interface LaunchView {
   liquidityUsd: number;
   volume24hUsd: number;
   fdvUsd: number;
-  priceUsd: number;
+  priceUsd: number | string;
 }
 
 const DEX_LABEL: Record<string, string> = {

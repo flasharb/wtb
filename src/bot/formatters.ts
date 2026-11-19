@@ -16,20 +16,32 @@ export function formatUsd(val: number): string {
   return `$${Math.round(val).toLocaleString()}`;
 }
 
-export function formatPrice(p: number): string {
-  if (!p || p <= 0) return '—';
-  if (p >= 1) return `$${p.toFixed(2)}`;
-  if (p >= 0.01) return `$${p.toFixed(4)}`;
-  if (p >= 0.0001) return `$${p.toFixed(6)}`; // e.g. $0.000164
-  // Tiny memecoin prices → DexScreener-style subscript: $0.0₅1234 means 5 leading zeros.
-  const m = p.toFixed(20).match(/^0\.(0+)(\d+)/);
-  if (m) {
-    const zeros = m[1].length;
-    const sig = (m[2].replace(/0+$/, '').slice(0, 4) || '0');
-    const sub = String(zeros).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[+d]);
-    return `$0.0${sub}${sig}`;
-  }
-  return `$${p.toExponential(2)}`;
+export function formatPrice(p: number | string): string {
+  const n = typeof p === 'string' ? parseFloat(p) : p;
+  if (!n || n <= 0 || !isFinite(n)) return '—';
+  // Show the EXACT value — no rounding/approximation. Prefer the original string (full stored
+  // precision); otherwise the number's shortest exact form. Just expand scientific notation
+  // to plain decimal and trim trailing zeros.
+  let s = typeof p === 'string' ? p : String(p);
+  if (/e/i.test(s)) s = expandExponential(s);
+  if (s.includes('.')) s = s.replace(/0+$/, '').replace(/\.$/, '');
+  return `$${s}`;
+}
+
+/** Expand "1.64e-7" → "0.000000164" without losing or rounding any digits. */
+function expandExponential(input: string): string {
+  const neg = input.startsWith('-');
+  const s = neg ? input.slice(1) : input;
+  const [mant, expPart] = s.toLowerCase().split('e');
+  const exp = parseInt(expPart, 10);
+  const [intPart, fracPart = ''] = mant.split('.');
+  const digits = intPart + fracPart;
+  const pointPos = intPart.length + exp;
+  let out: string;
+  if (pointPos <= 0) out = '0.' + '0'.repeat(-pointPos) + digits;
+  else if (pointPos >= digits.length) out = digits + '0'.repeat(pointPos - digits.length);
+  else out = digits.slice(0, pointPos) + '.' + digits.slice(pointPos);
+  return (neg ? '-' : '') + out;
 }
 
 /** "$WIF" when we know the ticker, otherwise a short mint — never a confusing "TOKEN". */

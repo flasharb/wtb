@@ -220,7 +220,7 @@ export class LaunchScanner {
         liquidityUsd: Number(cand.liquidityUsd),
         volume24hUsd: Number(cand.volume24hUsd),
         fdvUsd: Number(cand.fdvUsd),
-        priceUsd: Number(cand.priceUsd),
+        priceUsd: cand.priceUsd ?? 0, // raw stored string → exact price, no rounding
       },
       safety
     );
