@@ -7,8 +7,9 @@ import { GeckoTerminalSource } from '../providers/launches/geckoterminal-source.
 import { SolanaSafetyChecker } from '../providers/security/solana-safety.js';
 import { DexScreenerMarketProvider } from '../providers/market/market-data-provider.js';
 import { BirdeyeProvider } from '../providers/market/birdeye-provider.js';
-import { formatLaunchAlert } from '../bot/launch-formatter.js';
+import { formatLaunchAlert, formatTeaser } from '../bot/launch-formatter.js';
 import { formatPrice, formatUsd, tokenTicker } from '../bot/formatters.js';
+import { isSubscriber } from '../bot/billing.js';
 
 const SAFETY_CHECKS_PER_CYCLE = 30; // bound GoPlus calls per cycle
 const REFRESH_PER_CYCLE = 60; // market-data refreshes per cycle (DexScreener)
@@ -242,23 +243,61 @@ export class LaunchScanner {
       safety
     );
 
-    // 1. Broadcast channel (if configured) — capture the post id for threaded follow-ups.
-    if (config.ALERT_CHANNEL_ID) {
-      const sent = await this.sendMsg(config.ALERT_CHANNEL_ID, text, replyMarkup);
-      if (sent?.message_id) {
-        await db
-          .update(launchCandidates)
-          .set({ channelMessageId: sent.message_id })
-          .where(eq(launchCandidates.id, cand.id));
-      }
+    // Full call → VIP channel (or public if no VIP) + eligible DMs. Capture the channel
+    // post id for threaded follow-ups.
+    const msgId = await this.broadcastFull(text, replyMarkup);
+    if (msgId) {
+      await db.update(launchCandidates).set({ channelMessageId: msgId }).where(eq(launchCandidates.id, cand.id));
     }
 
-    // 2. Individual subscribers (DMs that /started the bot and aren't muted).
-    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
-    for (const chat of activeChats) await this.sendMsg(chat.telegramChatId, text, replyMarkup);
+    // Public teaser (contract hidden) → drives subscriptions — only when VIP is a separate channel.
+    if (
+      config.TEASER_ENABLED &&
+      config.VIP_CHANNEL_ID &&
+      config.ALERT_CHANNEL_ID &&
+      config.ALERT_CHANNEL_ID !== config.VIP_CHANNEL_ID
+    ) {
+      const view = {
+        tokenAddress: cand.tokenAddress,
+        symbol: cand.symbol,
+        name: cand.name,
+        dex: cand.dex,
+        poolCreatedAt: cand.poolCreatedAt,
+        liquidityUsd: Number(cand.liquidityUsd),
+        volume24hUsd: Number(cand.volume24hUsd),
+        fdvUsd: Number(cand.fdvUsd),
+        priceUsd: cand.priceUsd ?? 0,
+      };
+      const t = formatTeaser(view, safety);
+      await this.sendMsg(config.ALERT_CHANNEL_ID, t.text, t.replyMarkup);
+    }
+    console.log(`[scan] 🚀 alerted ${cand.symbol || cand.tokenAddress}`);
+  }
 
-    const to = `${config.ALERT_CHANNEL_ID ? 'channel + ' : ''}${activeChats.length} chat(s)`;
-    console.log(`[scan] 🚀 alerted ${cand.symbol || cand.tokenAddress} to ${to}`);
+  /**
+   * Deliver a full call/follow-up to the VIP channel (or the public channel if no VIP is
+   * configured) plus DMs. Once a VIP channel is set, DMs go only to admins and active
+   * subscribers so the paywall isn't bypassed. Returns the channel message id.
+   */
+  private async broadcastFull(text: string, keyboard?: InlineKeyboard, channelReplyTo?: number | null) {
+    const target = config.VIP_CHANNEL_ID || config.ALERT_CHANNEL_ID;
+    let msgId: number | undefined;
+    if (target) {
+      const sent = await this.sendMsg(target, text, keyboard, channelReplyTo);
+      msgId = sent?.message_id;
+    }
+    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
+    for (const chat of activeChats) {
+      if (
+        config.VIP_CHANNEL_ID &&
+        !config.ADMIN_TELEGRAM_IDS.includes(chat.telegramChatId) &&
+        !(await isSubscriber(chat.telegramChatId))
+      ) {
+        continue; // non-subscriber DM is gated once VIP is live
+      }
+      await this.sendMsg(chat.telegramChatId, text, keyboard);
+    }
+    return msgId;
   }
 
   /** Send with a plain-text fallback so Markdown-breaking names never drop a message. */
@@ -357,9 +396,7 @@ export class LaunchScanner {
       `📉 *${ticker}* faded *${pct}%* from the call.\n` +
       `Entry ${formatPrice(entry)} → now ${formatPrice(price)}`;
     const kb = new InlineKeyboard().url('📈 Chart', `https://dexscreener.com/solana/${c.tokenAddress}`);
-    if (config.ALERT_CHANNEL_ID) await this.sendMsg(config.ALERT_CHANNEL_ID, text, kb, c.channelMessageId);
-    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
-    for (const chat of activeChats) await this.sendMsg(chat.telegramChatId, text, kb);
+    await this.broadcastFull(text, kb, c.channelMessageId);
     console.log(`[scan] 📉 ${ticker} faded ${pct}% — follow-up posted`);
   }
 
@@ -368,9 +405,7 @@ export class LaunchScanner {
     const text =
       `💀 *${ticker}* — liquidity gone (${formatUsd(liq)}). Looks dead/rugged; tracking stopped.`;
     const kb = new InlineKeyboard().url('🔍 Solscan', `https://solscan.io/token/${c.tokenAddress}`);
-    if (config.ALERT_CHANNEL_ID) await this.sendMsg(config.ALERT_CHANNEL_ID, text, kb, c.channelMessageId);
-    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
-    for (const chat of activeChats) await this.sendMsg(chat.telegramChatId, text, kb);
+    await this.broadcastFull(text, kb, c.channelMessageId);
     console.log(`[scan] 💀 ${ticker} rugged (liq ${formatUsd(liq)}) — follow-up posted`);
   }
 
@@ -390,11 +425,7 @@ export class LaunchScanner {
       .url('📈 Chart', `https://dexscreener.com/solana/${c.tokenAddress}`)
       .url('🔍 Solscan', `https://solscan.io/token/${c.tokenAddress}`);
 
-    if (config.ALERT_CHANNEL_ID) {
-      await this.sendMsg(config.ALERT_CHANNEL_ID, text, kb, c.channelMessageId);
-    }
-    const activeChats = await db.select().from(chats).where(eq(chats.muted, false));
-    for (const chat of activeChats) await this.sendMsg(chat.telegramChatId, text, kb);
+    await this.broadcastFull(text, kb, c.channelMessageId);
     console.log(`[scan] 📈 ${ticker} hit ${mult}x — follow-up posted`);
   }
 

@@ -5,6 +5,7 @@ import { chats, wallets, walletLabels, buys, tokens, signals, signalOutcomes, us
 import { eq, desc, and, sql, gte, lte } from 'drizzle-orm';
 import { buildSettingsMenu } from './menus.js';
 import { formatShortAddress, formatUsd, formatTimeAgo, tokenTicker, formatAge } from './formatters.js';
+import { registerBilling } from './billing.js';
 
 export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   const bot = new Bot(token || 'dummy_token_for_init');
@@ -383,6 +384,9 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     }
     await ctx.answerCallbackQuery();
   });
+
+  // Paid VIP subscriptions (Telegram Stars): /subscribe, /renew, /membership, payments.
+  registerBilling(bot);
 
   return bot;
 }

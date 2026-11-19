@@ -249,6 +249,29 @@ export const launchCandidates = pgTable(
   ]
 );
 
+// 12. Subscriptions (paid VIP access via Telegram Stars)
+export const subscriptions = pgTable(
+  'subscriptions',
+  {
+    id: serial('id').primaryKey(),
+    telegramUserId: varchar('telegram_user_id', { length: 64 }).notNull(),
+    username: varchar('username', { length: 64 }),
+    status: varchar('status', { length: 16 }).default('active').notNull(), // active | expired
+    plan: varchar('plan', { length: 32 }).default('monthly').notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    lastPaymentAt: timestamp('last_payment_at', { withTimezone: true }),
+    totalStars: integer('total_stars').default(0).notNull(),
+    lastChargeId: varchar('last_charge_id', { length: 128 }),
+    inviteLink: text('invite_link'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex('subscriptions_user_idx').on(table.telegramUserId),
+    index('subscriptions_status_expires_idx').on(table.status, table.expiresAt),
+  ]
+);
+
 // Relations
 export const walletsRelations = relations(wallets, ({ many }) => ({
   labels: many(walletLabels),

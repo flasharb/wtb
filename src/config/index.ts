@@ -54,6 +54,17 @@ const envSchema = z.object({
   // The bot must be an admin of the channel with permission to post.
   ALERT_CHANNEL_ID: z.string().default(''),
 
+  // ---- Paid VIP subscriptions (Telegram Stars) ----
+  // Private channel where full real-time calls go; bot must be admin (invite + ban rights).
+  VIP_CHANNEL_ID: z.string().default(''),
+  SUB_PRICE_STARS: z.coerce.number().default(1000), // monthly price in Telegram Stars
+  SUB_DAYS: z.coerce.number().default(30), // days of access per payment
+  // Post teasers (no contract) to the public ALERT_CHANNEL_ID to drive subscriptions.
+  TEASER_ENABLED: z
+    .string()
+    .default('true')
+    .transform((v) => v === 'true' || v === '1'),
+
   // ---- New-Launch Scanner ----
   SCAN_ENABLED: z
     .string()

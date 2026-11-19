@@ -5,6 +5,7 @@ import { AlertPipeline } from './signals/pipeline.js';
 import { createBot } from './bot/index.js';
 import { measureSignalOutcomes } from './jobs/measure-outcomes.js';
 import { runLaunchScan } from './jobs/scan-launches.js';
+import { expireSubscriptions } from './bot/billing.js';
 import { pool } from './db/index.js';
 
 const OUTCOME_INTERVAL_MS = 15 * 60 * 1000; // re-check signal outcomes every 15 min
@@ -79,6 +80,17 @@ async function start() {
     console.log(`🔭 Launch scanner enabled — every ${config.SCAN_INTERVAL_MIN} min (age ${config.SCAN_MIN_AGE_DAYS}-${config.SCAN_MAX_AGE_DAYS}d, ≥$${config.SCAN_MIN_LIQUIDITY_USD} liq)`);
   }
 
+  // --- VIP subscription expiry sweep (every 30 min) ---
+  let subTimer: NodeJS.Timeout | undefined;
+  if (bot && config.VIP_CHANNEL_ID) {
+    const b = bot;
+    subTimer = setInterval(() => {
+      expireSubscriptions(b).catch((e) => console.error('[billing] expiry sweep error:', e?.message ?? e));
+    }, 30 * 60 * 1000);
+    subTimer.unref?.();
+    console.log(`⭐ VIP subscriptions enabled — ${config.SUB_PRICE_STARS}⭐ / ${config.SUB_DAYS}d`);
+  }
+
   console.log(`\n======================================================`);
   console.log(`🐋 Telegram Whale Buy Tracker — ACTIVE`);
   console.log(`🚀 Ingest server: http://${config.HOST}:${config.PORT}`);
@@ -91,6 +103,7 @@ async function start() {
     console.log('\nShutting down gracefully...');
     clearInterval(outcomeTimer);
     if (scanTimer) clearInterval(scanTimer);
+    if (subTimer) clearInterval(subTimer);
     try {
       await bot?.stop();
     } catch {

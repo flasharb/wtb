@@ -57,3 +57,25 @@ export function formatLaunchAlert(
 
   return { text, replyMarkup: kb };
 }
+
+/** Public teaser — shows the stats but HIDES the contract, with a CTA to subscribe. */
+export function formatTeaser(
+  c: LaunchView,
+  safety: TokenSafety,
+  botUsername = 'stackalpha_bot'
+): { text: string; replyMarkup: InlineKeyboard } {
+  const ticker = tokenTicker(c.symbol, c.tokenAddress);
+  const name = c.name && c.name !== c.symbol ? c.name : '';
+  const age = formatAge(c.poolCreatedAt || undefined);
+  const holders = safety.holderCount > 0 ? `👥 ${safety.holderCount.toLocaleString()} holders · ` : '';
+
+  let text = `🚀 *NEW ALPHA CALL* 🔒\n`;
+  text += name ? `*${name}* · ${ticker}\n` : `*${ticker}*\n`;
+  text += `🗓 ${age} old · ${holders}💧 ${formatUsd(c.liquidityUsd)} liq\n`;
+  text += `✅ Passed every safety check\n\n`;
+  text += `🔓 Contract + entry just dropped in the *VIP channel*.\n`;
+  text += `👉 Get real-time access:`;
+
+  const kb = new InlineKeyboard().url('⭐ Unlock VIP', `https://t.me/${botUsername}?start=subscribe`);
+  return { text, replyMarkup: kb };
+}
