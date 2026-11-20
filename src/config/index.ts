@@ -82,6 +82,13 @@ const envSchema = z.object({
   // and mark a call dead/rugged when liquidity falls below this.
   SCAN_FADE_MULT: z.coerce.number().default(0.5),
   SCAN_RUG_LIQUIDITY_USD: z.coerce.number().default(5000),
+  // DEXes to exclude — their pools let the dev pull liquidity (rug). pump.fun/PumpSwap burn LP.
+  SCAN_DEX_DENYLIST: z
+    .string()
+    .default('meteora-damm-v2,raydium-launchlab')
+    .transform((v) => v.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)),
+  // Follow-ups: ignore a price move above this multiple as a data glitch (false 100x reports).
+  FOLLOWUP_MAX_MULT: z.coerce.number().default(100),
 
   // Wallet selection & budget filters
   MVP_WALLET_CAP: z.coerce.number().default(1000),

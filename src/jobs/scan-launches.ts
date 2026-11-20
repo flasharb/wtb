@@ -127,6 +127,16 @@ export class LaunchScanner {
 
     for (const cand of eligible) {
       if (alerted >= config.SCAN_MAX_ALERTS_PER_CYCLE) break;
+      // Rug protection: skip DEXes where the dev can pull liquidity. pump.fun/PumpSwap burn
+      // LP at migration (unruggable); meteora-damm-v2 / raydium-launchlab often don't.
+      if (cand.dex && config.SCAN_DEX_DENYLIST.includes(cand.dex.toLowerCase())) {
+        await db
+          .update(launchCandidates)
+          .set({ status: 'rejected', rejectReason: `Rug-prone DEX (${cand.dex})` })
+          .where(eq(launchCandidates.id, cand.id));
+        rejected++;
+        continue;
+      }
       checked++;
       // Safety is rug-only here (minHolders:0); the holder gate is applied via Birdeye below
       // so it works for brand-new tokens GoPlus hasn't indexed yet.
@@ -157,7 +167,14 @@ export class LaunchScanner {
           else safety.checks.push({ name: 'Holders', status: 'pass', detail: holders.toLocaleString() });
           await db
             .update(launchCandidates)
-            .set({ ...base, holderCount: holders, status: 'alerted', alertedAt: new Date(), priceAtAlert: cand.priceUsd })
+            .set({
+              ...base,
+              holderCount: holders,
+              status: 'alerted',
+              alertedAt: new Date(),
+              // Entry price from Birdeye (same source used in follow-ups) for consistent multiples.
+              priceAtAlert: ov?.priceUsd && ov.priceUsd > 0 ? ov.priceUsd.toString() : cand.priceUsd,
+            })
             .where(eq(launchCandidates.id, cand.id));
           await this.sendAlert(cand, safety);
           alerted++;
@@ -343,8 +360,8 @@ export class LaunchScanner {
       const entry = Number(c.priceAtAlert);
       if (!entry || entry <= 0) continue;
       const md = await this.market.getTokenMarketData('solana', c.tokenAddress);
-      const price = md?.priceUsd || 0;
-      const liq = md?.liquidityUsd;
+      const ov = await this.birdeye.getOverview(c.tokenAddress);
+      const liq = md?.liquidityUsd ?? ov?.liquidityUsd;
 
       // Rug / liquidity death — report once, then stop tracking this call.
       if (typeof liq === 'number' && liq > 0 && liq < config.SCAN_RUG_LIQUIDITY_USD) {
@@ -356,9 +373,15 @@ export class LaunchScanner {
         posted++;
         continue;
       }
-      if (price <= 0) continue;
 
+      // Current price: use the CONSERVATIVE (lower) of DexScreener + Birdeye so a single-source
+      // price glitch can't fabricate a pump (this is what caused the false 100x/11000x reports).
+      const prices = [ov?.priceUsd || 0, md?.priceUsd || 0].filter((p) => p > 0);
+      if (prices.length === 0) continue;
+      const price = Math.min(...prices);
       const mult = price / entry;
+      // Glitch guard: ignore absurd multiples outright.
+      if (!isFinite(mult) || mult > config.FOLLOWUP_MAX_MULT) continue;
       const updates: any = {};
       if (mult > Number(c.peakMultiple)) updates.peakMultiple = mult;
 

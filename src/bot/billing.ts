@@ -112,13 +112,20 @@ async function handlePayment(ctx: Context) {
 }
 
 export function registerBilling(bot: Bot) {
-  // Setup helper: while VIP isn't configured, log the chat id of any channel the bot sees,
-  // so we can wire VIP_CHANNEL_ID from a channel post / admin change.
+  // Setup helper: forward any message from the VIP channel to the bot in DM and it replies
+  // with the channel's numeric ID (reliable — forwarded messages are normal DM updates).
+  bot.on('message:forward_origin', async (ctx) => {
+    const fo: any = ctx.message?.forward_origin;
+    if (fo?.type === 'channel' && fo.chat) {
+      console.log(`[chatinfo] forwarded from channel ${fo.chat.id} (${fo.chat.title || ''})`);
+      try {
+        await ctx.reply(`📡 Channel ID: \`${fo.chat.id}\`\n(${fo.chat.title || ''})`, { parse_mode: 'Markdown' });
+      } catch {
+        /* ignore */
+      }
+    }
+  });
   if (!config.VIP_CHANNEL_ID) {
-    bot.on('my_chat_member', (ctx) => {
-      const title = 'title' in ctx.chat ? ctx.chat.title : '';
-      console.log(`[chatinfo] bot now ${ctx.myChatMember.new_chat_member.status} in chat ${ctx.chat.id} (${title})`);
-    });
     bot.on('channel_post', (ctx) => {
       const title = 'title' in ctx.chat ? ctx.chat.title : '';
       console.log(`[chatinfo] channel_post from chat ${ctx.chat.id} (${title})`);
