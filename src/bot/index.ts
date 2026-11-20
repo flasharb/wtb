@@ -1,8 +1,8 @@
 import { Bot, Context, InlineKeyboard } from 'grammy';
 import { config } from '../config/index.js';
 import { db } from '../db/index.js';
-import { chats, wallets, walletLabels, buys, tokens, signals, signalOutcomes, usageDaily, webhookEvents, launchCandidates } from '../db/schema.js';
-import { eq, desc, and, sql, gte, lte } from 'drizzle-orm';
+import { chats, wallets, walletLabels, buys, tokens, signals, usageDaily, webhookEvents, launchCandidates } from '../db/schema.js';
+import { eq, desc, and, sql, gte, lte, inArray } from 'drizzle-orm';
 import { buildSettingsMenu } from './menus.js';
 import { formatShortAddress, formatUsd, formatTimeAgo, tokenTicker, formatAge } from './formatters.js';
 import { registerBilling, sendSubscribeInvoice } from './billing.js';
@@ -40,6 +40,8 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     return new InlineKeyboard()
       .text('🚀 Recent', 'cmd_recent')
       .text('🔭 Radar', 'cmd_top')
+      .row()
+      .text('🏆 Track record', 'cmd_performance')
       .text('📊 Status', 'cmd_status');
   }
 
@@ -259,54 +261,54 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     await ctx.reply(msg, { parse_mode: 'Markdown' });
   });
 
-  // 7. /performance
-  bot.command('performance', async (ctx) => {
-    const outcomes = await db.select().from(signalOutcomes);
+  // 7. /performance — real track record of the launch calls
+  async function replyPerformance(ctx: Context) {
+    const rows = await db
+      .select()
+      .from(launchCandidates)
+      .where(inArray(launchCandidates.status, ['alerted', 'closed']));
 
-    if (outcomes.length === 0) {
-      await ctx.reply(
-        '📊 *Signal Performance Report:*\n\n_No outcome horizons have been measured yet. Price re-checks occur automatically at +1h, +24h, and +7d after each alert._',
-        { parse_mode: 'Markdown' }
-      );
+    const total = rows.length;
+    if (total === 0) {
+      await ctx.reply('📊 No calls to score yet — the scoreboard fills in as soon as calls go out.', {
+        reply_markup: navKeyboard(),
+      });
       return;
     }
 
-    const horizons = ['1h', '24h', '7d'] as const;
-    let msg = `📊 *Whale Alert Performance Report:*\n\n`;
+    const peaks = rows.map((r) => Number(r.peakMultiple) || 1);
+    const hit = (x: number) => peaks.filter((p) => p >= x).length;
+    const pct = (n: number) => Math.round((n / total) * 100);
+    const rugged = rows.filter((r) => r.status === 'closed').length;
+    const faded = rows.filter((r) => r.reportedFade).length;
+    const avgPeak = peaks.reduce((a, b) => a + b, 0) / total;
+    const sorted = [...peaks].sort((a, b) => a - b);
+    const median = sorted[Math.floor((total - 1) / 2)];
+    const top = [...rows]
+      .sort((a, b) => Number(b.peakMultiple) - Number(a.peakMultiple))
+      .slice(0, 5)
+      .filter((r) => Number(r.peakMultiple) > 1.05);
 
-    for (const h of horizons) {
-      const hOutcomes = outcomes.filter((o) => o.horizon === h);
-      if (hOutcomes.length === 0) {
-        msg += `*Horizon +${h.toUpperCase()}:* _Pending (no signals reached +${h})_\n\n`;
-        continue;
-      }
+    let msg = `📊 *Stack Alpha — Track Record*\n\n`;
+    msg += `🎯 Calls scored: *${total}*\n`;
+    msg += `🏆 Hit *2x+*: *${hit(2)}* (${pct(hit(2))}%)\n`;
+    msg += `🚀 *3x+*: *${hit(3)}*  ·  *5x+*: *${hit(5)}*  ·  *10x+*: *${hit(10)}*\n`;
+    msg += `📈 Avg peak *${avgPeak.toFixed(2)}x*  ·  median *${median.toFixed(2)}x*\n`;
+    msg += `💀 Rugged: *${rugged}*  ·  📉 Faded: *${faded}*\n`;
 
-      const count = hOutcomes.length;
-      const wins = hOutcomes.filter((o) => o.pctChange > 0).length;
-      const winRate = ((wins / count) * 100).toFixed(1);
-
-      const changes = hOutcomes.map((o) => o.pctChange).sort((a, b) => a - b);
-      const sum = changes.reduce((acc, v) => acc + v, 0);
-      const mean = (sum / count).toFixed(1);
-
-      const mid = Math.floor(changes.length / 2);
-      const median = (
-        changes.length % 2 !== 0 ? changes[mid] : (changes[mid - 1] + changes[mid]) / 2
-      ).toFixed(1);
-
-      const maxGain = changes[changes.length - 1].toFixed(1);
-
-      msg +=
-        `🕒 *Horizon +${h.toUpperCase()}* (${count} alerts):\n` +
-        `   • Win Rate: *${winRate}%* (${wins}/${count})\n` +
-        `   • Median Change: *${Number(median) > 0 ? '+' : ''}${median}%*\n` +
-        `   • Mean Change: *${Number(mean) > 0 ? '+' : ''}${mean}%*\n` +
-        `   • Top Gain: *+${maxGain}%*\n\n`;
+    if (top.length > 0) {
+      const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+      msg += `\n*Best calls*\n`;
+      top.forEach((r, i) => {
+        msg += `${medals[i]} ${tokenTicker(r.symbol, r.tokenAddress)} — *${Number(r.peakMultiple).toFixed(2)}x*\n`;
+      });
     }
 
-    msg += `_Signals are evaluated against real-time DEX liquidity pools._`;
-    await ctx.reply(msg, { parse_mode: 'Markdown' });
-  });
+    msg += `\n_“Peak” = best multiple reached from the call price, tracked live. Not financial advice._`;
+    await ctx.reply(msg, { parse_mode: 'Markdown', reply_markup: navKeyboard() });
+  }
+
+  bot.command('performance', (ctx) => replyPerformance(ctx));
 
   // 8. /mute & /unmute
   bot.command('mute', async (ctx) => {
@@ -343,6 +345,11 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     }
     if (data === 'cmd_status') {
       await replyStatus(ctx);
+      await ctx.answerCallbackQuery();
+      return;
+    }
+    if (data === 'cmd_performance') {
+      await replyPerformance(ctx);
       await ctx.answerCallbackQuery();
       return;
     }
