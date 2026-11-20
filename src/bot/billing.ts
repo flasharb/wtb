@@ -112,6 +112,19 @@ async function handlePayment(ctx: Context) {
 }
 
 export function registerBilling(bot: Bot) {
+  // Setup helper: while VIP isn't configured, log the chat id of any channel the bot sees,
+  // so we can wire VIP_CHANNEL_ID from a channel post / admin change.
+  if (!config.VIP_CHANNEL_ID) {
+    bot.on('my_chat_member', (ctx) => {
+      const title = 'title' in ctx.chat ? ctx.chat.title : '';
+      console.log(`[chatinfo] bot now ${ctx.myChatMember.new_chat_member.status} in chat ${ctx.chat.id} (${title})`);
+    });
+    bot.on('channel_post', (ctx) => {
+      const title = 'title' in ctx.chat ? ctx.chat.title : '';
+      console.log(`[chatinfo] channel_post from chat ${ctx.chat.id} (${title})`);
+    });
+  }
+
   bot.command(['subscribe', 'renew', 'vip'], (ctx) => sendInvoice(ctx));
   bot.command('membership', (ctx) => showMembership(ctx));
   bot.on('pre_checkout_query', async (ctx) => {
