@@ -10,6 +10,7 @@ import { BirdeyeProvider } from '../providers/market/birdeye-provider.js';
 import { formatLaunchAlert, formatTeaser } from '../bot/launch-formatter.js';
 import { formatPrice, formatUsd, tokenTicker } from '../bot/formatters.js';
 import { isSubscriber } from '../bot/billing.js';
+import { autoBuyForSignal } from '../trading/engine.js';
 
 const SAFETY_CHECKS_PER_CYCLE = 30; // bound GoPlus calls per cycle
 const REFRESH_PER_CYCLE = 60; // market-data refreshes per cycle (DexScreener)
@@ -289,6 +290,13 @@ export class LaunchScanner {
       await this.sendMsg(config.ALERT_CHANNEL_ID, t.text, t.replyMarkup);
     }
     console.log(`[scan] 🚀 alerted ${cand.symbol || cand.tokenAddress}`);
+
+    // Autopilot: buy this fresh call for every VIP who has the sniper enabled.
+    // Non-blocking — a slow/failed trade must never hold up the scan cycle or other alerts.
+    if (this.bot) {
+      const b = this.bot;
+      void autoBuyForSignal(b, cand).catch((e) => console.error('[trade] autoBuy error:', e?.message ?? e));
+    }
   }
 
   /**

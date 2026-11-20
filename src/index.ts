@@ -6,6 +6,7 @@ import { createBot } from './bot/index.js';
 import { measureSignalOutcomes } from './jobs/measure-outcomes.js';
 import { runLaunchScan } from './jobs/scan-launches.js';
 import { expireSubscriptions } from './bot/billing.js';
+import { monitorPositions, tradingLive } from './trading/engine.js';
 import { pool } from './db/index.js';
 
 const OUTCOME_INTERVAL_MS = 15 * 60 * 1000; // re-check signal outcomes every 15 min
@@ -91,6 +92,20 @@ async function start() {
     console.log(`⭐ VIP subscriptions enabled — ${config.SUB_PRICE_STARS}⭐ / ${config.SUB_DAYS}d`);
   }
 
+  // --- Auto-trading exit monitor (TP / SL / trailing / rug) ---
+  let tradeTimer: NodeJS.Timeout | undefined;
+  if (bot && tradingLive()) {
+    const b = bot;
+    const tradeMs = Math.max(5, config.TRADE_MONITOR_INTERVAL_SEC) * 1000;
+    tradeTimer = setInterval(() => {
+      monitorPositions(b).catch((e) => console.error('[trade] monitor error:', e?.message ?? e));
+    }, tradeMs);
+    tradeTimer.unref?.();
+    console.log(`🤖 Auto-trading LIVE — exit monitor every ${config.TRADE_MONITOR_INTERVAL_SEC}s (max ${config.TRADE_MAX_BUY_SOL} SOL/trade)`);
+  } else if (bot && config.TRADING_ENABLED) {
+    console.warn('⚠️  TRADING_ENABLED but WALLET_ENCRYPTION_KEY missing/invalid — auto-trading disabled.');
+  }
+
   console.log(`\n======================================================`);
   console.log(`🐋 Telegram Whale Buy Tracker — ACTIVE`);
   console.log(`🚀 Ingest server: http://${config.HOST}:${config.PORT}`);
@@ -104,6 +119,7 @@ async function start() {
     clearInterval(outcomeTimer);
     if (scanTimer) clearInterval(scanTimer);
     if (subTimer) clearInterval(subTimer);
+    if (tradeTimer) clearInterval(tradeTimer);
     try {
       await bot?.stop();
     } catch {

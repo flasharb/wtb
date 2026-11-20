@@ -6,9 +6,14 @@ import { eq, desc, and, sql, gte, lte, inArray } from 'drizzle-orm';
 import { buildSettingsMenu } from './menus.js';
 import { formatShortAddress, formatUsd, formatTimeAgo, tokenTicker, formatAge } from './formatters.js';
 import { registerBilling, sendSubscribeInvoice } from './billing.js';
+import { registerTrading } from './trading.js';
 
 export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   const bot = new Bot(token || 'dummy_token_for_init');
+
+  // Auto-trading (sniper) commands + callbacks. Registered first so its `at_` callback
+  // middleware runs before the generic callback handler and passes everything else through.
+  registerTrading(bot);
 
   // Helper: Get or create chat record in PostgreSQL
   async function getOrCreateChat(ctx: Context) {
@@ -159,7 +164,9 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
       `• /recent — latest launches that passed\n` +
       `• /top — biggest launches on the radar\n` +
       `• /status — scanner health\n` +
-      `• /mute · /unmute — pause or resume alerts\n\n` +
+      `• /mute · /unmute — pause or resume alerts\n` +
+      `• /performance — the track record\n` +
+      `🤖 /autotrade — *VIP autopilot sniper* (auto-buy calls, auto-exit on your TP/SL)\n\n` +
       `You're all set — I'll ping you when a clean launch shows up. 🔔\n\n` +
       `_Not financial advice. Whale buys can be bait. Verify before acting._`;
 

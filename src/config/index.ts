@@ -90,6 +90,38 @@ const envSchema = z.object({
   // Follow-ups: ignore a price move above this multiple as a data glitch (false 100x reports).
   FOLLOWUP_MAX_MULT: z.coerce.number().default(100),
 
+  // ---- Auto-trading (VIP sniper) ----
+  // Master kill-switch. When false, no buys/sells execute regardless of per-user settings.
+  TRADING_ENABLED: z
+    .string()
+    .default('true')
+    .transform((v) => v === 'true' || v === '1'),
+  // 32-byte key (hex or base64) used to AES-256-GCM encrypt each user's wallet secret at rest.
+  // REQUIRED to enable trading. Never commit this. Rotating it orphans existing wallets.
+  WALLET_ENCRYPTION_KEY: z.string().default(''),
+  // Solana RPC for signing/sending (defaults to Helius if HELIUS_API_KEY is set, else public).
+  SOLANA_RPC_URL: z.string().default(''),
+  // Jupiter swap API base (lite = free/no-key). Paid: https://api.jup.ag/swap/v1 + JUPITER_API_KEY.
+  JUPITER_API_URL: z.string().default('https://lite-api.jup.ag/swap/v1'),
+  JUPITER_API_KEY: z.string().default(''),
+  // Per-trade priority fee (lamports) to land swaps during congestion.
+  TRADE_PRIORITY_FEE_LAMPORTS: z.coerce.number().default(300000),
+  // Keep this much SOL unspent in every wallet to cover fees/rent.
+  TRADE_FEE_RESERVE_SOL: z.coerce.number().default(0.03),
+  // Hard ceiling on per-trade buy size (SOL) — a guard rail over whatever the user sets.
+  TRADE_MAX_BUY_SOL: z.coerce.number().default(5),
+  // How often the exit monitor re-prices open positions (seconds).
+  TRADE_MONITOR_INTERVAL_SEC: z.coerce.number().default(20),
+  // ---- Default per-user trade parameters (user-editable via the bot) ----
+  TRADE_DEFAULT_BUY_SOL: z.coerce.number().default(0.1),
+  TRADE_DEFAULT_TP_PCT: z.coerce.number().default(100), // take-profit trigger: +100% = 2x
+  TRADE_DEFAULT_SL_PCT: z.coerce.number().default(40), // stop-loss: -40%
+  TRADE_DEFAULT_TRAIL_PCT: z.coerce.number().default(25), // trailing stop: exit on 25% drop from peak
+  TRADE_DEFAULT_TP_SELL_PCT: z.coerce.number().default(50), // sell 50% at TP, let the rest ride (moon-bag)
+  TRADE_DEFAULT_SLIPPAGE_BPS: z.coerce.number().default(1500), // 15% — memecoins need room
+  TRADE_DEFAULT_MAX_CONCURRENT: z.coerce.number().default(5),
+  TRADE_DEFAULT_MAX_DAILY_BUYS: z.coerce.number().default(20),
+
   // Wallet selection & budget filters
   MVP_WALLET_CAP: z.coerce.number().default(1000),
   MIN_WALLET_USD: z.coerce.number().default(100000),

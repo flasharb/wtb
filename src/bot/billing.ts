@@ -2,7 +2,7 @@ import { Bot, Context, InlineKeyboard } from 'grammy';
 import { and, eq, lt } from 'drizzle-orm';
 import { config } from '../config/index.js';
 import { db } from '../db/index.js';
-import { subscriptions } from '../db/schema.js';
+import { subscriptions, tradingConfigs } from '../db/schema.js';
 
 type Sub = typeof subscriptions.$inferSelect;
 
@@ -163,6 +163,12 @@ export async function expireSubscriptions(bot: Bot): Promise<number> {
       console.error(`[billing] remove ${id} failed:`, e?.message ?? e);
     }
     await db.update(subscriptions).set({ status: 'expired' }).where(eq(subscriptions.id, s.id));
+    // Stop autopilot for the lapsed member (open positions are left to run their exits).
+    await db
+      .update(tradingConfigs)
+      .set({ enabled: false })
+      .where(eq(tradingConfigs.telegramUserId, s.telegramUserId))
+      .catch(() => {});
     try {
       await bot.api.sendMessage(
         s.telegramUserId,

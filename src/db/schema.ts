@@ -272,6 +272,98 @@ export const subscriptions = pgTable(
   ]
 );
 
+// 13. Trading wallets (per-VIP custodial Solana wallet; secret encrypted at rest)
+export const tradingWallets = pgTable(
+  'trading_wallets',
+  {
+    id: serial('id').primaryKey(),
+    telegramUserId: varchar('telegram_user_id', { length: 64 }).notNull(),
+    publicKey: varchar('public_key', { length: 64 }).notNull(),
+    // AES-256-GCM payload: ivHex:authTagHex:cipherHex of the 64-byte secret key.
+    encryptedSecret: text('encrypted_secret').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex('trading_wallets_user_idx').on(table.telegramUserId)]
+);
+
+// 14. Trading config (per-VIP autopilot parameters)
+export const tradingConfigs = pgTable(
+  'trading_configs',
+  {
+    id: serial('id').primaryKey(),
+    telegramUserId: varchar('telegram_user_id', { length: 64 }).notNull(),
+    enabled: boolean('enabled').default(false).notNull(), // autopilot on/off
+    buySol: numeric('buy_sol', { precision: 18, scale: 9 }).default('0.1').notNull(),
+    tpPct: real('tp_pct').default(100).notNull(), // take-profit trigger %
+    slPct: real('sl_pct').default(40).notNull(), // stop-loss %
+    trailPct: real('trail_pct').default(25).notNull(), // trailing stop: % drop from peak (post-TP)
+    tpSellPct: real('tp_sell_pct').default(50).notNull(), // % of position sold at TP (moon-bag)
+    slippageBps: integer('slippage_bps').default(1500).notNull(),
+    maxConcurrent: integer('max_concurrent').default(5).notNull(),
+    maxDailyBuys: integer('max_daily_buys').default(20).notNull(),
+    dailyBuys: integer('daily_buys').default(0).notNull(),
+    dailyResetAt: timestamp('daily_reset_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex('trading_configs_user_idx').on(table.telegramUserId)]
+);
+
+// 15. Positions (one open/closed trade on a token for a user)
+export const positions = pgTable(
+  'positions',
+  {
+    id: serial('id').primaryKey(),
+    telegramUserId: varchar('telegram_user_id', { length: 64 }).notNull(),
+    candidateId: integer('candidate_id'), // launch_candidates.id that triggered the buy
+    tokenAddress: varchar('token_address', { length: 128 }).notNull(),
+    symbol: varchar('symbol', { length: 32 }),
+    status: varchar('status', { length: 16 }).default('open').notNull(), // open | closed | failed
+    // Entry (amounts in base units: SOL lamports, token raw units)
+    buySol: numeric('buy_sol', { precision: 18, scale: 9 }).default('0').notNull(), // SOL spent (display)
+    costLamports: numeric('cost_lamports', { precision: 30, scale: 0 }).default('0').notNull(), // lamports in
+    tokensBought: numeric('tokens_bought', { precision: 40, scale: 0 }).default('0').notNull(), // raw units
+    tokensRemaining: numeric('tokens_remaining', { precision: 40, scale: 0 }).default('0').notNull(),
+    // Cost basis attributed to the still-held tokens (lamports) — shrinks on partial sells.
+    costRemainingLamports: numeric('cost_remaining_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
+    buyTxSig: varchar('buy_tx_sig', { length: 128 }),
+    // Exit tracking
+    peakMultiple: real('peak_multiple').default(1).notNull(),
+    tpHit: boolean('tp_hit').default(false).notNull(), // took the moon-bag partial already?
+    proceedsLamports: numeric('proceeds_lamports', { precision: 30, scale: 0 }).default('0').notNull(), // SOL out
+    realizedPnlLamports: numeric('realized_pnl_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
+    exitReason: varchar('exit_reason', { length: 16 }), // tp | sl | trail | rug | manual
+    lastError: text('last_error'),
+    openedAt: timestamp('opened_at', { withTimezone: true }).defaultNow().notNull(),
+    lastCheckedAt: timestamp('last_checked_at', { withTimezone: true }),
+    closedAt: timestamp('closed_at', { withTimezone: true }),
+  },
+  (table) => [
+    index('positions_user_status_idx').on(table.telegramUserId, table.status),
+    index('positions_status_idx').on(table.status),
+    uniqueIndex('positions_user_candidate_idx').on(table.telegramUserId, table.candidateId),
+  ]
+);
+
+// 16. Trades (individual fills: the buy and each sell leg of a position)
+export const trades = pgTable(
+  'trades',
+  {
+    id: serial('id').primaryKey(),
+    positionId: integer('position_id').notNull(),
+    telegramUserId: varchar('telegram_user_id', { length: 64 }).notNull(),
+    side: varchar('side', { length: 8 }).notNull(), // buy | sell
+    kind: varchar('kind', { length: 16 }).notNull(), // entry | tp | sl | trail | rug | manual
+    tokensRaw: numeric('tokens_raw', { precision: 40, scale: 0 }).default('0').notNull(),
+    solLamports: numeric('sol_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
+    txSig: varchar('tx_sig', { length: 128 }),
+    success: boolean('success').default(true).notNull(),
+    error: text('error'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index('trades_position_idx').on(table.positionId)]
+);
+
 // Relations
 export const walletsRelations = relations(wallets, ({ many }) => ({
   labels: many(walletLabels),
