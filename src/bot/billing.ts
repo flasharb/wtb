@@ -21,7 +21,7 @@ export async function isSubscriber(uid: string): Promise<boolean> {
 }
 
 /** /subscribe, /renew, /vip — send a Telegram Stars invoice. */
-async function sendInvoice(ctx: Context) {
+export async function sendSubscribeInvoice(ctx: Context) {
   if (!config.VIP_CHANNEL_ID) {
     await ctx.reply('VIP is not available yet — hang tight. 🔧');
     return;
@@ -132,7 +132,7 @@ export function registerBilling(bot: Bot) {
     });
   }
 
-  bot.command(['subscribe', 'renew', 'vip'], (ctx) => sendInvoice(ctx));
+  bot.command(['subscribe', 'renew', 'vip'], (ctx) => sendSubscribeInvoice(ctx));
   bot.command('membership', (ctx) => showMembership(ctx));
   bot.on('pre_checkout_query', async (ctx) => {
     try {

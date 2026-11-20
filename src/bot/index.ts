@@ -5,7 +5,7 @@ import { chats, wallets, walletLabels, buys, tokens, signals, signalOutcomes, us
 import { eq, desc, and, sql, gte, lte } from 'drizzle-orm';
 import { buildSettingsMenu } from './menus.js';
 import { formatShortAddress, formatUsd, formatTimeAgo, tokenTicker, formatAge } from './formatters.js';
-import { registerBilling } from './billing.js';
+import { registerBilling, sendSubscribeInvoice } from './billing.js';
 
 export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   const bot = new Bot(token || 'dummy_token_for_init');
@@ -141,6 +141,11 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   // 1. /start
   bot.command('start', async (ctx) => {
     await getOrCreateChat(ctx);
+    // Deep link from the teaser's "Unlock VIP" button (t.me/bot?start=subscribe) → go straight to payment.
+    if (ctx.match?.trim() === 'subscribe') {
+      await sendSubscribeInvoice(ctx);
+      return;
+    }
     const welcome =
       `🚀 *Solana Launch Scanner*\n\n` +
       `I scan every new Solana token across Pump.fun, Raydium, Meteora & more — and only alert you on the rare ones that *survive the first week* and pass strict safety:\n\n` +
