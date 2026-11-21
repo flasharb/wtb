@@ -49,8 +49,9 @@ export function buildServer(
     (req: FastifyRequest, body: Buffer, done: (err: Error | null, parsed?: any) => void) => {
       try {
         (req as any).rawBody = body;
-        const json = JSON.parse(body.toString('utf-8'));
-        done(null, json);
+        const text = body.toString('utf-8').trim();
+        // Tolerate an empty body (e.g. a POST with a JSON content-type but no payload).
+        done(null, text ? JSON.parse(text) : {});
       } catch (err: any) {
         done(err, undefined);
       }
