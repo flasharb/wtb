@@ -9,7 +9,8 @@ import { getToken, clearToken } from '@/lib/session';
 import { shortAddr } from '@/lib/format';
 
 type Me = { address: string; tradingWallet: string | null; tradingLive: boolean };
-type WalletInfo = { address: string; balanceSol: number };
+type WalletInfo = { address: string | null; balanceSol: number };
+type Reveal = { mnemonic: string | null; secretKey: string };
 type Config = {
   enabled: boolean; buySol: number; tpPct: number; slPct: number; trailPct: number;
   tpSellPct: number; slippageBps: number; maxConcurrent: number; maxDailyBuys: number; maxBuySol: number;
@@ -38,6 +39,8 @@ export default function AppPage() {
   const [err, setErr] = useState<string | null>(null);
   const [toAddr, setToAddr] = useState('');
   const [amt, setAmt] = useState('');
+  const [reveal, setReveal] = useState<Reveal | null>(null);
+  const [showSecret, setShowSecret] = useState(false);
 
   useEffect(() => setHasToken(!!getToken()), []);
 
@@ -72,6 +75,20 @@ export default function AppPage() {
     try { setCfg(await api<Config>('/trading/config', { method: 'PATCH', body })); }
     catch (e: any) { setErr(e.message); }
     finally { setBusy(false); }
+  };
+
+  const createW = async () => {
+    setBusy(true); setErr(null);
+    try {
+      const r = await api<{ address: string; mnemonic: string; secretKey: string }>('/wallet/create', { method: 'POST' });
+      setReveal({ mnemonic: r.mnemonic, secretKey: r.secretKey }); setShowSecret(false); load();
+    } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
+  };
+
+  const exportW = async () => {
+    setBusy(true); setErr(null);
+    try { setReveal(await api<Reveal>('/wallet/export', { method: 'POST' })); setShowSecret(false); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   };
 
   const doWithdraw = async () => {
@@ -113,6 +130,29 @@ export default function AppPage() {
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
+          {/* Seed/key reveal — shown once on create, or on export */}
+          {reveal && (
+            <div className="card border-gold/50 lg:col-span-2">
+              <h3 className="font-display text-lg font-bold text-gold">🔑 Save your wallet keys</h3>
+              <p className="mt-1 text-sm text-red-300">Anyone with these can take your funds. Save them offline — we can’t recover them for you. This is a hot wallet; only keep what you’re actively trading.</p>
+              {reveal.mnemonic && (
+                <div className="mt-3">
+                  <p className="text-xs text-brand-100/60">Seed phrase (import into Phantom/Solflare)</p>
+                  <div className={`mt-1 rounded-lg bg-ink-950/60 p-3 text-sm leading-relaxed ${showSecret ? '' : 'select-none blur-sm'}`}>{reveal.mnemonic}</div>
+                </div>
+              )}
+              <div className="mt-3">
+                <p className="text-xs text-brand-100/60">Private key</p>
+                <code className={`mt-1 block break-all rounded-lg bg-ink-950/60 p-2 text-xs ${showSecret ? '' : 'select-none blur-sm'}`}>{reveal.secretKey}</code>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button className="btn-ghost" onClick={() => setShowSecret((s) => !s)}>{showSecret ? 'Hide' : 'Reveal'}</button>
+                <button className="btn-ghost" onClick={() => navigator.clipboard?.writeText(reveal.mnemonic || reveal.secretKey)}>Copy</button>
+                <button className="btn-primary" onClick={() => { setReveal(null); setShowSecret(false); }}>I’ve saved it</button>
+              </div>
+            </div>
+          )}
+
           {/* Autopilot */}
           <div className="card lg:col-span-2">
             <div className="flex items-center justify-between">
@@ -143,18 +183,24 @@ export default function AppPage() {
           {/* Wallet */}
           <div className="card">
             <h2 className="font-display text-lg font-bold text-white">💰 Trading wallet</h2>
-            {!wallet ? <p className="mt-4 text-brand-100/50">Loading…</p> : (
+            {!wallet ? <p className="mt-4 text-brand-100/50">Loading…</p> : wallet.address === null ? (
+              <div className="mt-3">
+                <p className="text-sm text-brand-100/60">Create your in-app trading wallet. You’ll get a seed phrase to save — it runs autopilot and you can withdraw to your own wallet anytime.</p>
+                <button className="btn-primary mt-4" onClick={createW} disabled={busy}>{busy ? 'Creating…' : 'Create wallet'}</button>
+              </div>
+            ) : (
               <>
                 <p className="mt-3 text-sm text-brand-100/60">Balance</p>
                 <p className="font-display text-2xl font-bold text-white">{wallet.balanceSol.toFixed(4)} SOL</p>
                 <p className="mt-3 text-xs text-brand-100/60">Deposit SOL to:</p>
-                <code className="mt-1 block cursor-pointer break-all rounded-lg bg-ink-950/60 p-2 text-xs text-brand-200" onClick={() => navigator.clipboard?.writeText(wallet.address)}>{wallet.address}</code>
+                <code className="mt-1 block cursor-pointer break-all rounded-lg bg-ink-950/60 p-2 text-xs text-brand-200" onClick={() => navigator.clipboard?.writeText(wallet.address || '')}>{wallet.address}</code>
                 <div className="mt-4 space-y-2">
                   <input className="w-full rounded-lg border border-ink-border bg-ink-950/60 p-2 text-sm" placeholder="Withdraw to address" value={toAddr} onChange={(e) => setToAddr(e.target.value)} />
                   <div className="flex gap-2">
                     <input className="w-full rounded-lg border border-ink-border bg-ink-950/60 p-2 text-sm" placeholder="Amount SOL" value={amt} onChange={(e) => setAmt(e.target.value)} />
                     <button className="btn-ghost shrink-0" onClick={doWithdraw} disabled={busy || !toAddr || !amt}>Withdraw</button>
                   </div>
+                  <button className="btn-ghost w-full text-xs" onClick={exportW} disabled={busy}>🔑 Export seed / private key</button>
                 </div>
               </>
             )}

@@ -6,7 +6,7 @@ import { db } from '../db/index.js';
 import { positions } from '../db/schema.js';
 import { tokenTicker } from '../bot/formatters.js';
 import { tradingLive } from '../trading/engine.js';
-import { getOrCreateWallet, getPublicKey, getBalanceSol, withdrawSol } from '../trading/wallet.js';
+import { getPublicKey, getBalanceSol, withdrawSol, createWallet, exportWallet } from '../trading/wallet.js';
 import { getOrCreateConfig, updateConfig, TradingConfig } from '../trading/store.js';
 import { lamportsToSol } from '../trading/solana.js';
 
@@ -74,13 +74,35 @@ export function registerAccountRoutes(server: FastifyInstance) {
     return { data: { address: u, tradingWallet: wallet, tradingLive: tradingLive() } };
   });
 
-  // ---- Wallet (mirrors bot /wallet) ----
+  // ---- Wallet ----
+  // Does NOT auto-create — the web shows a "Create wallet" step so the user can save the seed.
   server.get('/api/v1/wallet', { preHandler: requireAuth }, async (req, reply) => {
     if (!tradingLive()) return unavailable(reply);
-    const { publicKey } = await getOrCreateWallet(userId(req));
+    const address = await getPublicKey(userId(req));
+    if (!address) return { data: { address: null, balanceSol: 0 } };
     let balanceSol = 0;
-    try { balanceSol = await getBalanceSol(publicKey); } catch { /* rpc blip */ }
-    return { data: { address: publicKey, balanceSol } };
+    try { balanceSol = await getBalanceSol(address); } catch { /* rpc blip */ }
+    return { data: { address, balanceSol } };
+  });
+
+  // Create the exportable trading wallet; returns seed + key ONCE.
+  server.post('/api/v1/wallet/create', { preHandler: requireAuth }, async (req, reply) => {
+    if (!tradingLive()) return unavailable(reply);
+    try {
+      return { data: await createWallet(userId(req)) };
+    } catch (e: any) {
+      return reply.status(409).send({ error: { code: 'WALLET_EXISTS', message: e?.message ?? 'Wallet exists' } });
+    }
+  });
+
+  // Reveal the seed phrase + private key of the existing wallet (re-auth gated upstream later).
+  server.post('/api/v1/wallet/export', { preHandler: requireAuth }, async (req, reply) => {
+    if (!tradingLive()) return unavailable(reply);
+    try {
+      return { data: await exportWallet(userId(req)) };
+    } catch (e: any) {
+      return reply.status(404).send({ error: { code: 'NOT_FOUND', message: e?.message ?? 'No wallet' } });
+    }
   });
 
   server.post('/api/v1/wallet/withdraw', { preHandler: requireAuth }, async (req, reply) => {

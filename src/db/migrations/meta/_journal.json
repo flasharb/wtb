@@ -50,6 +50,13 @@
       "when": 1795236861852,
       "tag": "0006_parched_amphibian",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795290839359,
+      "tag": "0007_steep_tyrannus",
+      "breakpoints": true
     }
   ]
 }

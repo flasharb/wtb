@@ -281,6 +281,9 @@ export const tradingWallets = pgTable(
     publicKey: varchar('public_key', { length: 64 }).notNull(),
     // AES-256-GCM payload: ivHex:authTagHex:cipherHex of the 64-byte secret key.
     encryptedSecret: text('encrypted_secret').notNull(),
+    // Encrypted BIP39 mnemonic (null for legacy random keys, which export as a private key only).
+    encryptedMnemonic: text('encrypted_mnemonic'),
+    derivation: varchar('derivation', { length: 48 }), // e.g. bip39:m/44'/501'/0'/0' | legacy-random
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [uniqueIndex('trading_wallets_user_idx').on(table.telegramUserId)]
