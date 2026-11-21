@@ -5,6 +5,7 @@ import { IngestionProcessor } from './processor.js';
 import { classifySolanaSwap } from '../classify/solana.js';
 import { classifyEthereumTx, EthereumTxPayload } from '../classify/ethereum.js';
 import { DetectedBuy } from '../classify/types.js';
+import { registerApiRoutes } from '../api/routes.js';
 
 /** Optional callback invoked after a buy is persisted (signal evaluation + alerting). */
 export type OnBuyRecorded = (buy: DetectedBuy) => Promise<void> | void;
@@ -159,6 +160,9 @@ export function buildServer(
 
     return reply.status(200).send({ ok: true, processed: results });
   });
+
+  // Public JSON API (track record / calls) consumed by the web app.
+  registerApiRoutes(server);
 
   return server;
 }
