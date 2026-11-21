@@ -1,0 +1,6 @@
+# api.stackalpha.xyz → the backend API (app:3000), with automatic HTTPS.
+# Requires: DNS A record api.stackalpha.xyz → the droplet, and ports 80/443 open.
+api.stackalpha.xyz {
+	encode gzip zstd
+	reverse_proxy app:3000
+}
