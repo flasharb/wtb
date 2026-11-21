@@ -43,11 +43,28 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
   // Quick-nav buttons shown under replies so users tap instead of typing commands.
   function navKeyboard() {
     return new InlineKeyboard()
+      .text('🤖 Autopilot', 'cmd_autotrade')
+      .row()
       .text('🚀 Recent', 'cmd_recent')
       .text('🔭 Radar', 'cmd_top')
       .row()
       .text('🏆 Track record', 'cmd_performance')
       .text('📊 Status', 'cmd_status');
+  }
+
+  // Full button menu shown under /start — every action is a tap, no typing.
+  function startKeyboard() {
+    return new InlineKeyboard()
+      .text('🤖 Autopilot sniper', 'cmd_autotrade')
+      .row()
+      .text('🚀 Recent calls', 'cmd_recent')
+      .text('🔭 Radar', 'cmd_top')
+      .row()
+      .text('🏆 Track record', 'cmd_performance')
+      .text('📊 Status', 'cmd_status')
+      .row()
+      .text('💰 Wallet', 'cmd_wallet')
+      .text('⭐ Go VIP', 'cmd_subscribe');
   }
 
   async function replyRecent(ctx: Context, limit = 10) {
@@ -155,22 +172,15 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     }
     const welcome =
       `🚀 *Solana Launch Scanner*\n\n` +
-      `I scan every new Solana token across Pump.fun, Raydium, Meteora & more — and only alert you on the rare ones that *survive the first week* and pass strict safety:\n\n` +
-      `✅ 7–30 days old (made it past the rug window)\n` +
-      `✅ ≥ $30k liquidity · real volume\n` +
-      `✅ Mint & freeze authority revoked\n` +
-      `✅ No honeypot traits · healthy holder spread\n\n` +
-      `*Commands*\n` +
-      `• /recent — latest launches that passed\n` +
-      `• /top — biggest launches on the radar\n` +
-      `• /status — scanner health\n` +
-      `• /mute · /unmute — pause or resume alerts\n` +
-      `• /performance — the track record\n` +
-      `🤖 /autotrade — *VIP autopilot sniper* (auto-buy calls, auto-exit on your TP/SL)\n\n` +
-      `You're all set — I'll ping you when a clean launch shows up. 🔔\n\n` +
-      `_Not financial advice. Whale buys can be bait. Verify before acting._`;
+      `I scan every new Solana token across Pump.fun, Raydium, Meteora & more — and only call the rare ones that *survive the rug window* and pass strict safety:\n\n` +
+      `✅ Made it past the early rug window\n` +
+      `✅ Real liquidity & volume\n` +
+      `✅ Mint & freeze revoked · no honeypot · healthy holders\n\n` +
+      `🤖 *Autopilot* can auto-buy every call and auto-exit on your take-profit / stop-loss — all from buttons.\n\n` +
+      `Tap a button to begin 👇\n\n` +
+      `_Not financial advice. Crypto is risky — never invest more than you can afford to lose._`;
 
-    await ctx.reply(welcome, { parse_mode: 'Markdown', reply_markup: navKeyboard() });
+    await ctx.reply(welcome, { parse_mode: 'Markdown', reply_markup: startKeyboard() });
   });
 
   // 2. /chains
@@ -358,6 +368,11 @@ export function createBot(token: string = config.TELEGRAM_BOT_TOKEN): Bot {
     if (data === 'cmd_performance') {
       await replyPerformance(ctx);
       await ctx.answerCallbackQuery();
+      return;
+    }
+    if (data === 'cmd_subscribe') {
+      await sendSubscribeInvoice(ctx);
+      await ctx.answerCallbackQuery().catch(() => {});
       return;
     }
 

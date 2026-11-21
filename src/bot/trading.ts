@@ -268,6 +268,17 @@ export function registerTrading(bot: Bot) {
   // Callback routing for autopilot buttons; pass everything else through.
   bot.on('callback_query:data', async (ctx, next) => {
     const data = ctx.callbackQuery.data;
+    // Entry points from the /start menu and nav footer.
+    if (data === 'cmd_autotrade') {
+      await sendDashboard(ctx);
+      await ctx.answerCallbackQuery().catch(() => {});
+      return;
+    }
+    if (data === 'cmd_wallet') {
+      await sendWallet(ctx);
+      await ctx.answerCallbackQuery().catch(() => {});
+      return;
+    }
     if (!data.startsWith('at_')) return next();
     const uid = uidOf(ctx);
 
