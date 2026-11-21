@@ -44,10 +44,13 @@ export function Header() {
               ))}
             </nav>
             <div className="mt-2 flex flex-col gap-2 border-t border-ink-border pt-3">
+              <Link href="/app" className="btn-primary w-full">
+                Launch app
+              </Link>
               <a href={site.freeChannelUrl} target="_blank" rel="noopener" className="btn-ghost w-full">
                 Free calls channel
               </a>
-              <a href={site.botUrl} target="_blank" rel="noopener" className="btn-primary w-full">
+              <a href={site.botUrl} target="_blank" rel="noopener" className="btn-ghost w-full">
                 Open the bot
               </a>
             </div>
