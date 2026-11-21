@@ -42,7 +42,24 @@ export default function AppPage() {
   const [reveal, setReveal] = useState<Reveal | null>(null);
   const [showSecret, setShowSecret] = useState(false);
 
+  const [mobileNoWallet, setMobileNoWallet] = useState(false);
+
   useEffect(() => setHasToken(!!getToken()), []);
+
+  // On a mobile browser with no injected wallet, the extension flow can't work — offer a deep
+  // link that reopens the site inside Phantom's in-app browser, where connecting works.
+  useEffect(() => {
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+    const injected =
+      typeof window !== 'undefined' && (((window as any).phantom?.solana) || ((window as any).solana?.isPhantom));
+    setMobileNoWallet(/Android|iPhone|iPad|iPod/i.test(ua) && !injected);
+  }, []);
+
+  const openInPhantom = () => {
+    const url = encodeURIComponent(window.location.href);
+    const ref = encodeURIComponent(window.location.origin);
+    window.location.href = `https://phantom.app/ul/browse/${url}?ref=${ref}`;
+  };
 
   const load = useCallback(async () => {
     try {
@@ -120,7 +137,17 @@ export default function AppPage() {
         <div className="card text-center">
           <h1 className="font-display text-2xl font-bold text-white">Connect your wallet</h1>
           <p className="mt-2 text-brand-100/70">Sign in with Phantom, Solflare or Backpack — no email, no password.</p>
-          <div className="mt-6 flex justify-center"><WalletMultiButton style={{ background: '#7c3aed', borderRadius: 12 }} /></div>
+          {mobileNoWallet ? (
+            <div className="mt-6">
+              <button className="btn-primary w-full" onClick={openInPhantom}>Open in Phantom app</button>
+              <p className="mt-2 text-xs text-brand-100/50">
+                On mobile you connect inside the Phantom app’s browser. This opens Stack Alpha there. Using Solflare instead? Tap “Select Wallet”.
+              </p>
+              <div className="mt-4 flex justify-center"><WalletMultiButton style={{ background: 'transparent', border: '1px solid #2c1b60', borderRadius: 12 }} /></div>
+            </div>
+          ) : (
+            <div className="mt-6 flex justify-center"><WalletMultiButton style={{ background: '#7c3aed', borderRadius: 12 }} /></div>
+          )}
         </div>
       ) : !hasToken ? (
         <div className="card text-center">
