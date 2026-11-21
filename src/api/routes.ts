@@ -1,5 +1,7 @@
 import { FastifyInstance, FastifyReply } from 'fastify';
 import { getTrackRecord, getRecentCalls, getTopCalls } from './stats.js';
+import { registerAuthRoutes } from './auth.js';
+import { registerAccountRoutes } from './account.js';
 
 // Public JSON API consumed by the web app (and any future client). Read-only, CORS-open,
 // CDN-cacheable. Namespaced under /api/ so it never collides with the ingest/webhook routes.
@@ -8,16 +10,21 @@ function setCache(reply: FastifyReply, seconds = 60) {
 }
 
 export function registerApiRoutes(server: FastifyInstance) {
-  // Permissive CORS for the public API only, plus OPTIONS preflight short-circuit.
+  // CORS for the whole API (public reads + authed Bearer calls from the web), + OPTIONS preflight.
   server.addHook('onRequest', async (req, reply) => {
     if (!req.url.startsWith('/api/')) return;
     reply.header('Access-Control-Allow-Origin', '*');
-    reply.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    reply.header('Access-Control-Allow-Headers', 'Content-Type');
+    reply.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+    reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    reply.header('Access-Control-Max-Age', '86400');
     if (req.method === 'OPTIONS') {
       reply.status(204).send();
     }
   });
+
+  // Web app: SIWS auth + authed account/trading API (mirrors the Telegram bot).
+  registerAuthRoutes(server);
+  registerAccountRoutes(server);
 
   server.get('/api/health', async () => ({ status: 'ok', ts: new Date().toISOString() }));
 

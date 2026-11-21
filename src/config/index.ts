@@ -124,6 +124,12 @@ const envSchema = z.object({
   TRADE_DEFAULT_MAX_CONCURRENT: z.coerce.number().default(5),
   TRADE_DEFAULT_MAX_DAILY_BUYS: z.coerce.number().default(20),
 
+  // ---- Web auth (Sign-In With Solana) ----
+  // HMAC secret for session JWTs. Empty = web auth endpoints return 503 (disabled).
+  AUTH_JWT_SECRET: z.string().default(''),
+  AUTH_JWT_TTL_DAYS: z.coerce.number().default(30),
+  SIWS_DOMAIN: z.string().default('stackalpha.xyz'),
+
   // Wallet selection & budget filters
   MVP_WALLET_CAP: z.coerce.number().default(1000),
   MIN_WALLET_USD: z.coerce.number().default(100000),
