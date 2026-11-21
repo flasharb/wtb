@@ -67,6 +67,48 @@ Registration is **Sign-In With Solana** (connect wallet + sign a message). No pa
 - **Boundaries:** the web never connects to the DB or RPC directly; it only calls the API. The
   Telegram bot calls the **same core services** in-process (not over HTTP) for low latency.
 
+### 3.1 Code structure — modular monolith
+
+One deployable backend, organized into **self-contained modules**. Each module owns its folder and its
+own `types · api (routes) · controllers · services · repo`, talks to other modules only through their
+**service interfaces or the event bus** (never another module's repo/DB), and is independently testable.
+The web mirrors this with **feature modules** plus a **shared UI kit** (buttons, fields, modals…).
+
+Full spec, per-module A→Z plans, conventions, and the shared-UI inventory live in
+**[`docs/modules/README.md`](./modules/README.md)** and the per-module docs under `docs/modules/`.
+
+```
+src/
+  modules/
+    core/          config, db, redis, logger, errors, http, events, crypto   (shared foundation)
+    identity/      users, identities, account linking
+    auth/          SIWS, nonces, sessions/JWT, guards
+    wallet/        exportable trading wallet, keyvault, deposit/withdraw/export
+    market/        providers: jupiter, birdeye, dexscreener, gecko, safety
+    scanner/       launch discovery → vetting → calls → track record
+    trading/       autopilot engine, config, positions, exits
+    fees/          performance-fee calc, ledger, treasury sweep
+    billing/       entitlements/VIP, crypto + Stars payments
+    notifications/ Telegram bot surface + notification dispatch
+  app.ts           wires modules into the Fastify server + schedulers
+web/
+  modules/<feature>/   (ui, api-client, hooks, types per feature)
+  components/ui/        shared kit: Button, Field, Modal, Card, Toast, WalletButton…
+```
+
+Each backend module file set:
+
+```
+modules/<name>/
+  <name>.types.ts        domain types, DTOs, Zod schemas, event payloads
+  <name>.repo.ts         data access (Drizzle) — the ONLY place that touches this module's tables
+  <name>.service.ts      business logic — the module's public interface to other modules
+  <name>.controller.ts   HTTP handlers: validate → call service → format response
+  <name>.routes.ts       Fastify route registration (maps paths → controller)
+  <name>.events.ts       event names + payload types this module emits/consumes (optional)
+  index.ts               the module's public exports (service + register(routes))
+```
+
 ---
 
 ## 4. Identity & authentication
