@@ -8,9 +8,23 @@ import { isSubscriber } from './billing.js';
 import { tradingLive } from '../trading/engine.js';
 import { getOrCreateWallet, getPublicKey, getBalanceSol, withdrawSol } from '../trading/wallet.js';
 import { lamportsToSol } from '../trading/solana.js';
-import { getOrCreateConfig, updateConfig } from '../trading/store.js';
+import { getOrCreateConfig, updateConfig, TradingConfig } from '../trading/store.js';
 
 const uidOf = (ctx: Context) => String(ctx.from?.id);
+
+// Tap-to-cycle presets for every autopilot setting (button taps, no typing).
+const PRESETS = {
+  buy: [0.05, 0.1, 0.25, 0.5, 1, 2],
+  tp: [50, 100, 150, 200, 300, 500],
+  sl: [20, 30, 40, 50, 60],
+  trail: [15, 20, 25, 30, 40],
+  moon: [0, 25, 50, 75, 100],
+  slip: [5, 10, 15, 20, 30], // percent
+  max: [1, 2, 3, 5, 10],
+  daily: [5, 10, 20, 50, 100],
+};
+const nextCycle = (cur: number, arr: number[]) => arr.find((v) => v > cur + 1e-9) ?? arr[0];
+const numStr = (n: number) => (Number.isInteger(n) ? String(n) : String(Number(n.toFixed(3))));
 
 async function canTrade(ctx: Context): Promise<boolean> {
   const uid = uidOf(ctx);
@@ -18,9 +32,22 @@ async function canTrade(ctx: Context): Promise<boolean> {
   return isSubscriber(uid);
 }
 
-function dashKeyboard(enabled: boolean) {
+function dashKeyboard(cfg: TradingConfig) {
+  const slip = cfg.slippageBps / 100;
   return new InlineKeyboard()
-    .text(enabled ? '🔴 Disable autopilot' : '🟢 Enable autopilot', 'at_toggle')
+    .text(cfg.enabled ? '🔴 Disable autopilot' : '🟢 Enable autopilot', 'at_toggle')
+    .row()
+    .text(`💰 Buy ${numStr(Number(cfg.buySol))} SOL`, 'at_cyc_buy')
+    .text(`🎯 TP +${cfg.tpPct}%`, 'at_cyc_tp')
+    .row()
+    .text(`🛑 SL -${cfg.slPct}%`, 'at_cyc_sl')
+    .text(`📉 Trail ${cfg.trailPct}%`, 'at_cyc_trail')
+    .row()
+    .text(`🌙 Moon-bag ${cfg.tpSellPct}%`, 'at_cyc_moon')
+    .text(`↔️ Slip ${numStr(slip)}%`, 'at_cyc_slip')
+    .row()
+    .text(`🔢 Max ${cfg.maxConcurrent}`, 'at_cyc_max')
+    .text(`📆 Daily ${cfg.maxDailyBuys}`, 'at_cyc_daily')
     .row()
     .text('💰 Wallet', 'at_wallet')
     .text('📈 Positions', 'at_positions')
@@ -58,11 +85,7 @@ async function dashboardText(uid: string): Promise<string> {
     `• Trailing stop: *${cfg.trailPct}%* off peak\n` +
     `• Slippage: *${(cfg.slippageBps / 100).toFixed(1)}%*\n` +
     `• Daily cap: *${cfg.maxDailyBuys}* buys\n\n` +
-    `*Adjust:*\n` +
-    `/setbuy 0.25 · /settp 150 · /setsl 35\n` +
-    `/settrail 25 · /setmoonbag 50 · /setslippage 15\n` +
-    `/setmax 5 · /setdaily 20\n\n` +
-    `Fund your wallet with /wallet, then Enable. Withdraw anytime with /withdraw.`
+    `_Tap any button below to change a setting._ Fund with 💰 Wallet, then Enable.`
   );
 }
 
@@ -79,7 +102,7 @@ async function sendDashboard(ctx: Context) {
     /* will surface in /wallet */
   }
   const cfg = await getOrCreateConfig(uid);
-  await ctx.reply(await dashboardText(uid), { parse_mode: 'Markdown', reply_markup: dashKeyboard(cfg.enabled) });
+  await ctx.reply(await dashboardText(uid), { parse_mode: 'Markdown', reply_markup: dashKeyboard(cfg) });
 }
 
 async function sendWallet(ctx: Context) {
@@ -178,8 +201,8 @@ async function applySetter(ctx: Context, label: string, v: number | null, ok: bo
     return;
   }
   await getOrCreateConfig(uidOf(ctx));
-  await updateConfig(uidOf(ctx), patch);
-  await ctx.reply(`✅ ${label} updated.`, { reply_markup: dashKeyboard((await getOrCreateConfig(uidOf(ctx))).enabled) });
+  const updated = await updateConfig(uidOf(ctx), patch);
+  await ctx.reply(`✅ ${label} updated.`, { reply_markup: dashKeyboard(updated) });
 }
 
 export function registerTrading(bot: Bot) {
@@ -272,9 +295,46 @@ export function registerTrading(bot: Bot) {
       const updated = await updateConfig(uid, { enabled: !cfg.enabled });
       await ctx.answerCallbackQuery({ text: updated.enabled ? '🟢 Autopilot ON' : '🔴 Autopilot OFF' });
       try {
-        await ctx.editMessageText(await dashboardText(uid), { parse_mode: 'Markdown', reply_markup: dashKeyboard(updated.enabled) });
+        await ctx.editMessageText(await dashboardText(uid), { parse_mode: 'Markdown', reply_markup: dashKeyboard(updated) });
       } catch {
         /* message unchanged */
+      }
+      return;
+    }
+
+    // Tap-to-cycle a setting → update + re-render the dashboard in place.
+    if (data.startsWith('at_cyc_')) {
+      const key = data.slice('at_cyc_'.length);
+      const cfg = await getOrCreateConfig(uid);
+      let patch: Partial<TradingConfig> = {};
+      let label = '';
+      if (key === 'buy') {
+        const nv = nextCycle(Number(cfg.buySol), PRESETS.buy.filter((v) => v <= config.TRADE_MAX_BUY_SOL));
+        patch = { buySol: String(nv) }; label = `Buy ${numStr(nv)} SOL`;
+      } else if (key === 'tp') {
+        const nv = nextCycle(cfg.tpPct, PRESETS.tp); patch = { tpPct: nv }; label = `Take-profit +${nv}%`;
+      } else if (key === 'sl') {
+        const nv = nextCycle(cfg.slPct, PRESETS.sl); patch = { slPct: nv }; label = `Stop-loss -${nv}%`;
+      } else if (key === 'trail') {
+        const nv = nextCycle(cfg.trailPct, PRESETS.trail); patch = { trailPct: nv }; label = `Trailing ${nv}%`;
+      } else if (key === 'moon') {
+        const nv = nextCycle(cfg.tpSellPct, PRESETS.moon); patch = { tpSellPct: nv }; label = `Moon-bag sell ${nv}% at TP`;
+      } else if (key === 'slip') {
+        const nv = nextCycle(cfg.slippageBps / 100, PRESETS.slip); patch = { slippageBps: Math.round(nv * 100) }; label = `Slippage ${nv}%`;
+      } else if (key === 'max') {
+        const nv = nextCycle(cfg.maxConcurrent, PRESETS.max); patch = { maxConcurrent: nv }; label = `Max concurrent ${nv}`;
+      } else if (key === 'daily') {
+        const nv = nextCycle(cfg.maxDailyBuys, PRESETS.daily); patch = { maxDailyBuys: nv }; label = `Daily cap ${nv}`;
+      } else {
+        await ctx.answerCallbackQuery();
+        return;
+      }
+      const updated = await updateConfig(uid, patch);
+      await ctx.answerCallbackQuery({ text: `✅ ${label}` });
+      try {
+        await ctx.editMessageText(await dashboardText(uid), { parse_mode: 'Markdown', reply_markup: dashKeyboard(updated) });
+      } catch {
+        /* unchanged */
       }
       return;
     }
@@ -296,7 +356,7 @@ export function registerTrading(bot: Bot) {
     if (data === 'at_refresh') {
       const cfg = await getOrCreateConfig(uid);
       try {
-        await ctx.editMessageText(await dashboardText(uid), { parse_mode: 'Markdown', reply_markup: dashKeyboard(cfg.enabled) });
+        await ctx.editMessageText(await dashboardText(uid), { parse_mode: 'Markdown', reply_markup: dashKeyboard(cfg) });
       } catch {
         /* unchanged */
       }
