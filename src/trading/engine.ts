@@ -5,10 +5,15 @@ import { tradingConfigs, positions, trades, launchCandidates } from '../db/schem
 import { config } from '../config/index.js';
 import { tokenTicker } from '../bot/formatters.js';
 import { encryptionReady } from './crypto.js';
-import { getKeypair, getPublicKey, getBalanceSol } from './wallet.js';
+import { getKeypair, getPublicKey, getBalanceSol, getTokenBalanceRaw } from './wallet.js';
 import { buyToken, sellToken, quoteValueLamports } from './jupiter.js';
 import { solToLamports, lamportsToSol } from './solana.js';
 import { getOrCreateConfig, dailyBuysUsed, TradingConfig } from './store.js';
+
+/** Sells use a wider slippage floor so exits on fast-dumping tokens actually land. */
+function exitSlippageBps(cfg: TradingConfig): number {
+  return Math.min(5000, Math.max(cfg.slippageBps, config.TRADE_EXIT_SLIPPAGE_BPS));
+}
 
 type Candidate = typeof launchCandidates.$inferSelect;
 type Position = typeof positions.$inferSelect;
@@ -17,7 +22,12 @@ async function dm(bot: Bot, uid: string, text: string) {
   try {
     await bot.api.sendMessage(uid, text, { parse_mode: 'Markdown' });
   } catch {
-    /* user may have blocked the bot */
+    // Markdown-breaking symbol? Retry as plain text so trade alerts never silently drop.
+    try {
+      await bot.api.sendMessage(uid, text.replace(/[*_`]/g, ''));
+    } catch {
+      /* user may have blocked the bot */
+    }
   }
 }
 
@@ -71,6 +81,28 @@ export async function autoBuyForSignal(bot: Bot, candidate: Candidate): Promise<
       const lamports = solToLamports(buySol);
       const { sig, tokensRaw, costLamports } = await buyToken(kp, candidate.tokenAddress, lamports, cfg.slippageBps);
 
+      // Source of truth for how many tokens we actually hold = the on-chain balance after the
+      // swap, NOT the quoted outAmount (slippage means the real fill differs). This is what the
+      // exit monitor must sell, or sells fail with "insufficient funds".
+      let heldRaw = tokensRaw;
+      try {
+        const actual = await getTokenBalanceRaw(kp.publicKey, candidate.tokenAddress);
+        if (actual > 0n) heldRaw = actual.toString();
+      } catch {
+        /* fall back to the quoted amount; the sell path re-clamps to live balance anyway */
+      }
+      // Cost basis includes the priority + base fee so PnL/break-even reflect real account growth.
+      const basisLamports = Number(costLamports) + config.TRADE_PRIORITY_FEE_LAMPORTS + 5000;
+      // Entry liquidation value = what the full fill would fetch right now. TP/SL are measured
+      // against this (price moves), not cost basis, so the entry spread isn't an instant loss.
+      let baseValue = basisLamports;
+      try {
+        const v = await quoteValueLamports(candidate.tokenAddress, heldRaw, exitSlippageBps(cfg));
+        if (v && v > 0) baseValue = v;
+      } catch {
+        /* transient — fall back to cost basis as the baseline */
+      }
+
       const [pos] = await db
         .insert(positions)
         .values({
@@ -79,11 +111,12 @@ export async function autoBuyForSignal(bot: Bot, candidate: Candidate): Promise<
           tokenAddress: candidate.tokenAddress,
           symbol: candidate.symbol ?? null,
           status: 'open',
-          buySol: lamportsToSol(Number(costLamports)).toFixed(9),
-          costLamports: costLamports,
-          tokensBought: tokensRaw,
-          tokensRemaining: tokensRaw,
-          costRemainingLamports: costLamports,
+          buySol: buySol.toFixed(9),
+          costLamports: String(basisLamports),
+          tokensBought: heldRaw,
+          tokensRemaining: heldRaw,
+          costRemainingLamports: String(basisLamports),
+          baseValueLamports: String(baseValue),
           buyTxSig: sig,
           peakMultiple: 1,
         })
@@ -94,7 +127,7 @@ export async function autoBuyForSignal(bot: Bot, candidate: Candidate): Promise<
         telegramUserId: uid,
         side: 'buy',
         kind: 'entry',
-        tokensRaw,
+        tokensRaw: heldRaw,
         solLamports: costLamports,
         txSig: sig,
       });
@@ -169,8 +202,14 @@ export async function monitorPositions(bot: Bot): Promise<number> {
         }
         nullStreak.delete(p.id); // healthy quote — reset the failure streak
 
-        const costRem = Number(p.costRemainingLamports);
-        const mult = costRem > 0 ? value / costRem : 1;
+        // Multiple is measured against the entry liquidation value (scaled to the still-held
+        // fraction), so TP/SL track real price movement — not the fixed entry spread. Falls back
+        // to cost basis for legacy rows written before base_value existed.
+        const totalCost = Number(p.costLamports);
+        const remFrac = totalCost > 0 ? Number(p.costRemainingLamports) / totalCost : 1;
+        const baseFull = Number(p.baseValueLamports) > 0 ? Number(p.baseValueLamports) : Number(p.costLamports);
+        const baseRem = baseFull * remFrac;
+        const mult = baseRem > 0 ? value / baseRem : 1;
         const peak = Math.max(p.peakMultiple, mult);
 
         const slFloor = 1 - cfg.slPct / 100;
@@ -219,16 +258,41 @@ async function sellAndSettle(
   const ticker = tokenTicker(p.symbol, p.tokenAddress);
   try {
     const kp = await getKeypair(p.telegramUserId);
-    const { sig, solLamports } = await sellToken(kp, p.tokenAddress, tokensToSell.toString(), cfg.slippageBps);
+
+    // Clamp to the live on-chain balance so a sell never exceeds what we actually hold (slippage,
+    // rounding, dust, or a manual sale). For a full exit, dump the entire real balance.
+    let actualHeld: bigint | null = null;
+    try {
+      actualHeld = await getTokenBalanceRaw(kp.publicKey, p.tokenAddress);
+    } catch {
+      /* RPC blip — fall back to our tracked amount */
+    }
+    if (actualHeld !== null && actualHeld <= 0n) {
+      // Nothing left on-chain — reconcile and close so we stop retrying a dead position.
+      await db
+        .update(positions)
+        .set({
+          status: 'closed', exitReason: reason, tokensRemaining: '0', costRemainingLamports: '0',
+          realizedPnlLamports: String(Number(p.proceedsLamports) - Number(p.costLamports)),
+          closedAt: new Date(), lastCheckedAt: new Date(), lastError: 'No tokens on-chain at exit',
+        })
+        .where(eq(positions.id, p.id));
+      return 1;
+    }
+    let sellAmt = tokensToSell;
+    if (actualHeld !== null) sellAmt = closeAfter ? actualHeld : (tokensToSell <= actualHeld ? tokensToSell : actualHeld);
+    if (sellAmt <= 0n) return 0;
+
+    const { sig, solLamports } = await sellToken(kp, p.tokenAddress, sellAmt.toString(), exitSlippageBps(cfg));
     const proceeds = Number(solLamports);
 
     const totalRemaining = BigInt(p.tokensRemaining);
     const costRem = Number(p.costRemainingLamports);
-    const fraction = totalRemaining > 0n ? Number(tokensToSell) / Number(totalRemaining) : 1;
+    const fraction = totalRemaining > 0n ? Math.min(1, Number(sellAmt) / Number(totalRemaining)) : 1;
     const costSold = closeAfter ? costRem : Math.floor(costRem * fraction);
 
     const newProceeds = Number(p.proceedsLamports) + proceeds;
-    const newTokensRemaining = totalRemaining - tokensToSell;
+    const newTokensRemaining = totalRemaining - sellAmt;
     const newCostRemaining = Math.max(0, costRem - costSold);
     const totalCost = Number(p.costLamports);
 
@@ -237,7 +301,7 @@ async function sellAndSettle(
       telegramUserId: p.telegramUserId,
       side: 'sell',
       kind: reason,
-      tokensRaw: tokensToSell.toString(),
+      tokensRaw: sellAmt.toString(),
       solLamports: String(proceeds),
       txSig: sig,
     });

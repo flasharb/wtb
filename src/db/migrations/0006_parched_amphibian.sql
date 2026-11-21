@@ -1,0 +1,1 @@
+ALTER TABLE "positions" ADD COLUMN "base_value_lamports" numeric(30, 0) DEFAULT '0' NOT NULL;

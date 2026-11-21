@@ -326,6 +326,10 @@ export const positions = pgTable(
     tokensRemaining: numeric('tokens_remaining', { precision: 40, scale: 0 }).default('0').notNull(),
     // Cost basis attributed to the still-held tokens (lamports) — shrinks on partial sells.
     costRemainingLamports: numeric('cost_remaining_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
+    // Entry liquidation value (lamports you'd get selling the full fill at entry). TP/SL/trail
+    // multiples are measured against THIS, not cost basis, so the entry spread/price-impact never
+    // counts as an instant loss. PnL still uses cost basis.
+    baseValueLamports: numeric('base_value_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
     buyTxSig: varchar('buy_tx_sig', { length: 128 }),
     // Exit tracking
     peakMultiple: real('peak_multiple').default(1).notNull(),

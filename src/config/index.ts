@@ -119,6 +119,8 @@ const envSchema = z.object({
   TRADE_DEFAULT_TRAIL_PCT: z.coerce.number().default(25), // trailing stop: exit on 25% drop from peak
   TRADE_DEFAULT_TP_SELL_PCT: z.coerce.number().default(50), // sell 50% at TP, let the rest ride (moon-bag)
   TRADE_DEFAULT_SLIPPAGE_BPS: z.coerce.number().default(1500), // 15% — memecoins need room
+  // Exits use a wider floor so a stop-loss/rug sell on a dumping token actually lands.
+  TRADE_EXIT_SLIPPAGE_BPS: z.coerce.number().default(2500), // 25% floor for all sells
   TRADE_DEFAULT_MAX_CONCURRENT: z.coerce.number().default(5),
   TRADE_DEFAULT_MAX_DAILY_BUYS: z.coerce.number().default(20),
 

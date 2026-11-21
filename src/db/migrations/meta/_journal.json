@@ -43,6 +43,13 @@
       "when": 1795213715678,
       "tag": "0005_cynical_morg",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795236861852,
+      "tag": "0006_parched_amphibian",
+      "breakpoints": true
     }
   ]
 }

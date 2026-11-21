@@ -16,12 +16,19 @@ export interface JupQuote {
   [k: string]: unknown;
 }
 
+const FETCH_TIMEOUT_MS = 15000; // never let a hung request stall the exit monitor
+
 function headers(): Record<string, string> {
   const h: Record<string, string> = { 'Content-Type': 'application/json' };
   if (config.JUPITER_API_KEY) h['x-api-key'] = config.JUPITER_API_KEY;
   return h;
 }
 
+/**
+ * Fetch a quote. Returns `null` ONLY for a definitive "no viable route" (liquidity gone).
+ * Transient failures (429 rate-limit, 5xx, network, timeout) THROW so callers retry instead of
+ * mistaking a blip for a rug — otherwise a rate-limit streak would close healthy positions.
+ */
 export async function getQuote(params: {
   inputMint: string;
   outputMint: string;
@@ -35,15 +42,18 @@ export async function getQuote(params: {
     slippageBps: String(params.slippageBps),
     restrictIntermediateTokens: 'true',
   });
-  try {
-    const res = await fetch(`${config.JUPITER_API_URL}/quote?${qs}`, { headers: headers() });
-    if (!res.ok) return null;
+  const res = await fetch(`${config.JUPITER_API_URL}/quote?${qs}`, {
+    headers: headers(),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
+  if (res.ok) {
     const j = (await res.json()) as JupQuote;
     if (!j || !j.outAmount || Number(j.outAmount) <= 0) return null;
     return j;
-  } catch {
-    return null;
   }
+  // 400/404 = no route exists (definitive). Anything else = transient → throw to retry.
+  if (res.status === 400 || res.status === 404) return null;
+  throw new Error(`Jupiter quote HTTP ${res.status}`);
 }
 
 /** Build, sign, send and confirm the swap for a given quote. Returns the tx signature. */
@@ -64,6 +74,7 @@ async function executeSwap(keypair: Keypair, quote: JupQuote): Promise<string> {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   if (!res.ok) {
     const txt = await res.text().catch(() => '');

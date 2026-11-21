@@ -47,6 +47,18 @@ export async function getBalanceSol(pubkey: string): Promise<number> {
   return lamportsToSol(lamports);
 }
 
+/** Live on-chain balance (raw base units) of `mint` held by `owner`. Source of truth for sells. */
+export async function getTokenBalanceRaw(owner: PublicKey | string, mint: string): Promise<bigint> {
+  const ownerPk = typeof owner === 'string' ? new PublicKey(owner) : owner;
+  const res = await connection().getParsedTokenAccountsByOwner(ownerPk, { mint: new PublicKey(mint) });
+  let sum = 0n;
+  for (const { account } of res.value) {
+    const amt = (account.data as any)?.parsed?.info?.tokenAmount?.amount;
+    if (amt) sum += BigInt(amt);
+  }
+  return sum;
+}
+
 /** Sweep/withdraw SOL to an external address. amountSol is gross; a small fee buffer is kept. */
 export async function withdrawSol(
   uid: string,
