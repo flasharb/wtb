@@ -1,13 +1,18 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Logo } from './Logo';
 import { nav, site } from '@/lib/site';
 
 export function Header() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const close = () => setOpen(false);
+
+  // The /app dashboard has its own top bar — don't stack the marketing header there.
+  const hidden = pathname?.startsWith('/app');
 
   // Close the mobile menu on outside click or Escape.
   useEffect(() => {
@@ -23,6 +28,8 @@ export function Header() {
       document.removeEventListener('keydown', onKey);
     };
   }, [open]);
+
+  if (hidden) return null;
 
   return (
     <header className="sticky top-0 z-50 border-b border-ink-border/60 bg-ink-950/80 backdrop-blur">

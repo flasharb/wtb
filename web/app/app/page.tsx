@@ -124,10 +124,7 @@ export default function AppPage() {
     <div className="container-x py-8">
       <div className="mb-6 flex items-center justify-between gap-3">
         <Link href="/" className="font-display text-lg font-bold text-white">Stack<span className="text-brand-400">Alpha</span></Link>
-        <div className="flex items-center gap-2">
-          <WalletMultiButton style={{ background: '#7c3aed', height: 40, borderRadius: 12, fontSize: 14 }} />
-          {hasToken && <button className="btn-ghost" onClick={signOut}>Sign out</button>}
-        </div>
+        {hasToken && <button className="btn-ghost !px-4 !py-2 text-sm" onClick={signOut}>Sign out</button>}
       </div>
 
       {err && <div className="card mb-4 border-red-500/40 text-sm text-red-300">{err}</div>}
@@ -180,6 +177,15 @@ export default function AppPage() {
             </div>
           )}
 
+          {/* Create trading wallet — the single create action, only when none exists */}
+          {wallet && wallet.address === null && !reveal && (
+            <div className="card border-brand-500/50 lg:col-span-2">
+              <h2 className="font-display text-lg font-bold text-white">💰 Create your trading wallet</h2>
+              <p className="mt-2 text-sm text-brand-100/70">A dedicated in-app Solana wallet that runs autopilot. You’ll get a seed phrase to save, and you can withdraw to your own wallet anytime.</p>
+              <button className="btn-primary mt-4 w-full sm:w-auto" onClick={createW} disabled={busy}>{busy ? 'Creating…' : 'Create trading wallet'}</button>
+            </div>
+          )}
+
           {/* Autopilot */}
           <div className="card lg:col-span-2">
             <div className="flex items-center justify-between">
@@ -207,31 +213,24 @@ export default function AppPage() {
             )}
           </div>
 
-          {/* Wallet */}
-          <div className="card">
-            <h2 className="font-display text-lg font-bold text-white">💰 Trading wallet</h2>
-            {!wallet ? <p className="mt-4 text-brand-100/50">Loading…</p> : wallet.address === null ? (
-              <div className="mt-3">
-                <p className="text-sm text-brand-100/60">Create your in-app trading wallet. You’ll get a seed phrase to save — it runs autopilot and you can withdraw to your own wallet anytime.</p>
-                <button className="btn-primary mt-4" onClick={createW} disabled={busy}>{busy ? 'Creating…' : 'Create wallet'}</button>
-              </div>
-            ) : (
-              <>
-                <p className="mt-3 text-sm text-brand-100/60">Balance</p>
-                <p className="font-display text-2xl font-bold text-white">{wallet.balanceSol.toFixed(4)} SOL</p>
-                <p className="mt-3 text-xs text-brand-100/60">Deposit SOL to:</p>
-                <code className="mt-1 block cursor-pointer break-all rounded-lg bg-ink-950/60 p-2 text-xs text-brand-200" onClick={() => navigator.clipboard?.writeText(wallet.address || '')}>{wallet.address}</code>
-                <div className="mt-4 space-y-2">
-                  <input className="w-full rounded-lg border border-ink-border bg-ink-950/60 p-2 text-sm" placeholder="Withdraw to address" value={toAddr} onChange={(e) => setToAddr(e.target.value)} />
-                  <div className="flex gap-2">
-                    <input className="w-full rounded-lg border border-ink-border bg-ink-950/60 p-2 text-sm" placeholder="Amount SOL" value={amt} onChange={(e) => setAmt(e.target.value)} />
-                    <button className="btn-ghost shrink-0" onClick={doWithdraw} disabled={busy || !toAddr || !amt}>Withdraw</button>
-                  </div>
-                  <button className="btn-ghost w-full text-xs" onClick={exportW} disabled={busy}>🔑 Export seed / private key</button>
+          {/* Trading wallet — only once created */}
+          {wallet?.address && (
+            <div className="card">
+              <h2 className="font-display text-lg font-bold text-white">💰 Trading wallet</h2>
+              <p className="mt-3 text-xs text-brand-100/60">Balance</p>
+              <p className="font-display text-2xl font-bold text-white">{wallet.balanceSol.toFixed(4)} SOL</p>
+              <p className="mt-3 text-xs text-brand-100/60">Deposit SOL to this address:</p>
+              <code className="mt-1 block cursor-pointer break-all rounded-lg bg-ink-950/60 p-2.5 text-xs text-brand-200" onClick={() => navigator.clipboard?.writeText(wallet.address || '')}>{wallet.address}</code>
+              <div className="mt-4 space-y-2">
+                <input className="w-full rounded-lg border border-ink-border bg-ink-950/60 p-3 text-sm" placeholder="Withdraw to address" value={toAddr} onChange={(e) => setToAddr(e.target.value)} />
+                <div className="flex gap-2">
+                  <input className="w-full rounded-lg border border-ink-border bg-ink-950/60 p-3 text-sm" inputMode="decimal" placeholder="Amount SOL" value={amt} onChange={(e) => setAmt(e.target.value)} />
+                  <button className="btn-ghost shrink-0" onClick={doWithdraw} disabled={busy || !toAddr || !amt}>Withdraw</button>
                 </div>
-              </>
-            )}
-          </div>
+                <button className="btn-ghost w-full text-xs" onClick={exportW} disabled={busy}>🔑 Export seed / private key</button>
+              </div>
+            </div>
+          )}
 
           {/* Portfolio */}
           <div className="card">
