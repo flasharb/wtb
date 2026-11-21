@@ -23,9 +23,9 @@ export function Header() {
           <a href={site.freeChannelUrl} target="_blank" rel="noopener" className="btn-ghost">
             Free calls
           </a>
-          <a href={site.botUrl} target="_blank" rel="noopener" className="btn-primary">
-            Open the bot
-          </a>
+          <Link href="/app" className="btn-primary">
+            Launch app
+          </Link>
         </div>
 
         {/* Mobile menu */}
