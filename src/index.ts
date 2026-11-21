@@ -7,6 +7,7 @@ import { measureSignalOutcomes } from './jobs/measure-outcomes.js';
 import { runLaunchScan } from './jobs/scan-launches.js';
 import { expireSubscriptions } from './bot/billing.js';
 import { monitorPositions, tradingLive } from './trading/engine.js';
+import { sweepAccruedFees } from './trading/fees.js';
 import { pool } from './db/index.js';
 
 const OUTCOME_INTERVAL_MS = 15 * 60 * 1000; // re-check signal outcomes every 15 min
@@ -94,6 +95,7 @@ async function start() {
 
   // --- Auto-trading exit monitor (TP / SL / trailing / rug) ---
   let tradeTimer: NodeJS.Timeout | undefined;
+  let feeTimer: NodeJS.Timeout | undefined;
   if (bot && tradingLive()) {
     const b = bot;
     const tradeMs = Math.max(5, config.TRADE_MONITOR_INTERVAL_SEC) * 1000;
@@ -102,6 +104,14 @@ async function start() {
     }, tradeMs);
     tradeTimer.unref?.();
     console.log(`🤖 Auto-trading LIVE — exit monitor every ${config.TRADE_MONITOR_INTERVAL_SEC}s (max ${config.TRADE_MAX_BUY_SOL} SOL/trade)`);
+
+    // Fee sweeper: settle accrued 0.3% + 1% fees to the treasury, batched per user.
+    const feeMs = Math.max(1, config.FEE_SWEEP_INTERVAL_MIN) * 60 * 1000;
+    feeTimer = setInterval(() => {
+      sweepAccruedFees().catch((e) => console.error('[fee] sweep error:', e?.message ?? e));
+    }, feeMs);
+    feeTimer.unref?.();
+    if (config.FEE_TREASURY_ADDRESS) console.log(`💸 Fee sweeper on — every ${config.FEE_SWEEP_INTERVAL_MIN} min (0.3%/trade + 1%/profit → treasury)`);
   } else if (bot && config.TRADING_ENABLED) {
     console.warn('⚠️  TRADING_ENABLED but WALLET_ENCRYPTION_KEY missing/invalid — auto-trading disabled.');
   }
@@ -120,6 +130,7 @@ async function start() {
     if (scanTimer) clearInterval(scanTimer);
     if (subTimer) clearInterval(subTimer);
     if (tradeTimer) clearInterval(tradeTimer);
+    if (feeTimer) clearInterval(feeTimer);
     try {
       await bot?.stop();
     } catch {

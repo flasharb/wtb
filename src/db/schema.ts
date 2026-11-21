@@ -371,24 +371,28 @@ export const trades = pgTable(
   (table) => [index('trades_position_idx').on(table.positionId)]
 );
 
-// 17. Performance fees (1% of realized profit on profitable closes)
+// 17. Fee ledger — 0.3% per trade + 1% of profit on profitable closes. Accrued per event,
+// then swept to the treasury in one transfer per user.
 export const fees = pgTable(
   'fees',
   {
     id: serial('id').primaryKey(),
     telegramUserId: varchar('telegram_user_id', { length: 64 }).notNull(),
     positionId: integer('position_id').notNull(),
+    kind: varchar('kind', { length: 16 }).default('performance').notNull(), // transaction | performance
+    basisLamports: numeric('basis_lamports', { precision: 30, scale: 0 }).default('0').notNull(), // SOL moved, or profit
     profitLamports: numeric('profit_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
     feeBps: integer('fee_bps').default(0).notNull(),
     feeLamports: numeric('fee_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
-    status: varchar('status', { length: 16 }).default('swept').notNull(), // swept | accrued | skipped
+    status: varchar('status', { length: 16 }).default('accrued').notNull(), // accrued | settled | skipped
     txSig: varchar('tx_sig', { length: 128 }),
     error: text('error'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    settledAt: timestamp('settled_at', { withTimezone: true }),
   },
   (table) => [
-    index('fees_user_idx').on(table.telegramUserId),
-    uniqueIndex('fees_position_idx').on(table.positionId), // one fee per closed position
+    index('fees_user_status_idx').on(table.telegramUserId, table.status),
+    index('fees_position_idx').on(table.positionId),
   ]
 );
 

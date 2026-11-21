@@ -164,7 +164,7 @@ export function registerAccountRoutes(server: FastifyInstance) {
       .from(positions)
       .where(eq(positions.telegramUserId, u));
     const [feeAgg] = await db
-      .select({ paid: sql<string>`coalesce(sum(${fees.feeLamports}) filter (where ${fees.status} = 'swept'), 0)` })
+      .select({ paid: sql<string>`coalesce(sum(${fees.feeLamports}) filter (where ${fees.status} = 'settled'), 0)` })
       .from(fees)
       .where(eq(fees.telegramUserId, u));
     const addr = await getPublicKey(u);
