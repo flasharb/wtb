@@ -371,6 +371,27 @@ export const trades = pgTable(
   (table) => [index('trades_position_idx').on(table.positionId)]
 );
 
+// 17. Performance fees (1% of realized profit on profitable closes)
+export const fees = pgTable(
+  'fees',
+  {
+    id: serial('id').primaryKey(),
+    telegramUserId: varchar('telegram_user_id', { length: 64 }).notNull(),
+    positionId: integer('position_id').notNull(),
+    profitLamports: numeric('profit_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
+    feeBps: integer('fee_bps').default(0).notNull(),
+    feeLamports: numeric('fee_lamports', { precision: 30, scale: 0 }).default('0').notNull(),
+    status: varchar('status', { length: 16 }).default('swept').notNull(), // swept | accrued | skipped
+    txSig: varchar('tx_sig', { length: 128 }),
+    error: text('error'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('fees_user_idx').on(table.telegramUserId),
+    uniqueIndex('fees_position_idx').on(table.positionId), // one fee per closed position
+  ]
+);
+
 // Relations
 export const walletsRelations = relations(wallets, ({ many }) => ({
   labels: many(walletLabels),

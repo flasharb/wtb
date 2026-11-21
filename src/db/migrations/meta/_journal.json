@@ -57,6 +57,13 @@
       "when": 1795290839359,
       "tag": "0007_steep_tyrannus",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795291119360,
+      "tag": "0008_curvy_ultron",
+      "breakpoints": true
     }
   ]
 }

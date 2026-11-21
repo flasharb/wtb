@@ -124,6 +124,14 @@ const envSchema = z.object({
   TRADE_DEFAULT_MAX_CONCURRENT: z.coerce.number().default(5),
   TRADE_DEFAULT_MAX_DAILY_BUYS: z.coerce.number().default(20),
 
+  // ---- Performance fee ----
+  // Charged on realized profit when a position closes in profit (never on losses). 100 = 1%.
+  PERF_FEE_BPS: z.coerce.number().default(100),
+  // Treasury that receives fees. Empty = fee collection disabled (safe no-op).
+  FEE_TREASURY_ADDRESS: z.string().default(''),
+  // Skip fees below this (dust not worth the gas), lamports.
+  FEE_MIN_LAMPORTS: z.coerce.number().default(50000),
+
   // ---- Web auth (Sign-In With Solana) ----
   // HMAC secret for session JWTs. Empty = web auth endpoints return 503 (disabled).
   AUTH_JWT_SECRET: z.string().default(''),

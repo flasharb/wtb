@@ -9,6 +9,7 @@ import { getKeypair, getPublicKey, getBalanceSol, getTokenBalanceRaw } from './w
 import { buyToken, sellToken, quoteValueLamports } from './jupiter.js';
 import { solToLamports, lamportsToSol } from './solana.js';
 import { getOrCreateConfig, dailyBuysUsed, TradingConfig } from './store.js';
+import { collectPerformanceFee } from './fees.js';
 
 /** Sells use a wider slippage floor so exits on fast-dumping tokens actually land. */
 function exitSlippageBps(cfg: TradingConfig): number {
@@ -322,6 +323,8 @@ async function sellAndSettle(
           lastCheckedAt: new Date(),
         })
         .where(eq(positions.id, p.id));
+      // 1% performance fee on profit (never on losses). Non-blocking — the ledger records it.
+      void collectPerformanceFee(p.telegramUserId, p.id, realized).catch(() => {});
       const pnlSol = lamportsToSol(realized);
       const emoji = realized >= 0 ? '✅' : '🔴';
       const label = reason === 'sl' ? 'Stop-loss' : reason === 'trail' ? 'Trailing stop' : reason === 'tp' ? 'Take-profit' : 'Closed';

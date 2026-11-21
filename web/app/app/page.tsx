@@ -16,7 +16,7 @@ type Config = {
   tpSellPct: number; slippageBps: number; maxConcurrent: number; maxDailyBuys: number; maxBuySol: number;
 };
 type Position = { id: number; token: string; tokenAddress: string; status: string; buySol: number; peakMultiple: number; tpHit: boolean };
-type Portfolio = { balanceSol: number; open: number; closed: number; winRate: number; realizedPnlSol: number };
+type Portfolio = { balanceSol: number; open: number; closed: number; winRate: number; realizedPnlSol: number; feesPaidSol: number };
 
 const PRESETS = {
   buy: [0.05, 0.1, 0.25, 0.5, 1, 2], tp: [50, 100, 150, 200, 300, 500], sl: [20, 30, 40, 50, 60],
@@ -214,6 +214,7 @@ export default function AppPage() {
                 <Row k="Open positions" v={String(portfolio.open)} />
                 <Row k="Closed trades" v={`${portfolio.closed} · ${portfolio.winRate}% win`} />
                 <Row k="Realized P&L" v={`${portfolio.realizedPnlSol >= 0 ? '+' : ''}${portfolio.realizedPnlSol.toFixed(4)} SOL`} accent={portfolio.realizedPnlSol >= 0} />
+                <Row k="Fees paid (1%)" v={`${portfolio.feesPaidSol.toFixed(4)} SOL`} />
               </div>
             )}
           </div>

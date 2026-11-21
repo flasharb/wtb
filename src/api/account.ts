@@ -3,7 +3,7 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import { requireAuth, userId } from './auth.js';
 import { config } from '../config/index.js';
 import { db } from '../db/index.js';
-import { positions } from '../db/schema.js';
+import { positions, fees } from '../db/schema.js';
 import { tokenTicker } from '../bot/formatters.js';
 import { tradingLive } from '../trading/engine.js';
 import { getPublicKey, getBalanceSol, withdrawSol, createWallet, exportWallet } from '../trading/wallet.js';
@@ -163,6 +163,10 @@ export function registerAccountRoutes(server: FastifyInstance) {
       })
       .from(positions)
       .where(eq(positions.telegramUserId, u));
+    const [feeAgg] = await db
+      .select({ paid: sql<string>`coalesce(sum(${fees.feeLamports}) filter (where ${fees.status} = 'swept'), 0)` })
+      .from(fees)
+      .where(eq(fees.telegramUserId, u));
     const addr = await getPublicKey(u);
     let balanceSol = 0;
     if (addr) { try { balanceSol = await getBalanceSol(addr); } catch { /* */ } }
@@ -175,6 +179,7 @@ export function registerAccountRoutes(server: FastifyInstance) {
         closed,
         winRate: closed > 0 ? Math.round((wins / closed) * 100) : 0,
         realizedPnlSol: lamportsToSol(Number(agg?.realized ?? 0)),
+        feesPaidSol: lamportsToSol(Number(feeAgg?.paid ?? 0)),
       },
     };
   });
